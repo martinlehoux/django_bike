@@ -1,5 +1,7 @@
 import os
 
+from django.urls import reverse_lazy
+
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
 SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
@@ -78,3 +80,6 @@ STATIC_URL = "/static/"
 MEDIA_ROOT = "media/"
 
 CELERY_BROKER_URL = "redis://localhost:6379"
+
+LOGOUT_REDIRECT_URL = reverse_lazy("track-list")
+LOGIN_REDIRECT_URL = reverse_lazy("track-list")
