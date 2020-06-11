@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% for track in object_list %}
+  <div>
+    <h3><a href="{% url 'track-detail' track.pk %}">{{track.name}}</a></h3>
+    <p>{{track.datetime}}</p>
+  </div>
+{% endfor %}
+{% endblock content %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>{{track.name}}</h2>
+<p>Datetime : {{track.datetime}}</p>
+<canvas id="alt-dist-chart" width="400" height="400"></canvas>
+<script>
+let altDistChartCtx = document.getElementById("alt-dist-chart").getContext("2d");
+let config = {
+  type: "scatter",
+  data: {
+    datasets: [{
+      label: "{{track.name}}",
+      data: {{track.alt_dist_dataset|safe}},
+    }]
+  },
+  options: {
+    responsive: true,
+    title: {
+      display: true,
+      text: "Altitude vs Distance",
+    },
+    tooltips: {
+      callbacks: {
+        label: (tooltipItem, data) =>  Math.round(tooltipItem.xLabel)/1000 + "km, " + Math.round(tooltipItem.yLabel) + "m",
+      }
+    },
+    hover: {
+      mode: "nearest",
+      intersect: false,
+    },
+    scales: {
+      xAxes: {
+        display: true,
+        scaleLabel: {
+          display: true,
+          labelString: "Distance",
+        }
+      },
+      yAxes: {
+        display: true,
+        scaleLabel: {
+          display: true,
+          labelString: "Altitude",
+        }
+      },
+    }
+  }
+}
+let altDistChart = new Chart(altDistChartCtx, config)
+</script>
+{% endblock content %}
