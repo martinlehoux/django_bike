@@ -1,5 +1,6 @@
 from django.urls import reverse_lazy
 from django.views import generic
+from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from plotly.offline import plot
 from plotly.graph_objs import Scatter, Layout, Figure
@@ -10,6 +11,12 @@ from .forms import TrackCreateForm
 
 class TrackListView(generic.ListView):
     model = Track
+
+    def get_queryset(self):
+        q = Q(public=True)
+        if self.request.user.is_authenticated:
+            q |= Q(user=self.request.user)
+        return Track.objects.filter(q)
 
 
 class TrackCreateView(LoginRequiredMixin, generic.CreateView):
