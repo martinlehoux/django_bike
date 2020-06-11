@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Track
+
+
+@admin.register(Track)
+class TrackAdmin(admin.ModelAdmin):
+    fields = ("uuid", "name", "datetime", "gpx_file", "points_count", "user", "public")
+    readonly_fields = ("uuid", "points_count", "user")
+    list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
