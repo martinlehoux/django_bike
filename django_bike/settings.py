@@ -102,3 +102,5 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 MEDIA_ROOT = "media/"
+
+CELERY_BROKER_URL = "redis://localhost:6379"

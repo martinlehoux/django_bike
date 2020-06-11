@@ -7,11 +7,15 @@ authors = ["Martin Lehoux <martin@lehoux.net>"]
 [tool.poetry.dependencies]
 python = "^3.8"
 django = "^3.0.7"
+celery = "^4.4.5"
+requests = "^2.23.0"
+redis = "^3.5.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
 black = "^19.10b0"
 flake8 = "^3.8.3"
+flower = "^0.9.4"
 
 [build-system]
 requires = ["poetry>=0.12"]
