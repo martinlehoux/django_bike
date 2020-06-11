@@ -8,3 +8,7 @@ class TrackAdmin(admin.ModelAdmin):
     fields = ("uuid", "name", "datetime", "gpx_file", "points_count", "user", "public")
     readonly_fields = ("uuid", "points_count", "user")
     list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
+
+    def save_form(self, request, form, change):
+        form.instance.user = request.user
+        return super().save_form(request, form, change)
