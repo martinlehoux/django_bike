@@ -1,4 +1,13 @@
 <nav>
   <a href="{% url 'track-list' %}">Track list</a>
-  <a href="{% url 'track-create' %}">Create new track</a>
+  {% if user.is_authenticated %}
+    <a href="{% url 'track-create' %}">Create new track</a>
+    <span>Hello {{user.username}}</span>
+    {% if user.is_staff %}
+      <a href="{% url 'admin:index' %}">Admin</a>
+    {% endif %}
+    <a href="{% url 'logout' %}">Logout</a>
+  {% else %}
+    <a href="{% url 'login' %}">Login</a>
+  {% endif %}
 </nav>
