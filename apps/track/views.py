@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from plotly.offline import plot
 from plotly.graph_objs import Scatter, Layout, Figure
 
-from .models import Track
+from .models import Track, TrackData, smoother
 from .forms import TrackCreateForm
 
 
@@ -29,22 +29,72 @@ class TrackDetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         track = self.get_object()
+        track_data = TrackData(track)
         alt_vs_dist_fig = Figure(
             data=[
                 Scatter(
-                    x=list(track.point_set.values_list("dist", flat=True)),
-                    y=list(track.point_set.values_list("alt", flat=True)),
+                    x=track_data.dist(),
+                    y=track_data.alt(),
                     mode="lines",
-                    name=track.name,
+                    name="Altitude",
+                ),
+                Scatter(
+                    x=track_data.dist(),
+                    y=track_data.alt_cum(),
+                    mode="lines",
+                    name="Cumulated altitude",
+                ),
+            ],
+            layout=Layout(
+                title=track.name,
+                xaxis=dict(title="Distance (km)"),
+                yaxis=dict(title="Altitude (m)"),
+                margin=dict(r=0, l=0, t=0, b=0),
+            ),
+        )
+        slope_vs_dist_fig = Figure(
+            data=[
+                Scatter(
+                    x=track_data.dist(),
+                    y=smoother(track_data.slope()),
+                    mode="lines",
+                    name="Slope",
                 )
             ],
             layout=Layout(
                 title=track.name,
-                xaxis=dict(title="Distance (meters)"),
-                yaxis=dict(title="Altitude (meters)"),
+                xaxis=dict(title="Distance (km)"),
+                yaxis=dict(title="Slope (%)"),
                 margin=dict(r=0, l=0, t=0, b=0),
             ),
         )
-        alt_vs_dist = plot(alt_vs_dist_fig, output_type="div", include_plotlyjs=False,)
-        context.update({"alt_vs_dist": alt_vs_dist})
+        speed_vs_dist_fig = Figure(
+            data=[
+                Scatter(
+                    x=track_data.dist(),
+                    y=smoother(track_data.speed()),
+                    mode="lines",
+                    name="Speed",
+                )
+            ],
+            layout=Layout(
+                title=track.name,
+                xaxis=dict(title="Distance (km)"),
+                yaxis=dict(title="Speed (km/h)"),
+                margin=dict(r=0, l=0, t=0, b=0),
+            ),
+        )
+        context.update(
+            {
+                "alt_vs_dist": plot(
+                    alt_vs_dist_fig, output_type="div", include_plotlyjs=False
+                ),
+                "slope_vs_dist": plot(
+                    slope_vs_dist_fig, output_type="div", include_plotlyjs=False
+                ),
+                "speed_vs_dist": plot(
+                    speed_vs_dist_fig, output_type="div", include_plotlyjs=False
+                ),
+            }
+        )
         return context
