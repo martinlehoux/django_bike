@@ -5,8 +5,7 @@ from typing import List
 from django.db import models
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
-
-from .parsers.gpx.amazfit import AmazfitGPXParser
+from django.utils import timezone
 
 
 User = get_user_model()
@@ -33,7 +32,7 @@ def gpx_file_path(track, filename):
 class Track(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
-    datetime = models.DateTimeField(blank=True)
+    datetime = models.DateTimeField(blank=True, default=timezone.now)
     gpx_file = models.FileField(upload_to=gpx_file_path, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     public = models.BooleanField(default=False)
@@ -48,33 +47,8 @@ class Track(models.Model):
     def get_absolute_url(self):
         return reverse("track-detail", kwargs={"pk": self.pk})
 
-    def save(
-        self, force_insert=False, force_update=False, using=None, update_fields=None
-    ):
-        if self.pk is None and self.gpx_file:
-            parser = AmazfitGPXParser()
-            points = parser.parse(self.gpx_file.file.open())
-            self.datetime = points[0]["time"]
-            super().save(
-                force_insert=force_insert,
-                force_update=force_update,
-                using=using,
-                update_fields=update_fields,
-            )
-            for point in points:
-                point["time"] -= self.datetime
-            Point.objects.bulk_create([Point(**point, track=self) for point in points])
-        else:
-            super().save(
-                force_insert=force_insert,
-                force_update=force_update,
-                using=using,
-                update_fields=update_fields,
-            )
-
     @property
     def alt_dist_dataset(self) -> List[dict]:
         return list(
             self.point_set.extra(select={"x": "dist", "y": "alt"}).values("x", "y")
         )
-
