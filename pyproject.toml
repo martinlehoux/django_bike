@@ -11,6 +11,8 @@ celery = "^4.4.5"
 requests = "^2.23.0"
 redis = "^3.5.3"
 django-dotenv = "^1.4.2"
+plotly = "^4.8.1"
+pandas = "^1.0.4"
 
 [tool.poetry.dev-dependencies]
 pytest = "^4.6"
