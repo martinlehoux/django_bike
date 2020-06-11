@@ -46,9 +46,3 @@ class Track(models.Model):
 
     def get_absolute_url(self):
         return reverse("track-detail", kwargs={"pk": self.pk})
-
-    @property
-    def alt_dist_dataset(self) -> List[dict]:
-        return list(
-            self.point_set.extra(select={"x": "dist", "y": "alt"}).values("x", "y")
-        )
