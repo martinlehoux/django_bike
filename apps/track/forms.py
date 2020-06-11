@@ -7,6 +7,7 @@ from . import tasks
 
 class TrackCreateForm(forms.ModelForm):
     parser = forms.ChoiceField(choices=[(key, key) for key in PARSERS.keys()])
+    gpx_file = forms.FileField(required=True)
 
     class Meta:
         model = Track

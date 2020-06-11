@@ -34,7 +34,7 @@ class Track(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
     datetime = models.DateTimeField(blank=True, default=timezone.now)
-    gpx_file = models.FileField(upload_to=gpx_file_path, null=True)
+    gpx_file = models.FileField(upload_to=gpx_file_path, blank=True, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     public = models.BooleanField(default=False)
 
