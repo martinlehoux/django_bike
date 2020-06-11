@@ -3,8 +3,9 @@ from __future__ import absolute_import, unicode_literals
 import os
 
 from celery import Celery
+import dotenv
 
-# set the default Django settings module for the 'celery' program.
+dotenv.read_dotenv()
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings")
 
 app = Celery("django_bike")
