@@ -178,6 +178,14 @@ argon2 = ["argon2-cffi (>=16.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+category = "main"
+description = "foreman reads from .env. manage.py doesn't. Let's fix that."
+name = "django-dotenv"
+optional = false
+python-versions = "*"
+version = "1.4.2"
+
+[[package]]
 category = "dev"
 description = "the modular source code checker: pep8 pyflakes and co"
 name = "flake8"
@@ -485,7 +493,7 @@ python-versions = "*"
 version = "0.2.4"
 
 [metadata]
-content-hash = "9000c8f07945e91727481e80c06ba59e0dee2b118a97e4bfb542748e4f91ec55"
+content-hash = "356b9224b64a8ab1a7745917a41ff43b79dee2bfb5b00c66748f38edeae7f725"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -540,6 +548,10 @@ colorama = [
 django = [
     {file = "Django-3.0.7-py3-none-any.whl", hash = "sha256:e1630333248c9b3d4e38f02093a26f1e07b271ca896d73097457996e0fae12e8"},
     {file = "Django-3.0.7.tar.gz", hash = "sha256:5052b34b34b3425233c682e0e11d658fd6efd587d11335a0203d827224ada8f2"},
+]
+django-dotenv = [
+    {file = "django-dotenv-1.4.2.tar.gz", hash = "sha256:3812bb0f4876cf31f902aad140f0645e120e51ee30eb7c40c22050f58a0e4adb"},
+    {file = "django_dotenv-1.4.2-py2.py3-none-any.whl", hash = "sha256:a9b1b40a70bd321acd231926acedb9bd2c5e873e33a1873b34a7276d196a765e"},
 ]
 flake8 = [
     {file = "flake8-3.8.3-py2.py3-none-any.whl", hash = "sha256:15e351d19611c887e482fb960eae4d44845013cc142d42896e9862f775d8cf5c"},
