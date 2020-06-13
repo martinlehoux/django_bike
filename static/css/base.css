@@ -1,0 +1,65 @@
+:root {
+    --text-color: #3f3f3f;
+    --light-active-text-color: #83B5D1;
+    --bg-color: #726e97;
+    --bg-active-color: #7f557d;
+    --light-text-color: #7698b3;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: Helvetica, sans-serif;
+    color: var(--text-color);
+}
+
+canvas.chart {
+    border: 3px black solid;
+    width: 40% !important;
+    height: 40vh !important;
+    margin: auto 2em;
+    display: inline-block;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 90%;
+    margin: 1em 5%;
+    border: 1px solid darkgrey;
+    border-radius: 3px;
+    padding: 3px 1em;
+    align-items: center;
+}
+
+.container > h3, .container > p {
+    flex: 1 0 auto;
+}
+
+a.button {
+    text-decoration: none;
+}
+
+.button {
+    padding: 0.5em 1em;
+    border-radius: 3px;
+    background-color: var(--bg-color);
+    color: lightgrey;
+    display: inline-flex;
+    align-items: center;
+}
+
+.button:hover {
+    background-color: var(--bg-active-color);
+    color: white;
+}
+
+.button > i {
+    flex: 0 0 auto;
+}
+
+.button > span {
+    flex: 1 0 auto;
+    min-width: 3em;
+    text-align: center;
+}

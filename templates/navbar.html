@@ -1,3 +1,6 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/navbar.css' %}">
 <nav>
   <a href="{% url 'track-list' %}">Track list</a>
   {% if user.is_authenticated %}
