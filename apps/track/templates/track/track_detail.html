@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>{{track.name}}</h2>
-<p>Datetime : {{track.datetime}}</p>
+<div class="container">
+  <h2>{{track.name}}</h2>
+  <p>Datetime : {{track.datetime}}</p>
+  <p>Positive elevation : {{track_stat.pos_ele|floatformat:0}} meters</p>
+</div>
 {% autoescape off %}
 {{alt_vs_dist}}
 {{slope_vs_dist}}

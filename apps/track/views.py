@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from plotly.offline import plot
 from plotly.graph_objs import Scatter, Layout, Figure
 
-from .models import Track, TrackData, smoother
+from .models import Track, TrackData, smoother, TrackStat
 from .forms import TrackCreateForm
 
 
@@ -93,6 +93,7 @@ class TrackDetailView(generic.DetailView):
         )
         context.update(
             {
+                "track_stat": TrackStat(track),
                 "alt_vs_dist": plot(
                     alt_vs_dist_fig, output_type="div", include_plotlyjs=False
                 ),

@@ -49,12 +49,32 @@ class Track(models.Model):
         return reverse("track-detail", kwargs={"pk": self.pk})
 
 
+class TrackStat:
+    track: Track
+
+    def __init__(self, track: Track):
+        assert isinstance(track, Track)
+        self.track = track
+
+    def pos_ele(self) -> float:
+        alt_cum = smoother(TrackData(self.track).alt_cum(), 300)
+        if alt_cum:
+            return alt_cum[-1]
+        return 0.0
+
+
 class TrackData:
     track: Track
 
     def __init__(self, track: Track):
         assert isinstance(track, Track)
         self.track = track
+
+    def lon(self) -> List[float]:
+        return [point.lon for point in self.track.point_set.all()]
+
+    def lat(self) -> List[float]:
+        return [point.lat for point in self.track.point_set.all()]
 
     def dist(self) -> List[float]:
         return [point.dist / 1000 for point in self.track.point_set.all()]
