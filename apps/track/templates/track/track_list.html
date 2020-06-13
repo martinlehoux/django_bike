@@ -2,9 +2,13 @@
 
 {% block content %}
 {% for track in object_list %}
-  <div>
-    <h3><a href="{% url 'track-detail' track.pk %}">{{track.name}}</a></h3>
+  <div class="container">
+    <h3>{{track.name}}</h3>
     <p>{{track.datetime}}</p>
+    <a href="{% url 'track-detail' track.pk %}" class="button">
+      <span>See</span>
+      <i class="fas fa-eye"></i>
+    </a>
   </div>
 {% endfor %}
 {% endblock content %}
