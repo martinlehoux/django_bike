@@ -45,12 +45,6 @@ class TrackDetailView(generic.DetailView):
                     mode="lines",
                     name="Altitude",
                 ),
-                Scatter(
-                    x=track_data.dist(),
-                    y=track_data.alt_cum(),
-                    mode="lines",
-                    name="Cumulated altitude",
-                ),
             ],
             layout=Layout(
                 title=track.name,
