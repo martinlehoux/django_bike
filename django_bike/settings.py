@@ -77,6 +77,8 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
+STATICFILES_DIRS = ["static"]
+MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
 CELERY_BROKER_URL = "redis://localhost:6379"
