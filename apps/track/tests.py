@@ -2,7 +2,7 @@ from django.utils import timezone
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 
-from .models import Track, Point
+from .models import Track, Point, TrackData
 
 
 User = get_user_model()
@@ -15,22 +15,33 @@ class TrackModelTestCase(TestCase):
     def setUpTestData(cls):
         cls.user = User.objects.create_user("Kagamino")
 
-    def test_track_alt_dist_dataset(self):
+
+class TrackDataTestCase(TestCase):
+    user: User
+    track1: Track
+    track2: Track
+
+    @classmethod
+    def setUpTestData(cls):
         now = timezone.now()
-        track = Track.objects.create(name="Track 1", datetime=now, user=self.user)
-        for i in range(10):
+        cls.user = User.objects.create_user("Kagamino")
+        cls.track1 = Track.objects.create(name="Track 1", datetime=now, user=cls.user)
+        for i in range(20):
             Point(
-                track=track,
+                track=cls.track1,
                 lat=0,
                 lon=0,
                 time=timezone.timedelta(seconds=i),
-                alt=i ** 2,
+                alt=i % 10,
                 dist=i,
             ).save()
-        dataset = track.alt_dist_dataset
-        self.assertEqual(len(dataset), 10)
-        self.assertEqual(dataset[0], {"x": 0, "y": 0})
-        self.assertEqual(dataset[9], {"x": 9, "y": 81})
+
+    def test_cum_alt(self):
+        data1 = TrackData(self.track1)
+        self.assertListEqual(
+            data1.alt_cum(),
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+        )
 
 
 class PointModelTestCase(TestCase):
