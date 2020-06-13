@@ -3,7 +3,7 @@ from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from plotly.offline import plot
-from plotly.graph_objs import Scatter, Layout, Figure
+from plotly import graph_objs as go
 
 from .models import Track, TrackData, smoother, TrackStat
 from .forms import TrackCreateForm
@@ -37,48 +37,48 @@ class TrackDetailView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         track = self.get_object()
         track_data = TrackData(track)
-        alt_vs_dist_fig = Figure(
+        alt_vs_dist_fig = go.Figure(
             data=[
-                Scatter(
+                go.Scatter(
                     x=track_data.dist(),
                     y=track_data.alt(),
                     mode="lines",
                     name="Altitude",
                 ),
             ],
-            layout=Layout(
+            layout=go.Layout(
                 title=track.name,
                 xaxis=dict(title="Distance (km)"),
                 yaxis=dict(title="Altitude (m)"),
                 margin=dict(r=0, l=0, t=0, b=0),
             ),
         )
-        slope_vs_dist_fig = Figure(
+        slope_vs_dist_fig = go.Figure(
             data=[
-                Scatter(
+                go.Scatter(
                     x=track_data.dist(),
                     y=smoother(track_data.slope()),
                     mode="lines",
                     name="Slope",
                 )
             ],
-            layout=Layout(
+            layout=go.Layout(
                 title=track.name,
                 xaxis=dict(title="Distance (km)"),
                 yaxis=dict(title="Slope (%)"),
                 margin=dict(r=0, l=0, t=0, b=0),
             ),
         )
-        speed_vs_dist_fig = Figure(
+        speed_vs_dist_fig = go.Figure(
             data=[
-                Scatter(
+                go.Scatter(
                     x=track_data.dist(),
                     y=smoother(track_data.speed()),
                     mode="lines",
                     name="Speed",
                 )
             ],
-            layout=Layout(
+            layout=go.Layout(
                 title=track.name,
                 xaxis=dict(title="Distance (km)"),
                 yaxis=dict(title="Speed (km/h)"),
