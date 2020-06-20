@@ -22,7 +22,7 @@ jobs:
         restore-keys: ${{ runner.os }}-test
     - name: Install Dependencies
       if: steps.cache.outputs.cache-hit != 'true'
-        run: pip install -r requirements.txt
+      run: pip install -r requirements.txt
     - name: Create .env file
       run: mv django_bike/template.env django_bike/.env
     - name: Run Tests
