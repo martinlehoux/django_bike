@@ -41,7 +41,7 @@ class TrackDetailView(generic.DetailView):
             data=[
                 go.Scatter(
                     x=track_data.dist(),
-                    y=track_data.alt(),
+                    y=smoother(track_data.alt()),
                     mode="lines",
                     name="Altitude",
                 ),
