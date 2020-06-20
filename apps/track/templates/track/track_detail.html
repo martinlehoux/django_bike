@@ -2,10 +2,34 @@
 
 {% block content %}
 <div class="container">
-  <h2>{{track.name}}</h2>
-  <p>Datetime : {{track.datetime}}</p>
-  <p>Positive elevation : {{track_stat.pos_ele|floatformat:0}} meters</p>
-  <p>Average speed : {{track_stat.mean_speed|floatformat:1}} unit ?</p>
+  <h2 class="title">{{track.name}}</h2>
+  <h2 class="subtitle">{{track.datetime}}</h2>
+  <div class="level">
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Duration</p>
+        <p class="title">{{track_stat.duration}}</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Distance</p>
+        <p class="title">{{track_stat.distance|floatformat:1}} km</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Positive elevation</p>
+        <p class="title">{{track_stat.pos_ele|floatformat:0}} m</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Average speed</p>
+        <p class="title">{{track_stat.mean_speed|floatformat:1}} km/h</p>
+      </div>
+    </div>
+  </div>
 </div>
 {% autoescape off %}
 {{alt_vs_dist}}

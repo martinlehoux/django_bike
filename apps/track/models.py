@@ -2,6 +2,7 @@ from pathlib import Path
 import uuid
 from typing import List
 from math import sqrt
+from datetime import timedelta
 
 from django.db import models
 from django.shortcuts import reverse
@@ -80,7 +81,19 @@ class TrackStat:
         speed = TrackData(self.track).speed()
         if speed:
             return sum(speed) / len(speed)
+    def duration(self) -> timedelta:
+        duration = TrackData(self.track).time()
+        if duration:
+            return duration[-1]
+        return timedelta()
+
+    def distance(self) -> float:
+        """km"""
+        distance = TrackData(self.track).dist()
+        if distance:
+            return distance[-1]
         return 0.0
+
 
 
 class TrackData:
@@ -90,7 +103,7 @@ class TrackData:
         assert isinstance(track, Track)
         self.track = track
 
-    def time(self) -> List[float]:
+    def time(self) -> List[timedelta]:
         return [point.time for point in self.track.point_set.all()]
 
     def lon(self) -> List[float]:
@@ -100,6 +113,7 @@ class TrackData:
         return [point.lat for point in self.track.point_set.all()]
 
     def dist(self) -> List[float]:
+        """km"""
         return [point.dist / 1000 for point in self.track.point_set.all()]
 
     def alt(self) -> List[float]:
