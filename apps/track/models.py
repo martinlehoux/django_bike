@@ -77,10 +77,6 @@ class TrackStat:
             return alt_cum[-1]
         return 0.0
 
-    def mean_speed(self) -> float:
-        speed = TrackData(self.track).speed()
-        if speed:
-            return sum(speed) / len(speed)
     def duration(self) -> timedelta:
         duration = TrackData(self.track).time()
         if duration:
@@ -94,6 +90,13 @@ class TrackStat:
             return distance[-1]
         return 0.0
 
+    def mean_speed(self) -> float:
+        """km/h"""
+        duration = self.duration()
+        distance = self.distance()
+        if duration:
+            return distance / duration.total_seconds() * 3600
+        return None
 
 
 class TrackData:
