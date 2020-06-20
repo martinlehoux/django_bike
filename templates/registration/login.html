@@ -1,8 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<form method="post">{% csrf_token %}
-{{form.as_p}}
-<input type="submit" value="Login">
-</form>
+<div class="container mt-4">
+  <form method="post" class="box">{% csrf_token %}
+    <h1 class="title">Login</h1>
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" type="text" name="username" id="username" placeholder="Username">
+        <span class="icon is-small is-left"><i class="fas fa-user"></i></span>
+      </p>
+    </div>
+    <div class="field">
+      <p class="control has-icons-left">
+        <input class="input" type="password" name="password" id="password" placeholder="Password">
+        <span class="icon is-small is-left"><i class="fas fa-lock"></i></span>
+      </p>
+    </div>
+    <div class="field">
+      <p class="control">
+        <input class="button is-success" type="submit" value="Login">
+      </p>
+    </div>
+  </form>
+</div>
 {% endblock content %}
