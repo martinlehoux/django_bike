@@ -76,6 +76,9 @@ class TrackData:
         assert isinstance(track, Track)
         self.track = track
 
+    def time(self) -> List[float]:
+        return [point.time for point in self.track.point_set.all()]
+
     def lon(self) -> List[float]:
         return [point.lon for point in self.track.point_set.all()]
 
