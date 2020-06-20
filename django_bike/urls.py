@@ -7,7 +7,7 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("django.contrib.auth.urls")),
-    path("", RedirectView.as_view(url="track/", permanent=False)),
+    path("", RedirectView.as_view(url="track/", permanent=False), name="index"),
     path("track/", include("apps.track.urls")),
 ]
 
