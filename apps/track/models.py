@@ -57,9 +57,15 @@ class TrackStat:
         self.track = track
 
     def pos_ele(self) -> float:
-        alt_cum = smoother(TrackData(self.track).alt_cum(), 300)
+        alt_cum = smoother(TrackData(self.track).alt_cum())
         if alt_cum:
             return alt_cum[-1]
+        return 0.0
+
+    def mean_speed(self) -> float:
+        speed = TrackData(self.track).speed()
+        if speed:
+            return sum(speed) / len(speed)
         return 0.0
 
 
