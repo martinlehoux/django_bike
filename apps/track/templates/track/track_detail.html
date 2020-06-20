@@ -5,6 +5,7 @@
   <h2>{{track.name}}</h2>
   <p>Datetime : {{track.datetime}}</p>
   <p>Positive elevation : {{track_stat.pos_ele|floatformat:0}} meters</p>
+  <p>Average speed : {{track_stat.mean_speed|floatformat:1}} unit ?</p>
 </div>
 {% autoescape off %}
 {{alt_vs_dist}}
