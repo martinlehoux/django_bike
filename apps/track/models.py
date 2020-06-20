@@ -8,6 +8,8 @@ from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 
+from .parsers import PARSERS
+
 
 User = get_user_model()
 
@@ -26,15 +28,27 @@ class Point(models.Model):
     dist = models.FloatField(default=0)
 
 
-def gpx_file_path(track, filename):
-    return Path() / "track" / "gpx" / f"track_{track.name.lower()}_{track.uuid}.gpx"
+def source_file_path(track, filename):
+    suffixes = "".join(Path(filename).suffixes)
+    return (
+        Path()
+        / "track"
+        / "source"
+        / f"track_{track.name.lower()}_{track.uuid}{suffixes}"
+    )
+
+
+gpx_file_path = source_file_path  # TODO: depreciate
 
 
 class Track(models.Model):
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
     datetime = models.DateTimeField(blank=True, default=timezone.now)
-    gpx_file = models.FileField(upload_to=gpx_file_path, blank=True, null=True)
+    source_file = models.FileField(upload_to=source_file_path, blank=True, null=True)
+    parser = models.CharField(
+        max_length=32, choices=[(parser, parser) for parser in PARSERS.keys()]
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     public = models.BooleanField(default=False)
 

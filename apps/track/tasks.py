@@ -33,10 +33,10 @@ def haversine(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
 
 
 @shared_task
-def track_parse_gpx(track_pk: int, parser: str) -> int:
+def track_parse_source(track_pk: int, parser: str) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
-    points = parser.parse(track.gpx_file.file.open())
+    points = parser.parse(track.source_file.file.open())
     track.datetime = points[0]["time"]
     track.save()
     for point in points:
