@@ -43,6 +43,10 @@ gpx_file_path = source_file_path  # TODO: depreciate
 
 
 class Track(models.Model):
+    class StateChoices(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        READY = "ready", "Ready"
+
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
     datetime = models.DateTimeField(blank=True, default=timezone.now)
@@ -52,6 +56,9 @@ class Track(models.Model):
     )
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     public = models.BooleanField(default=False)
+    state = models.CharField(
+        max_length=32, choices=StateChoices.choices, default=StateChoices.READY
+    )
 
     @property
     def points_count(self) -> int:

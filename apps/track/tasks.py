@@ -96,3 +96,11 @@ def track_compute_dist(track_pk: int) -> int:
         )
     Point.objects.bulk_update(points, ["dist"], batch_size=100)
     return track_pk
+
+
+@shared_task
+def track_state_ready(track_pk: int) -> int:
+    track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.READY
+    track.save()
+    return track_pk

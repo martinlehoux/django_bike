@@ -12,11 +12,13 @@ class TrackCreateForm(forms.ModelForm):
         fields = ["name", "source_file", "parser"]
 
     def save(self, commit=True):
+        self.instance.state = Track.StateChoices.PROCESSING
         track = super().save(commit=commit)
         (
             tasks.track_parse_source.s(track.pk, self.cleaned_data["parser"])
             | tasks.track_compute_coordinates.s()
             | tasks.track_retrieve_alt.s()
             | tasks.track_compute_dist.s()
+            | tasks.track_state_ready.s()
         )()
         return track
