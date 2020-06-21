@@ -115,6 +115,12 @@ class TrackData:
     def lat(self) -> List[float]:
         return [point.lat for point in self.track.point_set.all()]
 
+    def x(self) -> List[float]:
+        return [point.x for point in self.track.point_set.all()]
+
+    def y(self) -> List[float]:
+        return [point.y for point in self.track.point_set.all()]
+
     def dist(self) -> List[float]:
         """km"""
         return [point.dist / 1000 for point in self.track.point_set.all()]
