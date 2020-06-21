@@ -1,3 +1,11 @@
+{% if form.non_field_errors %}
+  <div class="notification is-danger">
+    <button type="button" class="delete"></button>
+    {% for error in form.non_field_errors %}
+      <p>{{error}}</p>
+    {% endfor %}
+  </div>
+{% endif %}
 {% for field in form %}
   <div class="field">
     <label
