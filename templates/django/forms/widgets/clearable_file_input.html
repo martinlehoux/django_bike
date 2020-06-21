@@ -1,0 +1,35 @@
+{% comment %} TODO {% endcomment %}
+{% comment %} {% if widget.is_initial %}
+  {{ widget.initial_text }}: <a href="{{ widget.value.url }}">{{ widget.value }}</a>
+  {% if not widget.required %}
+    <input
+      type="checkbox"
+      name="{{ widget.checkbox_name }}"
+      id="{{ widget.checkbox_id }}"
+      {% if widget.attrs.disabled %}disabled{% endif %}
+    >
+    <label for="{{ widget.checkbox_id }}">{{ widget.clear_checkbox_label }}</label>
+  {% endif %}
+  <br>
+  {{ widget.input_text }}:
+{% endif %} {% endcomment %}
+
+<div class="file has-name">
+  <label class="file-label">
+    <input
+      class="file-input"
+      type="file"
+      name="{{widget.name}}"
+      {% if widget.value != None %} value="{{ widget.value|stringformat:'s' }}"{% endif %}
+    >
+    <span class="file-cta">
+      <span class="file-icon">
+        <i class="fas fa-upload"></i>
+      </span>
+      <span class="file-label">Choose a file…</span>
+    </span>
+    <span class="file-name" id="name-{{widget.name}}">
+      {% if widget.value != None %}{{ widget.value|stringformat:'s' }}{% endif %}
+    </span>
+  </label>
+</div>
