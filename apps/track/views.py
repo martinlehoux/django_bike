@@ -2,6 +2,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib import messages
 from plotly.offline import plot
 from plotly import graph_objs as go
 
@@ -26,6 +27,10 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
     success_url = reverse_lazy("track-list")
 
     def form_valid(self, form):
+        messages.info(
+            self.request,
+            f"{form.instance.name} track was created and will be parsed in a few seconds",
+        )
         form.instance.user = self.request.user
         return super().form_valid(form)
 
