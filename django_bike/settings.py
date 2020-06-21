@@ -1,6 +1,7 @@
 import os
 
 from django.urls import reverse_lazy
+from django.contrib.messages import constants as messages
 
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -85,3 +86,8 @@ CELERY_BROKER_URL = "redis://localhost:6379"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track-list")
 LOGIN_REDIRECT_URL = reverse_lazy("track-list")
+
+MESSAGE_TAGS = {
+    messages.DEBUG: "primary",
+    messages.ERROR: "danger",
+}
