@@ -20,19 +20,25 @@ class BaseChart:
     def __init__(self, track: Track):
         self.track = track
         self.data = TrackData(track)
-        self.layout = go.Layout(
-            title=track.name,
+        self.layout = self.get_layout()
+        self.figure = self.get_figure()
+
+    def get_layout(self):
+        return go.Layout(
+            title=self.track.name,
             xaxis=dict(title=self.x_title),
             yaxis=dict(title=self.y_title),
             margin=dict(r=0, l=0, t=40, b=0),
         )
+
+    def get_figure(self):
         x = getattr(self.data, self.x_data_method)()
         if self.x_smoother:
             x = smoother(x, self.x_smoother)
         y = getattr(self.data, self.y_data_method)()
         if self.y_smoother:
             y = smoother(y, self.y_smoother)
-        self.figure = go.Figure(
+        return go.Figure(
             data=[go.Scatter(x=x, y=y, mode="lines", name=self.name)],
             layout=self.layout,
         )
