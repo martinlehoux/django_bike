@@ -44,6 +44,7 @@ class TrackDetailView(generic.DetailView):
             {
                 "track_stat": TrackStat(track),
                 "charts": [
+                    charts.MapChart(track).plot(),
                     charts.AltVSDistChart(track).plot(),
                     charts.SlopeVSDistChart(track).plot(),
                     charts.SpeedVSDistChart(track).plot(),
