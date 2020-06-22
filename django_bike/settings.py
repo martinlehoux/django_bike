@@ -86,8 +86,8 @@ MEDIA_ROOT = "media/"
 
 CELERY_BROKER_URL = "redis://localhost:6379"
 
-LOGOUT_REDIRECT_URL = reverse_lazy("track-list")
-LOGIN_REDIRECT_URL = reverse_lazy("track-list")
+LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
+LOGIN_REDIRECT_URL = reverse_lazy("track:list")
 
 MESSAGE_TAGS = {
     messages.DEBUG: "primary",

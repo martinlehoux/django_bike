@@ -69,7 +69,7 @@ class Track(models.Model):
         return f"{self.name} ({self.uuid})"
 
     def get_absolute_url(self):
-        return reverse("track-detail", kwargs={"pk": self.pk})
+        return reverse("track:detail", kwargs={"pk": self.pk})
 
 
 class TrackStat:

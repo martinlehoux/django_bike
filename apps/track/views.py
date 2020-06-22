@@ -23,7 +23,7 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
     model = Track
     template_name_suffix = "_create_form"
     form_class = TrackCreateForm
-    success_url = reverse_lazy("track-list")
+    success_url = reverse_lazy("track:list")
 
     def form_valid(self, form):
         messages.info(

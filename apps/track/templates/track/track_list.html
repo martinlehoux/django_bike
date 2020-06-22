@@ -15,7 +15,7 @@
       <footer class="card-footer">
         <p class="card-footer-item">
           <a
-            href="{% if track.state == "ready" %}{% url 'track-detail' track.pk %}{% else %}#{% endif %}"
+            href="{% if track.state == "ready" %}{% url 'track:detail' track.pk %}{% else %}#{% endif %}"
             class="button is-link"
             {% if track.state != "ready" %}disabled{% endif %}
           >
