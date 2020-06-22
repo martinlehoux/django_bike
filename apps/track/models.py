@@ -46,6 +46,7 @@ class Track(models.Model):
     class StateChoices(models.TextChoices):
         PROCESSING = "processing", "Processing"
         READY = "ready", "Ready"
+        ERROR = "error", "Error"
 
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
