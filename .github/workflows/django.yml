@@ -25,6 +25,8 @@ jobs:
       run: pip install -r requirements.txt
     - name: Create .env file
       run: mv django_bike/template.env django_bike/.env
+    - name: Migrate database
+      run: python manage.py migrate
     - name: Run Tests
       run: python manage.py test
       env:
