@@ -5,10 +5,9 @@ import os
 from django.db import migrations
 from django.conf import settings
 
-from apps.track.models import Track
-
 
 def forward(apps, schema_editor):
+    Track = apps.get_model("track", "Track")
     tracks = Track.objects.all()
     for track in tracks:
         name = track.source_file.name
