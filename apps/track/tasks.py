@@ -1,7 +1,8 @@
 from math import radians, cos, sin, asin, sqrt
 from typing import List
+from xml.etree.ElementTree import ParseError
 
-from celery import shared_task
+import celery
 from celery.utils.log import get_task_logger
 from django.conf import settings
 import requests
@@ -32,20 +33,30 @@ def haversine(lon1: float, lat1: float, lon2: float, lat2: float) -> float:
     return meters
 
 
-@shared_task
-def track_parse_gpx(track_pk: int, parser: str) -> int:
+def track_error(track: Track, message: str, err: Exception):
+    logger.error(message)
+    track.state = Track.StateChoices.ERROR
+    track.save()
+    raise err
+
+
+@celery.shared_task
+def track_parse_source(track_pk: int, parser: str) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
-    points = parser.parse(track.gpx_file.file.open())
-    track.datetime = points[0]["time"]
-    track.save()
-    for point in points:
-        point["time"] -= track.datetime
-    Point.objects.bulk_create([Point(**point, track=track) for point in points])
-    return track_pk
+    try:
+        points = parser.parse(track.source_file.file.open())
+        track.datetime = points[0]["time"]
+        track.save()
+        for point in points:
+            point["time"] -= track.datetime
+        Point.objects.bulk_create([Point(**point, track=track) for point in points])
+        return track_pk
+    except ParseError as err:
+        track_error(track, f"Failed to parse {track} source file: {err}", err)
 
 
-@shared_task
+@celery.shared_task
 def track_compute_coordinates(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
     points: List[Point] = track.point_set.all()
@@ -56,31 +67,34 @@ def track_compute_coordinates(track_pk: int) -> int:
     return track_pk
 
 
-@shared_task
+@celery.shared_task
 def track_retrieve_alt(track_pk: int) -> int:
     """Use JAWG API to get Altitudes
     Batch size is 500
     """
     track = Track.objects.get(pk=track_pk)
     points = track.point_set.all()
-    for i in range(len(points) // 500 + 1):
-        logger.info("Get altitudes for points %d to %d", i * 500, i * 500 + 499)
-        response = requests.post(
-            f"https://api.jawg.io/elevations/locations?access-token={settings.JAWG_TOKEN}",
-            json={
-                "locations": "|".join(
-                    f"{point.lat},{point.lon}"
-                    for point in points[i * 500 : (i + 1) * 500]
-                )
-            },
-        )
-        for j, data in enumerate(response.json()):
-            points[i * 500 + j].alt = data["elevation"]
-    Point.objects.bulk_update(points, ["alt"], batch_size=100)
+    try:
+        for i in range(len(points) // 500 + 1):
+            logger.info("Get altitudes for points %d to %d", i * 500, i * 500 + 499)
+            response = requests.post(
+                f"https://api.jawg.io/elevations/locations?access-token={settings.JAWG_TOKEN}",
+                json={
+                    "locations": "|".join(
+                        f"{point.lat},{point.lon}"
+                        for point in points[i * 500 : (i + 1) * 500]
+                    )
+                },
+            )
+            for j, data in enumerate(response.json()):
+                points[i * 500 + j].alt = data["elevation"]
+        Point.objects.bulk_update(points, ["alt"], batch_size=100)
+    except Exception as err:
+        track_error(track, f"Failed to load latitudes for track {track}: {err}", err)
     return track_pk
 
 
-@shared_task
+@celery.shared_task
 def track_compute_dist(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
     points = track.point_set.all()
@@ -95,4 +109,12 @@ def track_compute_dist(track_pk: int) -> int:
             + previous.dist
         )
     Point.objects.bulk_update(points, ["dist"], batch_size=100)
+    return track_pk
+
+
+@celery.shared_task
+def track_state_ready(track_pk: int) -> int:
+    track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.READY
+    track.save()
     return track_pk

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form method="post" class="box">{% csrf_token %}
+  <h1 class="title">Login</h1>
+  {% include "form.html" with action="Login" %}
+  <a href="{% url 'password_reset' %}" class="button">Password forgotten ?</a>
+</form>
+{% endblock content %}

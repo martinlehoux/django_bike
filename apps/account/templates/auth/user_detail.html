@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="box">
+  <h1 class="title">Profile</h1>
+  <div class="field is-grouped">
+    <p class="control">
+      <a href="{% url 'password_change' %}" class="button">Change password</a>
+    </p>
+  </div>
+</div>
+{% endblock content %}

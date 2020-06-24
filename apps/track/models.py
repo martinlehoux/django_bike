@@ -2,11 +2,14 @@ from pathlib import Path
 import uuid
 from typing import List
 from math import sqrt
+from datetime import timedelta
 
 from django.db import models
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+
+from .parsers import PARSERS
 
 
 User = get_user_model()
@@ -26,17 +29,37 @@ class Point(models.Model):
     dist = models.FloatField(default=0)
 
 
-def gpx_file_path(track, filename):
-    return Path() / "track" / "gpx" / f"track_{track.name.lower()}_{track.uuid}.gpx"
+def source_file_path(track, filename):
+    suffixes = "".join(Path(filename).suffixes)
+    return (
+        Path()
+        / "track"
+        / "source"
+        / f"track_{track.name.lower()}_{track.uuid}{suffixes}"
+    )
+
+
+gpx_file_path = source_file_path  # TODO: depreciate
 
 
 class Track(models.Model):
+    class StateChoices(models.TextChoices):
+        PROCESSING = "processing", "Processing"
+        READY = "ready", "Ready"
+        ERROR = "error", "Error"
+
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
     datetime = models.DateTimeField(blank=True, default=timezone.now)
-    gpx_file = models.FileField(upload_to=gpx_file_path, blank=True, null=True)
+    source_file = models.FileField(upload_to=source_file_path, blank=True, null=True)
+    parser = models.CharField(
+        max_length=32, choices=[(parser, parser) for parser in PARSERS.keys()]
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     public = models.BooleanField(default=False)
+    state = models.CharField(
+        max_length=32, choices=StateChoices.choices, default=StateChoices.READY
+    )
 
     @property
     def points_count(self) -> int:
@@ -46,7 +69,7 @@ class Track(models.Model):
         return f"{self.name} ({self.uuid})"
 
     def get_absolute_url(self):
-        return reverse("track-detail", kwargs={"pk": self.pk})
+        return reverse("track:detail", kwargs={"pk": self.pk})
 
 
 class TrackStat:
@@ -62,11 +85,26 @@ class TrackStat:
             return alt_cum[-1]
         return 0.0
 
-    def mean_speed(self) -> float:
-        speed = TrackData(self.track).speed()
-        if speed:
-            return sum(speed) / len(speed)
+    def duration(self) -> timedelta:
+        duration = TrackData(self.track).time()
+        if duration:
+            return duration[-1]
+        return timedelta()
+
+    def distance(self) -> float:
+        """km"""
+        distance = TrackData(self.track).dist()
+        if distance:
+            return distance[-1]
         return 0.0
+
+    def mean_speed(self) -> float:
+        """km/h"""
+        duration = self.duration()
+        distance = self.distance()
+        if duration:
+            return distance / duration.total_seconds() * 3600
+        return None
 
 
 class TrackData:
@@ -76,7 +114,7 @@ class TrackData:
         assert isinstance(track, Track)
         self.track = track
 
-    def time(self) -> List[float]:
+    def time(self) -> List[timedelta]:
         return [point.time for point in self.track.point_set.all()]
 
     def lon(self) -> List[float]:
@@ -85,7 +123,14 @@ class TrackData:
     def lat(self) -> List[float]:
         return [point.lat for point in self.track.point_set.all()]
 
+    def x(self) -> List[float]:
+        return [point.x for point in self.track.point_set.all()]
+
+    def y(self) -> List[float]:
+        return [point.y for point in self.track.point_set.all()]
+
     def dist(self) -> List[float]:
+        """km"""
         return [point.dist / 1000 for point in self.track.point_set.all()]
 
     def alt(self) -> List[float]:

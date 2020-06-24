@@ -6,10 +6,14 @@ from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("accounts/", include("django.contrib.auth.urls")),
-    path("", RedirectView.as_view(url="track/", permanent=False)),
+    path("accounts/", include("apps.account.urls")),
+    path("", RedirectView.as_view(url="track/", permanent=False), name="index"),
     path("track/", include("apps.track.urls")),
 ]
 
 if settings.DEBUG:
+    import debug_toolbar
+
     urlpatterns.extend(static(settings.STATIC_URL, document_root=settings.STATIC_ROOT))
+    urlpatterns.extend(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
+    urlpatterns.append(path("__debug__/", include(debug_toolbar.urls)))

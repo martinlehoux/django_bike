@@ -1,6 +1,7 @@
 import os
 
 from django.urls import reverse_lazy
+from django.contrib.messages import constants as messages
 
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -10,16 +11,19 @@ assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = SERVER_TYPE in ["dev", "test"]
 ALLOWED_HOSTS = []
+DEBUG = SERVER_TYPE in ["dev"]
+INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
+    "apps.account",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.forms",
     "apps.track",
 ]
 
@@ -35,10 +39,11 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "django_bike.urls"
 
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["templates"],
+        "DIRS": [os.path.join(BASE_DIR, "templates")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -83,5 +88,18 @@ MEDIA_ROOT = "media/"
 
 CELERY_BROKER_URL = "redis://localhost:6379"
 
-LOGOUT_REDIRECT_URL = reverse_lazy("track-list")
-LOGIN_REDIRECT_URL = reverse_lazy("track-list")
+LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
+LOGIN_REDIRECT_URL = reverse_lazy("track:list")
+
+MESSAGE_TAGS = {
+    messages.DEBUG: "primary",
+    messages.ERROR: "danger",
+}
+
+if DEBUG:
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+
+if DEBUG:
+    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, "mail")
