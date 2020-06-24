@@ -26,6 +26,7 @@
       {% endif %}
     </div>
     <div class="navbar-end">
+      {% include "navbar-item.html" with url='profile' name='Profile' %}
       <div class="navbar-item">
         <div class="buttons">
           {% if user.is_authenticated %}
