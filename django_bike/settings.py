@@ -11,8 +11,8 @@ assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = SERVER_TYPE in ["dev", "test"]
 ALLOWED_HOSTS = []
+DEBUG = SERVER_TYPE in ["dev"]
 INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
