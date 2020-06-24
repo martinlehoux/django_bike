@@ -23,7 +23,7 @@ jobs:
     - name: Install Dependencies
       if: steps.cache.outputs.cache-hit != 'true'
       run: |
-      pip install wheel
+        pip install wheel
         pip install -r requirements.txt
     - name: Migrate database
       run: python manage.py migrate
