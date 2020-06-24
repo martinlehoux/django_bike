@@ -13,6 +13,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = SERVER_TYPE in ["dev", "test"]
 ALLOWED_HOSTS = []
+INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -93,3 +94,7 @@ MESSAGE_TAGS = {
     messages.DEBUG: "primary",
     messages.ERROR: "danger",
 }
+
+if DEBUG:
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
