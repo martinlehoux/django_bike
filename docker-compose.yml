@@ -35,6 +35,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       JAWG_TOKEN: ${JAWG_TOKEN}
       SERVER_TYPE: stage
+      SENDGRID_KEY: ${SENDGRID_KEY}
     command: celery -A django_bike worker --loglevel=info
 
   web:
@@ -61,5 +62,6 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       JAWG_TOKEN: ${JAWG_TOKEN}
       SERVER_TYPE: stage
+      SENDGRID_KEY: ${SENDGRID_KEY}
     command: sh start-server.sh
 
