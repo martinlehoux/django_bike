@@ -1,6 +1,7 @@
 from math import radians, cos, sin, asin, sqrt
 from typing import List
 from xml.etree.ElementTree import ParseError
+import time
 
 import celery
 from celery.utils.log import get_task_logger
@@ -76,6 +77,7 @@ def track_retrieve_alt(track_pk: int) -> int:
     points = track.point_set.all()
     try:
         for i in range(len(points) // 500 + 1):
+            time.sleep(1)  # API rate limit
             logger.info("Get altitudes for points %d to %d", i * 500, i * 500 + 499)
             response = requests.post(
                 f"https://api.jawg.io/elevations/locations?access-token={settings.JAWG_TOKEN}",
