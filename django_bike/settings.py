@@ -12,6 +12,7 @@ assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = SERVER_TYPE in ["dev"]
+DOCKER = SERVER_TYPE in ["prod", "stage"]
 ALLOWED_HOSTS = ["localhost"]
 INTERNAL_IPS = ["127.0.0.1"]
 
@@ -101,7 +102,10 @@ else:
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
-CELERY_BROKER_URL = "redis://localhost:6379"
+if DOCKER:
+    CELERY_BROKER_URL = "redis://redis:6379"
+else:
+    CELERY_BROKER_URL = "redis://localhost:6379"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
 LOGIN_REDIRECT_URL = reverse_lazy("track:list")
