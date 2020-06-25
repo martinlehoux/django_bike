@@ -58,12 +58,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "django_bike.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+if SERVER_TYPE in ["dev", "test"]:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "django_bike",
+            "USER": "django_bike",
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": "db",
+            "PORT": "5432",
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
