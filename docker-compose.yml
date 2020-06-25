@@ -5,3 +5,15 @@ services:
     ports:
       - "6379:6379"
 
+  db:
+    image: postgres
+    environment:
+      POSTGRES_DB: django_bike
+      POSTGRES_USER: django_bike
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    expose:
+      - 5432
+
