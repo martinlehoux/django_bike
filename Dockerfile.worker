@@ -1,0 +1,5 @@
+FROM python:3.8
+WORKDIR /django_bike/
+
+COPY requirements.txt /django_bike/
+RUN pip install -r requirements.txt

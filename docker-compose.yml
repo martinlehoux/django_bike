@@ -17,6 +17,26 @@ services:
     expose:
       - 5432
 
+  worker:
+    image: worker
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    volumes:
+      - ./django_bike:/django_bike/django_bike
+      - ./apps:/django_bike/apps
+      - ./media:/django_bike/media
+    depends_on:
+      - redis
+      - db
+    environment:
+      PYTHONUNBUFFERED: 1
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      JAWG_TOKEN: ${JAWG_TOKEN}
+      SERVER_TYPE: stage
+    command: celery -A django_bike worker --loglevel=info
+
   web:
     image: web
     expose:
