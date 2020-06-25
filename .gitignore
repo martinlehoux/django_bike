@@ -6,3 +6,5 @@ media/
 .env
 mail/
 pgdata/
+static/admin/
+static/debug_toolbar/
