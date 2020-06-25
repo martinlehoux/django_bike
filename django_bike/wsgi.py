@@ -12,7 +12,7 @@ import os
 from django.core.wsgi import get_wsgi_application
 import dotenv
 
-dotenv.read_dotenv()
+dotenv.read_dotenv(".env")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings")
 
 application = get_wsgi_application()
