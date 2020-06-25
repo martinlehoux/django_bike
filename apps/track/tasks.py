@@ -87,7 +87,11 @@ def track_retrieve_alt(track_pk: int) -> int:
                 },
             )
             for j, data in enumerate(response.json()):
-                points[i * 500 + j].alt = data["elevation"]
+                try:
+                    points[i * 500 + j].alt = data["elevation"]
+                except TypeError:
+                    logger.error(response.json())
+                    break
         Point.objects.bulk_update(points, ["alt"], batch_size=100)
     except Exception as err:
         track_error(track, f"Failed to load latitudes for track {track}: {err}", err)
