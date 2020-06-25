@@ -17,3 +17,28 @@ services:
     expose:
       - 5432
 
+  web:
+    image: web
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./media:/django_bike/media
+      - ./django_bike:/django_bike/django_bike
+      - ./apps:/django_bike/apps
+      - ./templates:/django_bike/templates
+    depends_on:
+      - redis
+      - db
+    environment:
+      PYTHONUNBUFFERED: 1
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      SECRET_KEY: ${SECRET_KEY}
+      JAWG_TOKEN: ${JAWG_TOKEN}
+      SERVER_TYPE: stage
+    command: sh start-server.sh
+
