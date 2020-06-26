@@ -8,11 +8,12 @@ https://docs.djangoproject.com/en/2.2/howto/deployment/wsgi/
 """
 
 import os
+from pathlib import Path
 
 from django.core.wsgi import get_wsgi_application
 import dotenv
 
-dotenv.read_dotenv(".env")
+dotenv.read_dotenv(Path(os.path.dirname(os.path.dirname(__file__))) / ".env")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings")
 
 application = get_wsgi_application()

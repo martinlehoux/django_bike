@@ -7,10 +7,11 @@ services:
 
   db:
     image: postgres
+    env_file:
+      - django_bike/.env
     environment:
       POSTGRES_DB: django_bike
       POSTGRES_USER: django_bike
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     volumes:
       - ./pgdata:/var/lib/postgresql/data/pgdata
@@ -31,11 +32,7 @@ services:
       - db
     environment:
       PYTHONUNBUFFERED: 1
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SECRET_KEY: ${SECRET_KEY}
-      JAWG_TOKEN: ${JAWG_TOKEN}
       SERVER_TYPE: stage
-      SENDGRID_KEY: ${SENDGRID_KEY}
     command: celery -A django_bike worker --loglevel=info
 
   web:
@@ -58,10 +55,5 @@ services:
       - db
     environment:
       PYTHONUNBUFFERED: 1
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      SECRET_KEY: ${SECRET_KEY}
-      JAWG_TOKEN: ${JAWG_TOKEN}
       SERVER_TYPE: stage
-      SENDGRID_KEY: ${SENDGRID_KEY}
     command: sh start-server.sh
-
