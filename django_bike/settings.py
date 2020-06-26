@@ -7,13 +7,14 @@ from django.contrib.messages import constants as messages
 SECRET_KEY = os.environ.get("SECRET_KEY")
 SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
 JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(";")
+
 assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = SERVER_TYPE in ["dev"]
 DOCKER = SERVER_TYPE in ["prod", "stage"]
-ALLOWED_HOSTS = ["localhost"]
 INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
