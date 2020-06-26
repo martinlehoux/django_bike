@@ -25,6 +25,15 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = TrackCreateForm
     success_url = reverse_lazy("track:list")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["track_names"] = list(
+            Track.objects.filter(user=self.request.user)
+            .values_list("name", flat=True)
+            .distinct()
+        )
+        return kwargs
+
     def form_valid(self, form):
         messages.info(
             self.request,

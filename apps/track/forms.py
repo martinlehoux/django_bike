@@ -1,11 +1,21 @@
+from typing import List
+
 from django import forms
 
 from .models import Track
 from . import tasks
+from .widgets import TextListInput
 
 
 class TrackCreateForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=128, required=True, strip=True, widget=TextListInput
+    )
     source_file = forms.FileField(required=True)
+
+    def __init__(self, track_names: List[str], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update({"data_list": track_names})
 
     class Meta:
         model = Track
