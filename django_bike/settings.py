@@ -119,17 +119,14 @@ if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 
+SERVER_EMAIL = "martin@lehoux.net"
+
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, "mail")
 
 if DOCKER:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "smtp.sendgrid.net"
-    EMAIL_HOST_USER = "apikey"
-    EMAIL_HOST_PASSWORD = os.environ.get("SENDGRID_KEY")
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    SERVER_EMAIL = "martin@lehoux.net"
+    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+    SENDGRID_API_KEY = os.environ.get("SENDGRID_KEY")
 
 ADMINS = [("Martin Lehoux", "martin@lehoux.net")]
