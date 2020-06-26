@@ -6,7 +6,7 @@ from pathlib import Path
 from celery import Celery
 import dotenv
 
-dotenv.read_dotenv(Path(os.path.dirname(os.path.dirname(__file__))) / ".env")
+dotenv.read_dotenv(Path(os.path.dirname(__file__)) / ".env")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings")
 
 app = Celery("django_bike")
