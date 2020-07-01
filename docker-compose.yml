@@ -34,6 +34,7 @@ services:
       PYTHONUNBUFFERED: 1
       SERVER_TYPE: stage
     command: celery -A django_bike worker --loglevel=info
+    restart: always
 
   web:
     image: web
