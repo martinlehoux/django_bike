@@ -10,3 +10,9 @@ worker:
 
 flower:
 	celery flower -A django_bike
+
+docker-stop:
+	docker ps -q | xargs docker kill
+
+export:
+	poetry export -f requirements.txt -o requirements.txt --without-hashes
