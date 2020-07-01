@@ -153,11 +153,14 @@ class TrackData:
         points = self.track.point_set.all()
         for index, point in list(enumerate(points))[1:]:
             previous = points[index - 1]
-            slope.append(
-                (point.alt - previous.alt)
-                / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
-                * 100
-            )
+            try:
+                slope.append(
+                    (point.alt - previous.alt)
+                    / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
+                    * 100
+                )
+            except ZeroDivisionError:
+                slope.append(slope[-1])
         return slope
 
     def speed(self) -> List[float]:
