@@ -2,9 +2,9 @@ from typing import List
 
 from django import forms
 
+from apps.main.widgets import TextListInput
 from .models import Track
 from . import tasks
-from .widgets import TextListInput
 
 
 class TrackCreateForm(forms.ModelForm):
