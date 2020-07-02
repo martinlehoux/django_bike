@@ -4,8 +4,17 @@
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
 <div class="box">
-  <h2 class="title">{{track.name}}</h2>
-  <h2 class="subtitle">{{track.datetime}}</h2>
+  <div class="level">
+    <div class="level-left">
+      <div>
+        <h2 class="title">{{track.name}}</h2>
+        <h2 class="subtitle">{{track.datetime}}</h2>
+      </div>
+    </div>
+    <div class="level-right">
+      <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
+    </div>
+  </div>
   <div class="level">
     <div class="level-item has-text-centered">
       <div>
@@ -33,9 +42,12 @@
     </div>
   </div>
 </div>
+
 {% autoescape off %}
 {% for chart in charts %}
   <div class="box">{{chart}}</div>
 {% endfor %}
 {% endautoescape %}
+
+{% include "track/track_delete_modal.html" %}
 {% endblock content %}

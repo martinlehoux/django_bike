@@ -61,3 +61,8 @@ class TrackDetailView(generic.DetailView):
             }
         )
         return context
+
+
+class TrackDeleteView(generic.DeleteView):
+    model = Track
+    success_url = reverse_lazy("track:list")
