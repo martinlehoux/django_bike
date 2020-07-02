@@ -1,0 +1,16 @@
+<div id="track-delete-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <form method="post" action="{% url 'track:delete' track.pk %}" class="box">{% csrf_token %}
+      <h2 class="subtitle">Delete {{track.name}} ({{track.datetime}}) ?</h2>
+      <div class="field is-grouped">
+        <p class="control">
+          <button type="button" class="button" value="track-delete-modal" name="modal-close">Cancel</button>
+        </p>
+        <p class="control">
+          <button type="submit" class="button is-danger">Confirm deletion</button>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
