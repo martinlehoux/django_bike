@@ -65,7 +65,7 @@ class TrackDataRealTest(FileSystemTestCase):
                 open(Path(__file__).parent / "tests" / "track_zero_div.gpx")
             ),
         )
-        track_parse_source(cls.track1.pk, "amazfit-gpx-parser")
+        track_parse_source(cls.track1.pk, "amazfit-gpx-parser", next_task=False)
 
     def test_slope(self):
         data = TrackData(self.track1)

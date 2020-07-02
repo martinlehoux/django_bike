@@ -42,7 +42,7 @@ def track_error(track: Track, message: str, err: Exception):
 
 
 @celery.shared_task
-def track_parse_source(track_pk: int, parser: str) -> int:
+def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
     try:
@@ -52,7 +52,8 @@ def track_parse_source(track_pk: int, parser: str) -> int:
         for point in points:
             point["time"] -= track.datetime
         Point.objects.bulk_create([Point(**point, track=track) for point in points])
-        track_compute_coordinates.delay(track_pk)
+        if next_task:
+            track_compute_coordinates.delay(track_pk)
         return track_pk
     except ParseError as err:
         track_error(track, f"Failed to parse {track} source file: {err}", err)
