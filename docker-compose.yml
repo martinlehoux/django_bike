@@ -1,0 +1,60 @@
+version: "3"
+services:
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+  db:
+    image: postgres
+    env_file:
+      - django_bike/.env
+    environment:
+      POSTGRES_DB: django_bike
+      POSTGRES_USER: django_bike
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data/pgdata
+    expose:
+      - 5432
+
+  worker:
+    image: worker
+    build:
+      context: .
+      dockerfile: Dockerfile.worker
+    volumes:
+      - ./django_bike:/django_bike/django_bike
+      - ./apps:/django_bike/apps
+      - ./media:/django_bike/media
+    depends_on:
+      - redis
+      - db
+    environment:
+      PYTHONUNBUFFERED: 1
+      SERVER_TYPE: stage
+    command: celery -A django_bike worker --loglevel=info
+    restart: always
+
+  web:
+    image: web
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./media:/django_bike/media
+      - ./django_bike:/django_bike/django_bike
+      - ./apps:/django_bike/apps
+      - ./templates:/django_bike/templates
+      - ./static:/django_bike/static
+    depends_on:
+      - redis
+      - db
+    environment:
+      PYTHONUNBUFFERED: 1
+      SERVER_TYPE: stage
+    command: sh start-server.sh

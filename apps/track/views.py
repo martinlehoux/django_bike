@@ -16,7 +16,7 @@ class TrackListView(generic.ListView):
         q = Q(public=True)
         if self.request.user.is_authenticated:
             q |= Q(user=self.request.user)
-        return Track.objects.filter(q)
+        return Track.objects.filter(q).order_by("-datetime")
 
 
 class TrackCreateView(LoginRequiredMixin, generic.CreateView):
@@ -24,6 +24,15 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
     template_name_suffix = "_create_form"
     form_class = TrackCreateForm
     success_url = reverse_lazy("track:list")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["track_names"] = list(
+            Track.objects.filter(user=self.request.user)
+            .values_list("name", flat=True)
+            .distinct()
+        )
+        return kwargs
 
     def form_valid(self, form):
         messages.info(
@@ -52,3 +61,8 @@ class TrackDetailView(generic.DetailView):
             }
         )
         return context
+
+
+class TrackDeleteView(generic.DeleteView):
+    model = Track
+    success_url = reverse_lazy("track:list")

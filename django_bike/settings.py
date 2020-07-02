@@ -7,16 +7,20 @@ from django.contrib.messages import constants as messages
 SECRET_KEY = os.environ.get("SECRET_KEY")
 SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
 JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
+
 assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-ALLOWED_HOSTS = []
 DEBUG = SERVER_TYPE in ["dev"]
+DOCKER = SERVER_TYPE in ["prod", "stage"]
 INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
+    "apps.main",
     "apps.account",
+    "apps.track",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -24,7 +28,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.forms",
-    "apps.track",
+    "django_cleanup.apps.CleanupConfig",
 ]
 
 MIDDLEWARE = [
@@ -43,7 +47,7 @@ FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR, "templates")],
+        "DIRS": [],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -58,12 +62,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "django_bike.wsgi.application"
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+if SERVER_TYPE in ["dev", "test"]:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": "django_bike",
+            "USER": "django_bike",
+            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+            "HOST": "db",
+            "PORT": "5432",
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -82,11 +98,14 @@ USE_L10N = True
 USE_TZ = True
 
 STATIC_URL = "/static/"
-STATICFILES_DIRS = ["static"]
+STATIC_ROOT = "static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
-CELERY_BROKER_URL = "redis://localhost:6379"
+if DOCKER:
+    CELERY_BROKER_URL = "redis://redis:6379"
+else:
+    CELERY_BROKER_URL = "redis://localhost:6379"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
 LOGIN_REDIRECT_URL = reverse_lazy("track:list")
@@ -100,6 +119,14 @@ if DEBUG:
     INSTALLED_APPS.append("debug_toolbar")
     MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
 
+SERVER_EMAIL = "martin@lehoux.net"
+
 if DEBUG:
     EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
     EMAIL_FILE_PATH = os.path.join(BASE_DIR, "mail")
+
+if DOCKER:
+    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
+    SENDGRID_API_KEY = os.environ.get("SENDGRID_KEY")
+
+ADMINS = [("Martin Lehoux", "martin@lehoux.net")]

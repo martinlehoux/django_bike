@@ -1,6 +1,7 @@
 from math import radians, cos, sin, asin, sqrt
 from typing import List
 from xml.etree.ElementTree import ParseError
+import time
 
 import celery
 from celery.utils.log import get_task_logger
@@ -41,7 +42,7 @@ def track_error(track: Track, message: str, err: Exception):
 
 
 @celery.shared_task
-def track_parse_source(track_pk: int, parser: str) -> int:
+def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
     try:
@@ -51,6 +52,8 @@ def track_parse_source(track_pk: int, parser: str) -> int:
         for point in points:
             point["time"] -= track.datetime
         Point.objects.bulk_create([Point(**point, track=track) for point in points])
+        if next_task:
+            track_compute_coordinates.delay(track_pk)
         return track_pk
     except ParseError as err:
         track_error(track, f"Failed to parse {track} source file: {err}", err)
@@ -64,6 +67,7 @@ def track_compute_coordinates(track_pk: int) -> int:
         point.x = haversine(points[0].lon, 0, point.lon, 0)
         point.y = haversine(0, points[0].lat, 0, point.lat)
     Point.objects.bulk_update(points, ["x", "y"], batch_size=100)
+    track_retrieve_alt.delay(track_pk)
     return track_pk
 
 
@@ -76,21 +80,27 @@ def track_retrieve_alt(track_pk: int) -> int:
     points = track.point_set.all()
     try:
         for i in range(len(points) // 500 + 1):
+            time.sleep(1)  # API rate limit
             logger.info("Get altitudes for points %d to %d", i * 500, i * 500 + 499)
             response = requests.post(
                 f"https://api.jawg.io/elevations/locations?access-token={settings.JAWG_TOKEN}",
                 json={
                     "locations": "|".join(
                         f"{point.lat},{point.lon}"
-                        for point in points[i * 500 : (i + 1) * 500]
+                        for point in points[i * 500 : (i + 1) * 500]  # noqa: E203
                     )
                 },
             )
             for j, data in enumerate(response.json()):
-                points[i * 500 + j].alt = data["elevation"]
+                try:
+                    points[i * 500 + j].alt = data["elevation"]
+                except TypeError:
+                    logger.error(response.json())
+                    break
         Point.objects.bulk_update(points, ["alt"], batch_size=100)
     except Exception as err:
         track_error(track, f"Failed to load latitudes for track {track}: {err}", err)
+    track_compute_dist.delay(track_pk)
     return track_pk
 
 
@@ -109,6 +119,7 @@ def track_compute_dist(track_pk: int) -> int:
             + previous.dist
         )
     Point.objects.bulk_update(points, ["dist"], batch_size=100)
+    track_state_ready.delay(track_pk)
     return track_pk
 
 

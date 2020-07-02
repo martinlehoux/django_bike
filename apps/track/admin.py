@@ -14,6 +14,7 @@ class TrackAdmin(admin.ModelAdmin):
         "points_count",
         "user",
         "public",
+        "state",
     )
     readonly_fields = ("uuid", "points_count", "user")
     list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
