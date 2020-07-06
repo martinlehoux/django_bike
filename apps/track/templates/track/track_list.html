@@ -3,17 +3,19 @@
 {% block content %}
 <div class="columns is-multiline box">
 {% for track in object_list %}
-  <div class="is-one-third column">
-    <div class="card">
-      <div class="card-content">
-        <p class="title is-4">{{track.name}}</p>
-        <p class="subtitle is-6">{{track.datetime}}</p>
-        <div class="content">
-          {% include "track/track_tags.html" %}
+  <div class="is-full column">
+    <div class="box">
+      <div class="level">
+        <div class="level-left">
+          <div>
+            <p class="title is-4">{{track.name}}</p>
+            <p class="subtitle is-6">{{track.datetime}}</p>
+          </div>
+          <div class="content">
+            {% include "track/track_tags.html" %}
+          </div>
         </div>
-      </div>
-      <footer class="card-footer">
-        <p class="card-footer-item">
+        <div class="level-right">
           <a
             href="{% if track.state == "ready" %}{% url 'track:detail' track.pk %}{% else %}#{% endif %}"
             class="button is-link"
@@ -22,8 +24,8 @@
             <span class="icon"><i class="fas fa-map-marked"></i></span>
             <span>See</span> 
           </a>
-        </p>
-      </footer>
+        </div>
+      </div>
     </div>
   </div>
 {% endfor %}
