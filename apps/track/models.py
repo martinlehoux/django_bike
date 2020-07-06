@@ -108,6 +108,7 @@ class TrackStat:
 
 
 class TrackData:
+    DIST_FACTOR = 0.88
     track: Track
 
     def __init__(self, track: Track):
@@ -131,7 +132,9 @@ class TrackData:
 
     def dist(self) -> List[float]:
         """km"""
-        return [point.dist / 1000 for point in self.track.point_set.all()]
+        return [
+            point.dist * self.DIST_FACTOR / 1000 for point in self.track.point_set.all()
+        ]
 
     def alt(self) -> List[float]:
         return [point.alt for point in self.track.point_set.all()]
