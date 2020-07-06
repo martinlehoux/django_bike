@@ -4,8 +4,8 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 
-from .models import Track, TrackStat
-from .forms import TrackCreateForm
+from .models import Track
+from .forms import TrackCreateForm, TrackEditForm
 from . import charts
 
 
@@ -43,8 +43,18 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class TrackDetailView(generic.DetailView):
+class TrackDetailView(generic.UpdateView):
     model = Track
+    form_class = TrackEditForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["track_names"] = list(
+            Track.objects.filter(user=self.request.user)
+            .values_list("name", flat=True)
+            .distinct()
+        )
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
