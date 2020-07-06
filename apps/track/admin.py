@@ -1,10 +1,15 @@
 from django.contrib import admin
 
-from .models import Track
+from .models import Track, TrackStat
+
+
+class TrackStatInline(admin.StackedInline):
+    model = TrackStat
 
 
 @admin.register(Track)
 class TrackAdmin(admin.ModelAdmin):
+    inlines = [TrackStatInline]
     fields = (
         "uuid",
         "name",

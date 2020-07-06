@@ -51,7 +51,7 @@ class TrackDetailView(generic.DetailView):
         track = self.get_object()
         context.update(
             {
-                "track_stat": TrackStat(track),
+                "track_stat": track.trackstat,
                 "charts": [
                     charts.MapChart(track).plot(),
                     charts.AltVSDistChart(track).plot(),

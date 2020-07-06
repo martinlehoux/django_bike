@@ -4,7 +4,9 @@ from typing import List
 from math import sqrt
 from datetime import timedelta
 
+from django.dispatch import receiver
 from django.db import models
+from django.db.models.signals import post_save
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -70,41 +72,6 @@ class Track(models.Model):
 
     def get_absolute_url(self):
         return reverse("track:detail", kwargs={"pk": self.pk})
-
-
-class TrackStat:
-    track: Track
-
-    def __init__(self, track: Track):
-        assert isinstance(track, Track)
-        self.track = track
-
-    def pos_ele(self) -> float:
-        alt_cum = smoother(TrackData(self.track).alt_cum())
-        if alt_cum:
-            return alt_cum[-1]
-        return 0.0
-
-    def duration(self) -> timedelta:
-        duration = TrackData(self.track).time()
-        if duration:
-            return duration[-1]
-        return timedelta()
-
-    def distance(self) -> float:
-        """km"""
-        distance = TrackData(self.track).dist()
-        if distance:
-            return distance[-1]
-        return 0.0
-
-    def mean_speed(self) -> float:
-        """km/h"""
-        duration = self.duration()
-        distance = self.distance()
-        if duration:
-            return distance / duration.total_seconds() * 3600
-        return None
 
 
 class TrackData:
@@ -189,6 +156,48 @@ class TrackData:
         return speed
 
 
+class TrackStat(models.Model):
+    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)
+    pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)
+    duration = models.DurationField(default=timedelta(), blank=True)
+    distance = models.FloatField(default=0.0, blank=True)
+    mean_speed = models.FloatField(default=0.0, blank=True)
+
+    def compute(self):
+        data = TrackData(self.track)
+        self.pos_ele = self._pos_ele(data)
+        self.duration = self._duration(data)
+        self.distance = self._distance(data)
+        self.mean_speed = self._mean_speed(data)
+
+    def _pos_ele(self, data: TrackData) -> float:
+        alt_cum = smoother(data.alt_cum())
+        if alt_cum:
+            return alt_cum[-1]
+        return 0.0
+
+    def _duration(self, data: TrackData) -> timedelta:
+        duration = data.time()
+        if duration:
+            return duration[-1]
+        return timedelta()
+
+    def _distance(self, data: TrackData) -> float:
+        """km"""
+        distance = data.dist()
+        if distance:
+            return distance[-1]
+        return 0.0
+
+    def _mean_speed(self, data: TrackData) -> float:
+        """km/h"""
+        duration = self._duration(data)
+        distance = self._distance(data)
+        if duration:
+            return distance / duration.total_seconds() * 3600
+        return 0.0
+
+
 def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
     new_array = []
     for i in range(len(array)):
@@ -196,3 +205,9 @@ def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
         end = min(i + smooth_size, len(array))
         new_array.append(sum(array[start:end]) / len(array[start:end]))
     return new_array
+
+
+@receiver(post_save, sender=Track)
+def track_pre_save(sender, instance: Track, *args, **kwargs):
+    if not TrackStat.objects.filter(track=instance).exists():
+        TrackStat.objects.create(track=instance)

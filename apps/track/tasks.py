@@ -119,6 +119,15 @@ def track_compute_dist(track_pk: int) -> int:
             + previous.dist
         )
     Point.objects.bulk_update(points, ["dist"], batch_size=100)
+    track_compute_stat.delay(track_pk)
+    return track_pk
+
+
+@celery.shared_task
+def track_compute_stat(track_pk: int):
+    track = Track.objects.get(pk=track_pk)
+    track.trackstat.compute()
+    track.trackstat.save()
     track_state_ready.delay(track_pk)
     return track_pk
 
