@@ -110,3 +110,26 @@ class PointModelTestCase(TestCase):
         )
         self.assertGreater(point1.pk, point2.pk)
         self.assertEqual(track.point_set.first(), point1)
+
+
+class TrackPermissionsTestCase(TestCase):
+    user1: User
+    user2: User
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user1 = User.objects.create_user("Kagamino")
+        cls.user2 = User.objects.create_user("Other")
+
+    def test_view_permission(self):
+        now = timezone.now()
+        track = Track.objects.create(name="Track 1", datetime=now, user=self.user1)
+
+        self.assertTrue(self.user1.has_perm("track.view_track", track))
+        self.assertFalse(self.user2.has_perm("track.view_track", track))
+
+        track.public = True
+        track.save()
+
+        self.assertTrue(self.user1.has_perm("track.view_track", track))
+        self.assertTrue(self.user2.has_perm("track.view_track", track))
