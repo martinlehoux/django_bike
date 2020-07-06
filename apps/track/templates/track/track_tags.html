@@ -1,10 +1,13 @@
-{% load track_tags %}
-
 <div class="field is-grouped is-grouped-multiline">
-  {% comment %} State {% endcomment %}
+  {% comment %} User {% endcomment %}
   <div class="control">
-    <span class="tag {{track.state|state_class}}">
-      {{track.state}}
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-user"></i>
+      </span>
+      <span class="tag">
+        {{track.user}}
+      </span>
     </span>
   </div>
   {% comment %} Duration {% endcomment %}

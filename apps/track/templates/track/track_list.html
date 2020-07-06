@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load track_tags %}
 
 {% block content %}
 <div class="columns is-multiline box">
@@ -8,12 +9,15 @@
       <div class="level">
         <div class="level-left">
           <div>
-            <p class="title is-4">{{track.name}}</p>
+            <p class="title is-4">
+              {{track.name}}
+              <span class="tag {{track.state|state_class}}">{{track.state}}</span>
+            </p>
             <p class="subtitle is-6">{{track.datetime}}</p>
           </div>
-          <div class="content">
-            {% include "track/track_tags.html" %}
-          </div>
+          {% comment %} <div class="content">
+            
+          </div> {% endcomment %}
         </div>
         <div class="level-right">
           <a
@@ -26,6 +30,7 @@
           </a>
         </div>
       </div>
+      {% include "track/track_tags.html" %}
     </div>
   </div>
 {% endfor %}
