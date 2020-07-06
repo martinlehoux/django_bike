@@ -22,8 +22,10 @@
     </div>
   </div>
 {% endfor %}
-<div class="field">
-  <div class="control">
-    <button class="button is-link">{{action}}</button>
+{% if action %}
+  <div class="field">
+    <div class="control">
+      <button class="button is-link">{{action}}</button>
+    </div>
   </div>
-</div>
+{% endif %}
