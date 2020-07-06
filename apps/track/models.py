@@ -109,6 +109,7 @@ class TrackStat:
 
 class TrackData:
     DIST_FACTOR = 0.88
+    MIN_POS_ELE = 8
     track: Track
 
     def __init__(self, track: Track):
@@ -140,15 +141,21 @@ class TrackData:
         return [point.alt for point in self.track.point_set.all()]
 
     def alt_cum(self) -> List[float]:
-        alt_cum = []
+        # https://www.gpsvisualizer.com/tutorials/elevation_gain.html
+
         points = self.track.point_set.all()
+        alt_cum = []
+        last_low_alt = points[0].alt
         for index, point in enumerate(points):
-            previous = points[index - 1] if index > 0 else point
-            alt_cum.append(
-                max(point.alt - previous.alt, 0) + alt_cum[index - 1]
-                if index > 0
-                else 0
-            )
+            if index == 0:
+                alt_cum.append(0)
+            elif point.alt >= last_low_alt + self.MIN_ELE_POS:
+                alt_cum.append(point.alt - last_low_alt + alt_cum[index - 1])
+                last_low_alt = point.alt
+            else:
+                alt_cum.append(alt_cum[index - 1])
+                if point.alt < last_low_alt:
+                    last_low_alt = min(point.alt, last_low_alt)
         return alt_cum
 
     def slope(self) -> List[float]:
