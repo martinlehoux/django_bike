@@ -130,3 +130,5 @@ if DOCKER:
     SENDGRID_API_KEY = os.environ.get("SENDGRID_KEY")
 
 ADMINS = [("Martin Lehoux", "martin@lehoux.net")]
+
+TRACK_CHARTS_DISPLAY = True

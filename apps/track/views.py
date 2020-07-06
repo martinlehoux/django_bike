@@ -58,18 +58,15 @@ class TrackDetailView(generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        track = self.get_object()
-        context.update(
-            {
-                "track_stat": track.trackstat,
-                "charts": [
-                    charts.MapChart(track).plot(),
-                    charts.AltVSDistChart(track).plot(),
-                    charts.SlopeVSDistChart(track).plot(),
-                    charts.SpeedVSDistChart(track).plot(),
-                ],
-            }
-        )
+        track: Track = self.get_object()
+        context["track_stat"] = track.trackstat
+        if settings.TRACK_CHARTS_DISPLAY:
+            context["charts"] = [
+                charts.MapChart(track).plot(),
+                charts.AltVSDistChart(track).plot(),
+                charts.SlopeVSDistChart(track).plot(),
+                charts.SpeedVSDistChart(track).plot(),
+            ]
         return context
 
 
