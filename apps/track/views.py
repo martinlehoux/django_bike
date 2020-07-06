@@ -3,6 +3,8 @@ from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.conf import settings
+from rules.contrib.views import PermissionRequiredMixin
 
 from .models import Track
 from .forms import TrackCreateForm, TrackEditForm
@@ -43,9 +45,10 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class TrackDetailView(generic.UpdateView):
+class TrackDetailView(PermissionRequiredMixin, generic.UpdateView):
     model = Track
     form_class = TrackEditForm
+    permission_required = "track.edit_track"
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -70,6 +73,7 @@ class TrackDetailView(generic.UpdateView):
         return context
 
 
-class TrackDeleteView(generic.DeleteView):
+class TrackDeleteView(PermissionRequiredMixin, generic.DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
+    permission_required = "track.delete_track"
