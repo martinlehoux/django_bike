@@ -1,12 +1,15 @@
 from pathlib import Path
+import csv
+from datetime import timedelta
 
 from django.utils import timezone
 from django.test import TestCase
 from django.core.files import File
 from django.contrib.auth import get_user_model
+from django.utils.dateparse import parse_duration
 
-from apps.main.utils import FileSystemTestCase
-from .models import Track, Point, TrackData
+from apps.main.utils import FileSystemTestCase, TestMixin
+from .models import Track, Point, TrackData, TrackStat
 from .tasks import track_parse_source
 
 
@@ -19,34 +22,6 @@ class TrackModelTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create_user("Kagamino")
-
-
-class TrackDataTestCase(TestCase):
-    user: User
-    track1: Track
-    track2: Track
-
-    @classmethod
-    def setUpTestData(cls):
-        now = timezone.now()
-        cls.user = User.objects.create_user("Kagamino")
-        cls.track1 = Track.objects.create(name="Track 1", datetime=now, user=cls.user)
-        for i in range(20):
-            Point(
-                track=cls.track1,
-                lat=0,
-                lon=0,
-                time=timezone.timedelta(seconds=i),
-                alt=i % 10,
-                dist=i,
-            ).save()
-
-    def test_cum_alt(self):
-        data1 = TrackData(self.track1)
-        self.assertListEqual(
-            data1.alt_cum(),
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
-        )
 
 
 class TrackDataRealTest(FileSystemTestCase):
@@ -70,6 +45,50 @@ class TrackDataRealTest(FileSystemTestCase):
     def test_slope(self):
         data = TrackData(self.track1)
         data.slope()
+
+
+class TrackStatRealTest(TestMixin, TestCase):
+    track: Track
+
+    @classmethod
+    def setUpTestData(cls):
+        now = timezone.now()
+        cls.user = User.objects.create_user("Kagamino")
+        cls.track = Track.objects.create(name="Track 1", datetime=now, user=cls.user,)
+        with open(
+            Path(__file__).parent
+            / "tests"
+            / "c9454a76-4d06-4fea-bc54-2ced607f75bf.csv",
+            "r",
+        ) as file:
+            reader = csv.reader(file)
+            Point.objects.bulk_create(
+                [
+                    Point(
+                        lat=0,
+                        lon=0,
+                        x=row[0],
+                        y=row[1],
+                        alt=row[2],
+                        time=parse_duration(row[3]),
+                        dist=row[4],
+                        track=cls.track,
+                    )
+                    for row in reader
+                ]
+            )
+
+    def test_stat_values(self):
+        stat = TrackStat(self.track)
+
+        self.assertIsClose(stat.distance(), 19.31, 0.05)
+        self.assertAlmostEquals(
+            stat.duration(),
+            timedelta(minutes=58, seconds=22),
+            delta=timedelta(seconds=10),
+        )
+        self.assertIsClose(stat.mean_speed(), 19.85, 0.05)
+        self.assertIsClose(stat.pos_ele(), 300, 0.05)
 
 
 class PointModelTestCase(TestCase):
