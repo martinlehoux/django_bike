@@ -149,7 +149,7 @@ class TrackData:
         for index, point in enumerate(points):
             if index == 0:
                 alt_cum.append(0)
-            elif point.alt >= last_low_alt + self.MIN_ELE_POS:
+            elif point.alt >= last_low_alt + self.MIN_POS_ELE:
                 alt_cum.append(point.alt - last_low_alt + alt_cum[index - 1])
                 last_low_alt = point.alt
             else:
