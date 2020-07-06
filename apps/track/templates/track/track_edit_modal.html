@@ -1,0 +1,17 @@
+<div id="track-edit-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <form action="{% url 'track:detail' track.pk %}" method="post" class="box">{% csrf_token %}
+      <h1 class="title">Edit track</h1>
+      {% include "form.html" %}
+      <div class="field is-grouped">
+        <p class="control">
+          <button type="button" class="button" value="track-edit-modal" name="modal-close">Cancel</button>
+        </p>
+        <p class="control">
+          <button type="submit" class="button is-primary">Confirm update</button>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

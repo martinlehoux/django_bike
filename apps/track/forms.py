@@ -26,3 +26,17 @@ class TrackCreateForm(forms.ModelForm):
         track = super().save(commit=commit)
         tasks.track_parse_source.delay(track.pk, self.cleaned_data["parser"])
         return track
+
+
+class TrackEditForm(forms.ModelForm):
+    name = forms.CharField(
+        max_length=128, required=True, strip=True, widget=TextListInput
+    )
+
+    def __init__(self, track_names: List[str], *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["name"].widget.attrs.update({"data_list": track_names})
+
+    class Meta:
+        model = Track
+        fields = ["name", "public", "datetime"]
