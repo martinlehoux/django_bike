@@ -79,16 +79,17 @@ class TrackStatRealTest(TestMixin, TestCase):
             )
 
     def test_stat_values(self):
-        stat = TrackStat(self.track)
+        stat = TrackStat(track=self.track)
+        stat.compute()
 
-        self.assertIsClose(stat.distance(), 19.31, 0.05)
+        self.assertIsClose(stat.distance, 19.31, 0.05)
         self.assertAlmostEquals(
-            stat.duration(),
+            stat.duration,
             timedelta(minutes=58, seconds=22),
             delta=timedelta(seconds=10),
         )
-        self.assertIsClose(stat.mean_speed(), 19.85, 0.05)
-        self.assertIsClose(stat.pos_ele(), 300, 0.05)
+        self.assertIsClose(stat.mean_speed, 19.85, 0.05)
+        self.assertIsClose(stat.pos_ele, 300, 0.05)
 
 
 class PointModelTestCase(TestCase):
