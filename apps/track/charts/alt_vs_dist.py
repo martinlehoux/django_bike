@@ -1,10 +1,15 @@
-from .base import BaseChart
+from .base import BaseChart, smoother, go
 
 
 class AltVSDistChart(BaseChart):
-    name = "Altitude"
     x_title = "Distance (km)"
-    x_data_method = "dist"
     y_title = "Altitude (m)"
-    y_data_method = "alt"
-    y_smoother = 30
+
+    def get_data(self):
+        x = self.data.dist()
+        y1 = smoother(self.data.alt(), 30)
+        y2 = smoother(self.data.alt_cum(), 30)
+        return [
+            go.Scatter(x=x, y=y1, mode="lines", name="Altitude"),
+            go.Scatter(x=x, y=y2, mode="lines", name="Positive elevation"),
+        ]

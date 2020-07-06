@@ -31,17 +31,17 @@ class BaseChart:
             margin=dict(r=0, l=0, t=40, b=0),
         )
 
-    def get_figure(self):
+    def get_data(self):
         x = getattr(self.data, self.x_data_method)()
         if self.x_smoother:
             x = smoother(x, self.x_smoother)
         y = getattr(self.data, self.y_data_method)()
         if self.y_smoother:
             y = smoother(y, self.y_smoother)
-        return go.Figure(
-            data=[go.Scatter(x=x, y=y, mode="lines", name=self.name)],
-            layout=self.layout,
-        )
+        return [go.Scatter(x=x, y=y, mode="lines", name=self.name)]
+
+    def get_figure(self):
+        return go.Figure(data=self.get_data(), layout=self.layout)
 
     def plot(self):
         return plot(self.figure, output_type="div", include_plotlyjs=False)
