@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.forms",
     "django_cleanup.apps.CleanupConfig",
+    "rules.apps.AutodiscoverRulesConfig",
 ]
 
 MIDDLEWARE = [
@@ -130,3 +131,10 @@ if DOCKER:
     SENDGRID_API_KEY = os.environ.get("SENDGRID_KEY")
 
 ADMINS = [("Martin Lehoux", "martin@lehoux.net")]
+
+TRACK_CHARTS_DISPLAY = True
+
+AUTHENTICATION_BACKENDS = (
+    "rules.permissions.ObjectPermissionBackend",
+    "django.contrib.auth.backends.ModelBackend",
+)

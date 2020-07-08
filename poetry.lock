@@ -549,6 +549,14 @@ six = ">=1.7.0"
 
 [[package]]
 category = "main"
+description = "Awesome Django authorization, without the database"
+name = "rules"
+optional = false
+python-versions = "*"
+version = "2.2"
+
+[[package]]
+category = "main"
 description = "Twilio SendGrid library for Python"
 name = "sendgrid"
 optional = false
@@ -638,7 +646,7 @@ python-versions = "*"
 version = "0.2.5"
 
 [metadata]
-content-hash = "3d55af9909a40b28ce955f0e9a1aea801b485014a8e6ec882afa3c62937e49c7"
+content-hash = "6f5812035d07520ef764744dbd509d1d77be07a72229cea112866b116b4d1c8f"
 python-versions = "^3.8"
 
 [metadata.files]
@@ -902,6 +910,9 @@ requests = [
 ]
 retrying = [
     {file = "retrying-1.3.3.tar.gz", hash = "sha256:08c039560a6da2fe4f2c426d0766e284d3b736e355f8dd24b37367b0bb41973b"},
+]
+rules = [
+    {file = "rules-2.2.tar.gz", hash = "sha256:9bae429f9d4f91a375402990da1541f9e093b0ac077221d57124d06eeeca4405"},
 ]
 sendgrid = [
     {file = "sendgrid-6.4.1-py3-none-any.whl", hash = "sha256:dd0eddf079be040172a4d0afdf9b9becb4e53210ead015a0e6b2d680eea92ac0"},

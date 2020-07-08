@@ -1,7 +1,57 @@
-{% load track_tags %}
-
-<div class="tags">
-  <span class="tag {{track.state|state_class}}">
-    {{track.state}}
-  </span>
+<div class="field is-grouped is-grouped-multiline">
+  {% comment %} User {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-user"></i>
+      </span>
+      <span class="tag">
+        {{track.user}}
+      </span>
+    </span>
+  </div>
+  {% comment %} Duration {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-stopwatch"></i>
+      </span>
+      <span class="tag">
+        {{track.trackstat.duration}}
+      </span>
+    </span>
+  </div>
+  {% comment %} Distance {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-arrows-alt-h"></i>
+      </span>
+      <span class="tag">
+        {{track.trackstat.distance|floatformat}} km
+      </span>
+    </span>
+  </div>
+  {% comment %} Positive elevation {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-arrows-alt-v"></i>
+      </span>
+      <span class="tag">
+        {{track.trackstat.pos_ele|floatformat:0}} m
+      </span>
+    </span>
+  </div>
+  {% comment %} Mean speed {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-tachometer-alt"></i>
+      </span>
+      <span class="tag">
+        {{track.trackstat.mean_speed|floatformat}} km/h
+      </span>
+    </span>
+  </div>
 </div>

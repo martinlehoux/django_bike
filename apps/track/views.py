@@ -3,9 +3,11 @@ from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.conf import settings
+from rules.contrib.views import PermissionRequiredMixin
 
-from .models import Track, TrackStat
-from .forms import TrackCreateForm
+from .models import Track
+from .forms import TrackCreateForm, TrackEditForm
 from . import charts
 
 
@@ -43,26 +45,35 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class TrackDetailView(generic.DetailView):
+class TrackDetailView(PermissionRequiredMixin, generic.UpdateView):
     model = Track
+    form_class = TrackEditForm
+    permission_required = "track.edit_track"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["track_names"] = list(
+            Track.objects.filter(user=self.request.user)
+            .values_list("name", flat=True)
+            .distinct()
+        )
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        track = self.get_object()
-        context.update(
-            {
-                "track_stat": TrackStat(track),
-                "charts": [
-                    charts.MapChart(track).plot(),
-                    charts.AltVSDistChart(track).plot(),
-                    charts.SlopeVSDistChart(track).plot(),
-                    charts.SpeedVSDistChart(track).plot(),
-                ],
-            }
-        )
+        track: Track = self.get_object()
+        context["track_stat"] = track.trackstat
+        if settings.TRACK_CHARTS_DISPLAY:
+            context["charts"] = [
+                charts.MapChart(track).plot(),
+                charts.AltVSDistChart(track).plot(),
+                charts.SlopeVSDistChart(track).plot(),
+                charts.SpeedVSDistChart(track).plot(),
+            ]
         return context
 
 
-class TrackDeleteView(generic.DeleteView):
+class TrackDeleteView(PermissionRequiredMixin, generic.DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
+    permission_required = "track.delete_track"

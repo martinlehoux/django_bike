@@ -4,7 +4,9 @@ from typing import List
 from math import sqrt
 from datetime import timedelta
 
+from django.dispatch import receiver
 from django.db import models
+from django.db.models.signals import post_save
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
@@ -72,42 +74,9 @@ class Track(models.Model):
         return reverse("track:detail", kwargs={"pk": self.pk})
 
 
-class TrackStat:
-    track: Track
-
-    def __init__(self, track: Track):
-        assert isinstance(track, Track)
-        self.track = track
-
-    def pos_ele(self) -> float:
-        alt_cum = smoother(TrackData(self.track).alt_cum())
-        if alt_cum:
-            return alt_cum[-1]
-        return 0.0
-
-    def duration(self) -> timedelta:
-        duration = TrackData(self.track).time()
-        if duration:
-            return duration[-1]
-        return timedelta()
-
-    def distance(self) -> float:
-        """km"""
-        distance = TrackData(self.track).dist()
-        if distance:
-            return distance[-1]
-        return 0.0
-
-    def mean_speed(self) -> float:
-        """km/h"""
-        duration = self.duration()
-        distance = self.distance()
-        if duration:
-            return distance / duration.total_seconds() * 3600
-        return None
-
-
 class TrackData:
+    DIST_FACTOR = 0.88
+    MIN_POS_ELE = 8
     track: Track
 
     def __init__(self, track: Track):
@@ -131,21 +100,29 @@ class TrackData:
 
     def dist(self) -> List[float]:
         """km"""
-        return [point.dist / 1000 for point in self.track.point_set.all()]
+        return [
+            point.dist * self.DIST_FACTOR / 1000 for point in self.track.point_set.all()
+        ]
 
     def alt(self) -> List[float]:
         return [point.alt for point in self.track.point_set.all()]
 
     def alt_cum(self) -> List[float]:
-        alt_cum = []
+        # https://www.gpsvisualizer.com/tutorials/elevation_gain.html
+
         points = self.track.point_set.all()
+        alt_cum = []
+        last_low_alt = points[0].alt
         for index, point in enumerate(points):
-            previous = points[index - 1] if index > 0 else point
-            alt_cum.append(
-                max(point.alt - previous.alt, 0) + alt_cum[index - 1]
-                if index > 0
-                else 0
-            )
+            if index == 0:
+                alt_cum.append(0)
+            elif point.alt >= last_low_alt + self.MIN_POS_ELE:
+                alt_cum.append(point.alt - last_low_alt + alt_cum[index - 1])
+                last_low_alt = point.alt
+            else:
+                alt_cum.append(alt_cum[index - 1])
+                if point.alt < last_low_alt:
+                    last_low_alt = min(point.alt, last_low_alt)
         return alt_cum
 
     def slope(self) -> List[float]:
@@ -179,6 +156,48 @@ class TrackData:
         return speed
 
 
+class TrackStat(models.Model):
+    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)
+    pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)
+    duration = models.DurationField(default=timedelta(), blank=True)
+    distance = models.FloatField(default=0.0, blank=True)
+    mean_speed = models.FloatField(default=0.0, blank=True)
+
+    def compute(self):
+        data = TrackData(self.track)
+        self.pos_ele = self._pos_ele(data)
+        self.duration = self._duration(data)
+        self.distance = self._distance(data)
+        self.mean_speed = self._mean_speed(data)
+
+    def _pos_ele(self, data: TrackData) -> float:
+        alt_cum = smoother(data.alt_cum())
+        if alt_cum:
+            return alt_cum[-1]
+        return 0.0
+
+    def _duration(self, data: TrackData) -> timedelta:
+        duration = data.time()
+        if duration:
+            return duration[-1]
+        return timedelta()
+
+    def _distance(self, data: TrackData) -> float:
+        """km"""
+        distance = data.dist()
+        if distance:
+            return distance[-1]
+        return 0.0
+
+    def _mean_speed(self, data: TrackData) -> float:
+        """km/h"""
+        duration = self._duration(data)
+        distance = self._distance(data)
+        if duration:
+            return distance / duration.total_seconds() * 3600
+        return 0.0
+
+
 def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
     new_array = []
     for i in range(len(array)):
@@ -186,3 +205,9 @@ def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
         end = min(i + smooth_size, len(array))
         new_array.append(sum(array[start:end]) / len(array[start:end]))
     return new_array
+
+
+@receiver(post_save, sender=Track)
+def track_pre_save(sender, instance: Track, *args, **kwargs):
+    if not TrackStat.objects.filter(track=instance).exists():
+        TrackStat.objects.create(track=instance)
