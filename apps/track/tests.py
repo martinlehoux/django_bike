@@ -7,6 +7,8 @@ from django.test import TestCase
 from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.utils.dateparse import parse_duration
+from django.urls import reverse
+from django.http import HttpResponse
 
 from apps.main.utils import FileSystemTestCase, TestMixin
 from .models import Track, Point, TrackData, TrackStat
@@ -133,3 +135,31 @@ class TrackPermissionsTestCase(TestCase):
 
         self.assertTrue(self.user1.has_perm("track.view_track", track))
         self.assertTrue(self.user2.has_perm("track.view_track", track))
+
+    def test_detail_view(self):
+        now = timezone.now()
+        res: HttpResponse
+        track = Track.objects.create(name="Track 1", datetime=now, user=self.user1)
+        url = reverse("track:detail", args=[track.pk])
+
+        res = self.client.get(url)
+        self.assertContains(res, track, status_code=403)
+
+        self.client.force_login(self.user1)
+        res = self.client.get(url)
+        self.assertContains(res, "Track 1")
+
+        self.client.force_login(self.user2)
+        res = self.client.get(url)
+        self.assertContains(res, track, status_code=403)
+
+        track.public = True
+        track.save()
+
+        self.client.force_login(self.user1)
+        res = self.client.get(url)
+        self.assertContains(res, "Track 1")
+
+        self.client.force_login(self.user2)
+        res = self.client.get(url)
+        self.assertContains(res, "Track 1")
