@@ -69,6 +69,7 @@ class TrackDetailView(PermissionRequiredMixin, generic.UpdateView):
                 charts.AltVSDistChart(track).plot(),
                 charts.SlopeVSDistChart(track).plot(),
                 charts.SpeedVSDistChart(track).plot(),
+                charts.PowerVSTimeChart(track).plot(),
             ]
         return context
 
