@@ -25,19 +25,21 @@
   {% include 'navbar.html' %}
   <div class="container mt-4">
     <div class="columns">
-      <div class="column"></div>
+      <div class="column">
+        <script defer src="{% static 'bundle.js' %}"></script>
+        <div id="svelte-root"></div>
+        {% for message in messages %}
+          <div class="notification {% if message.tags %}is-{{message.tags}}{% endif %}">
+            <button class="delete"></button>
+            {{message}}
+          </div>
+        {% endfor %}
+      </div>
       <div class="column is-two-thirds">
         {% block content %}
         {% endblock content %}
       </div>
-      <div class="column">
-      {% for message in messages %}
-        <div class="notification {% if message.tags %}is-{{message.tags}}{% endif %}">
-          <button class="delete"></button>
-          {{message}}
-        </div>
-      {% endfor %}
-      </div>
+      <div class="column"></div>
     </div>
   </div>
   <script src="{% static 'js/index.js' %}"></script>
