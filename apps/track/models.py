@@ -1,7 +1,7 @@
 from pathlib import Path
 import uuid
 from typing import List
-from math import sqrt
+from math import sqrt, cos, sin, atan
 from datetime import timedelta
 
 from django.dispatch import receiver
@@ -154,6 +154,50 @@ class TrackData:
                     * 3.6
                 )
         return speed
+
+    def acceleration(self) -> List[float]:
+        acceleration = [0]
+        speed = [s / 3.6 for s in self.speed()]
+        points = self.track.point_set.all()
+        for index, point in list(enumerate(points))[1:]:
+            previous = points[index - 1]
+            if point.time == previous.time:
+                acceleration.append(acceleration[-1])
+            else:
+                acceleration.append(
+                    (speed[index] - speed[index - 1])
+                    / (point.time - previous.time).total_seconds()
+                )
+        return acceleration
+
+    def power(self) -> List[float]:
+        ROLLING_RESISTANCE = 0.005  # TODO
+        MASS = 80  # kg # TODO
+        GRAVITY = 9.87  # m/s2
+        AIR_DENSITY = 1.225  # kg/m3
+        DRAG_COEF = 0.9  # TODO
+        WIND_SURFACE = 0.44704  # m2 # TODO
+        # W = kg.m2/s3
+        power = [0]
+        slope = self.slope()
+        speed = [s / 3.6 for s in self.speed()]
+        acceleration = self.acceleration()
+        points = self.track.point_set.all()
+        for index, point in list(enumerate(points))[1:]:
+            weight = MASS * GRAVITY  # N = kg * m/s2
+            normal = weight * cos(slope[index] / 100)  # N
+            rolling_resistance = (
+                ROLLING_RESISTANCE * normal * speed[index]
+            )  # W = N * m/s
+            wind = (
+                0.5 * AIR_DENSITY * speed[index] ** 3 * DRAG_COEF * WIND_SURFACE
+            )  # W = kg/m3 * m3/s3 * m2
+            gravity = (
+                weight * speed[index] * sin(atan(slope[index] / 100))
+            )  # W = N * m/s
+            accel = MASS * speed[index] * acceleration[index]  # W = kg * m/s * m/s2
+            power.append(rolling_resistance + wind + gravity + accel)
+        return power
 
 
 class TrackStat(models.Model):
