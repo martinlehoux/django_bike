@@ -4,8 +4,8 @@ from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.conf import settings
-from rules.contrib.views import PermissionRequiredMixin
 
+from apps.main.views import PermissionRequiredMethodMixin
 from .models import Track
 from .forms import TrackCreateForm, TrackEditForm
 from . import charts
@@ -45,10 +45,21 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class TrackDetailView(PermissionRequiredMixin, generic.UpdateView):
+class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
     model = Track
     form_class = TrackEditForm
-    permission_required = "track.edit_track"
+    permission_denied_message = (
+        "You are not allowed to access this track: {} with this method."
+    )
+    raise_exception = True
+    permission_required_map = {
+        "GET": "track.view_track",
+        "POST": "track.edit_track",
+    }
+
+    def get_permission_denied_message(self):
+        track = self.get_object()
+        return self.permission_denied_message.format(track)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -74,7 +85,7 @@ class TrackDetailView(PermissionRequiredMixin, generic.UpdateView):
         return context
 
 
-class TrackDeleteView(PermissionRequiredMixin, generic.DeleteView):
+class TrackDeleteView(PermissionRequiredMethodMixin, generic.DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
     permission_required = "track.delete_track"
