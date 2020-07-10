@@ -42,7 +42,7 @@ def track_error(track: Track, message: str, err: Exception):
 
 
 @celery.shared_task
-def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
+def track_parse_source(track_pk: int, parser: str) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
     try:
@@ -52,8 +52,6 @@ def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
         for point in points:
             point["time"] -= track.datetime
         Point.objects.bulk_create([Point(**point, track=track) for point in points])
-        if next_task:
-            track_compute_coordinates.delay(track_pk)
         return track_pk
     except ParseError as err:
         track_error(track, f"Failed to parse {track} source file: {err}", err)
@@ -67,7 +65,6 @@ def track_compute_coordinates(track_pk: int) -> int:
         point.x = haversine(points[0].lon, 0, point.lon, 0)
         point.y = haversine(0, points[0].lat, 0, point.lat)
     Point.objects.bulk_update(points, ["x", "y"], batch_size=100)
-    track_retrieve_alt.delay(track_pk)
     return track_pk
 
 
@@ -100,7 +97,6 @@ def track_retrieve_alt(track_pk: int) -> int:
         Point.objects.bulk_update(points, ["alt"], batch_size=100)
     except Exception as err:
         track_error(track, f"Failed to load latitudes for track {track}: {err}", err)
-    track_compute_dist.delay(track_pk)
     return track_pk
 
 
@@ -119,7 +115,6 @@ def track_compute_dist(track_pk: int) -> int:
             + previous.dist
         )
     Point.objects.bulk_update(points, ["dist"], batch_size=100)
-    track_compute_stat.delay(track_pk)
     return track_pk
 
 
@@ -132,7 +127,6 @@ def track_compute_stat(track_pk: int):
         track.trackstat = TrackStat(track=track)
     track.trackstat.compute()
     track.trackstat.save()
-    track_state_ready.delay(track_pk)
     return track_pk
 
 
