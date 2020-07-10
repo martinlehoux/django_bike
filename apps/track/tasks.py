@@ -45,6 +45,8 @@ def track_error(track: Track, message: str, err: Exception):
 def track_parse_source(track_pk: int, parser: str) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     try:
         points = parser.parse(track.source_file.file.open())
         track.datetime = points[0]["time"]
@@ -60,6 +62,8 @@ def track_parse_source(track_pk: int, parser: str) -> int:
 @celery.shared_task
 def track_compute_coordinates(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     points: List[Point] = track.point_set.all()
     for point in points:
         point.x = haversine(points[0].lon, 0, point.lon, 0)
@@ -74,6 +78,8 @@ def track_retrieve_alt(track_pk: int) -> int:
     Batch size is 500
     """
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     points = track.point_set.all()
     try:
         for i in range(len(points) // 500 + 1):
@@ -103,6 +109,8 @@ def track_retrieve_alt(track_pk: int) -> int:
 @celery.shared_task
 def track_compute_dist(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     points = track.point_set.all()
     for index, point in enumerate(points):
         previous: Point = points[index - 1] if index > 0 else point
