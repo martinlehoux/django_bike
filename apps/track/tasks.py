@@ -8,7 +8,7 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 import requests
 
-from .models import Track, Point
+from .models import Track, Point, TrackStat
 from .parsers import PARSERS
 
 logger = get_task_logger(__name__)
@@ -126,6 +126,10 @@ def track_compute_dist(track_pk: int) -> int:
 @celery.shared_task
 def track_compute_stat(track_pk: int):
     track = Track.objects.get(pk=track_pk)
+    try:
+        track.trackstat
+    except TrackStat.DoesNotExist:
+        track.trackstat = TrackStat(track=track)
     track.trackstat.compute()
     track.trackstat.save()
     track_state_ready.delay(track_pk)
