@@ -8,6 +8,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
 JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
+TRACK_CHARTS_DISPLAY = bool(os.environ.get("TRACK_CHARTS_DISPLAY", True))
 
 assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 
@@ -134,7 +135,6 @@ if DOCKER:
 
 ADMINS = [("Martin Lehoux", "martin@lehoux.net")]
 
-TRACK_CHARTS_DISPLAY = True
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
