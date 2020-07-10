@@ -6,6 +6,7 @@ from django.contrib import messages
 from django.conf import settings
 
 from apps.main.views import PermissionRequiredMethodMixin
+from apps.notification import notify
 from .models import Track
 from .forms import TrackCreateForm, TrackEditForm
 from . import charts
@@ -37,8 +38,8 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
         return kwargs
 
     def form_valid(self, form):
-        messages.info(
-            self.request,
+        notify.info(
+            self.request.user,
             f"{form.instance.name} track was created and will be parsed in a few seconds",
         )
         form.instance.user = self.request.user

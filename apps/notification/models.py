@@ -6,7 +6,9 @@ User = get_user_model()
 
 class Notification(models.Model):
     class Level(models.TextChoices):
-        INFO = "is-primary"
+        INFO = "is-info"
+        SUCCESS = "is-success"
+        WARNING = "is-warning"
         ERROR = "is-danger"
 
     datetime = models.DateTimeField(auto_now_add=True)

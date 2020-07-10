@@ -8,6 +8,7 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 import requests
 
+from apps.notification import notify
 from .models import Track, Point, TrackStat
 from .parsers import PARSERS
 
@@ -38,6 +39,9 @@ def track_error(track: Track, message: str, err: Exception):
     logger.error(message)
     track.state = Track.StateChoices.ERROR
     track.save()
+    notify.error(
+        track.user, f"An error has occured while processing {track} track: {err}",
+    )
     raise err
 
 
@@ -143,4 +147,5 @@ def track_state_ready(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
     track.state = Track.StateChoices.READY
     track.save()
+    notify.success(track.user, f"{track.name} track is ready")
     return track_pk
