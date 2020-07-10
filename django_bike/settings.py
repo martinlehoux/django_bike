@@ -21,6 +21,7 @@ INSTALLED_APPS = [
     "apps.main",
     "apps.account",
     "apps.track",
+    "apps.notification",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -100,6 +101,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "static/"
+STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
