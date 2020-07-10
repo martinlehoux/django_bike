@@ -1,6 +1,6 @@
-import App from './App.svelte';
+import Notification from './Notifications.svelte';
 
-const app = new App({
+const app = new Notification({
 	target: document.getElementById("svelte-root"),
 });
 

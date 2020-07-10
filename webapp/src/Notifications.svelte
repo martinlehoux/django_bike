@@ -1,19 +1,17 @@
 <script lang="ts">
   import { onMount, onDestroy } from "svelte";
+  import { HttpService, Notif } from "./service";
 
   let notifications = [];
-
   let notifGetter: number;
+
+  const httpService = new HttpService();
 
   onMount(async () => {
     // Fetch all
-    fetch("/notification/")
-      .then((res) => res.json())
-      .then((data) => (notifications = data));
+    httpService.getNotifications().then((data) => (notifications = data));
     notifGetter = setInterval(() => {
-      fetch("/notification/")
-        .then((res) => res.json())
-        .then((data) => (notifications = data));
+      httpService.getNotifications().then((data) => (notifications = data));
     }, 5000);
   });
 
@@ -23,17 +21,15 @@
 
   function deleteNotif(pk: number) {
     notifications = notifications.filter((notif) => notif.pk !== pk);
-    fetch(`/notification/${pk}`, {
-      method: "DELETE",
-    });
+    httpService.deleteNotification(pk);
   }
 </script>
 
 <main>
   {#each notifications as notification (notification.pk)}
-    <div class="notification {notification.level}">
+    <div class="notification {notification.level} is-light">
       <button class="delete" on:click={() => deleteNotif(notification.pk)} />
-      {notification.content} ({notification.pk})
+      {notification.content}
     </div>
   {/each}
 </main>
