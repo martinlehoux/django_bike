@@ -2,7 +2,6 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
 from django.conf import settings
 
 from apps.main.views import PermissionRequiredMethodMixin
@@ -64,11 +63,14 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["track_names"] = list(
-            Track.objects.filter(user=self.request.user)
-            .values_list("name", flat=True)
-            .distinct()
-        )
+        if self.request.user == self.object.user:
+            kwargs["track_names"] = list(
+                Track.objects.filter(user=self.request.user)
+                .values_list("name", flat=True)
+                .distinct()
+            )
+        else:
+            kwargs["track_names"] = []
         return kwargs
 
     def get_context_data(self, **kwargs):
