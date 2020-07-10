@@ -8,3 +8,5 @@ mail/
 pgdata/
 static/admin/
 static/debug_toolbar/
+node_modules/
+build/
