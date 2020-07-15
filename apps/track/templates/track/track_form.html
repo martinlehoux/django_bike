@@ -13,9 +13,11 @@
     </div>
     <div class="level-right">
       <div class="field is-grouped">
-        <p class="control">
-          <button class="button is-primary" value="track-edit-modal" name="modal-open">Edit</button>
-        </p>
+        {% if request.user == track.user %}
+          <p class="control">
+            <button class="button is-primary" value="track-edit-modal" name="modal-open">Edit</button>
+          </p>  
+        {% endif %}
         <p class="control">
           <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
         </p>

@@ -1,6 +1,7 @@
 from typing import Any, List, Dict
 
 from django import forms
+from celery import chain
 
 from apps.main.widgets import TextListInput
 from .models import Track
@@ -24,7 +25,14 @@ class TrackCreateForm(forms.ModelForm):
     def save(self, commit=True):
         self.instance.state = Track.StateChoices.PROCESSING
         track = super().save(commit=commit)
-        tasks.track_parse_source.delay(track.pk, self.cleaned_data["parser"])
+        chain(
+            tasks.track_parse_source.s(track.pk, self.cleaned_data["parser"]),
+            tasks.track_compute_coordinates.s(),
+            tasks.track_retrieve_alt.s(),
+            tasks.track_compute_dist.s(),
+            tasks.track_compute_stat.s(),
+            tasks.track_state_ready.s(),
+        ).delay()
         return track
 
 

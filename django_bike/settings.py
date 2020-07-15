@@ -8,6 +8,7 @@ SECRET_KEY = os.environ.get("SECRET_KEY")
 SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
 JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
+TRACK_CHARTS_DISPLAY = bool(os.environ.get("TRACK_CHARTS_DISPLAY", True))
 
 assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
 
@@ -21,6 +22,7 @@ INSTALLED_APPS = [
     "apps.main",
     "apps.account",
     "apps.track",
+    "apps.notification",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -100,6 +102,7 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = "static/"
+STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
@@ -132,7 +135,46 @@ if DOCKER:
 
 ADMINS = [("Martin Lehoux", "martin@lehoux.net")]
 
-TRACK_CHARTS_DISPLAY = True
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": True,
+    "filters": {
+        "require_debug_false": {"()": "django.utils.log.RequireDebugFalse"},
+        "require_debug_true": {"()": "django.utils.log.RequireDebugTrue"},
+    },
+    "formatters": {
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}] {message}",
+            "style": "{",
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+        },
+        "django.server": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django": {"handlers": ["mail_admins", "console"], "level": "INFO"},
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
 
 AUTHENTICATION_BACKENDS = (
     "rules.permissions.ObjectPermissionBackend",

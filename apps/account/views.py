@@ -7,7 +7,8 @@ from django.contrib.auth.views import (
     PasswordResetDoneView,
     PasswordResetCompleteView,
 )
-from django.contrib import messages
+
+from apps.notification import notify
 
 User = get_user_model()
 
@@ -21,14 +22,16 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
 class PasswordChangeDoneView(PasswordChangeDoneView):
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, "Your password was changed successfully.")
+        notify.success(
+            request.user, "Your password was changed successfully.",
+        )
         return redirect("profile")
 
 
 class PasswordResetDoneView(PasswordResetDoneView):
     def dispatch(self, request, *args, **kwargs):
-        messages.info(
-            request,
+        notify.info(
+            request.user,
             (
                 "We’ve emailed you instructions for setting your password, "
                 "if an account exists with the email you entered. You should "
@@ -42,5 +45,5 @@ class PasswordResetDoneView(PasswordResetDoneView):
 
 class PasswordResetCompleteView(PasswordResetCompleteView):
     def dispatch(self, request, *args, **kwargs):
-        messages.success(request, "Password reset complete")
+        notify.success(request.user, "Password reset complete")
         return redirect("login")

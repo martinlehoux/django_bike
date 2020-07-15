@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <article class="message is-danger">
+    <div class="message-header">
+      <p>404: Not found ({{ request_path }})</p>
+    </div>
+    <div class="message-body">{{ exception }}</div>
+  </article>
+{% endblock content %}

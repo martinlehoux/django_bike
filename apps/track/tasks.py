@@ -8,6 +8,7 @@ from celery.utils.log import get_task_logger
 from django.conf import settings
 import requests
 
+from apps.notification import notify
 from .models import Track, Point, TrackStat
 from .parsers import PARSERS
 
@@ -38,13 +39,18 @@ def track_error(track: Track, message: str, err: Exception):
     logger.error(message)
     track.state = Track.StateChoices.ERROR
     track.save()
+    notify.error(
+        track.user, f"An error has occured while processing {track} track: {err}",
+    )
     raise err
 
 
 @celery.shared_task
-def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
+def track_parse_source(track_pk: int, parser: str) -> int:
     parser = PARSERS[parser]()
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     try:
         points = parser.parse(track.source_file.file.open())
         track.datetime = points[0]["time"]
@@ -52,8 +58,6 @@ def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
         for point in points:
             point["time"] -= track.datetime
         Point.objects.bulk_create([Point(**point, track=track) for point in points])
-        if next_task:
-            track_compute_coordinates.delay(track_pk)
         return track_pk
     except ParseError as err:
         track_error(track, f"Failed to parse {track} source file: {err}", err)
@@ -62,12 +66,13 @@ def track_parse_source(track_pk: int, parser: str, next_task=True) -> int:
 @celery.shared_task
 def track_compute_coordinates(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     points: List[Point] = track.point_set.all()
     for point in points:
         point.x = haversine(points[0].lon, 0, point.lon, 0)
         point.y = haversine(0, points[0].lat, 0, point.lat)
     Point.objects.bulk_update(points, ["x", "y"], batch_size=100)
-    track_retrieve_alt.delay(track_pk)
     return track_pk
 
 
@@ -77,6 +82,8 @@ def track_retrieve_alt(track_pk: int) -> int:
     Batch size is 500
     """
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     points = track.point_set.all()
     try:
         for i in range(len(points) // 500 + 1):
@@ -100,13 +107,14 @@ def track_retrieve_alt(track_pk: int) -> int:
         Point.objects.bulk_update(points, ["alt"], batch_size=100)
     except Exception as err:
         track_error(track, f"Failed to load latitudes for track {track}: {err}", err)
-    track_compute_dist.delay(track_pk)
     return track_pk
 
 
 @celery.shared_task
 def track_compute_dist(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
+    track.state = Track.StateChoices.PROCESSING
+    track.save()
     points = track.point_set.all()
     for index, point in enumerate(points):
         previous: Point = points[index - 1] if index > 0 else point
@@ -119,7 +127,6 @@ def track_compute_dist(track_pk: int) -> int:
             + previous.dist
         )
     Point.objects.bulk_update(points, ["dist"], batch_size=100)
-    track_compute_stat.delay(track_pk)
     return track_pk
 
 
@@ -132,7 +139,6 @@ def track_compute_stat(track_pk: int):
         track.trackstat = TrackStat(track=track)
     track.trackstat.compute()
     track.trackstat.save()
-    track_state_ready.delay(track_pk)
     return track_pk
 
 
@@ -141,4 +147,5 @@ def track_state_ready(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
     track.state = Track.StateChoices.READY
     track.save()
+    notify.success(track.user, f"{track.name} track is ready")
     return track_pk
