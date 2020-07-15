@@ -1,6 +1,8 @@
-from django.contrib import admin
+from django.contrib import admin, messages
+from celery import chain
 
 from .models import Track, TrackStat
+from . import tasks
 
 
 class TrackStatInline(admin.StackedInline):
@@ -23,7 +25,17 @@ class TrackAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("uuid", "points_count", "user")
     list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
+    actions = ["compute_stats"]
 
     def save_form(self, request, form, change):
         form.instance.user = request.user
         return super().save_form(request, form, change)
+
+    def compute_stats(self, request, queryset):
+        for track in queryset:
+            chain(
+                tasks.track_compute_stat.s(track.pk), tasks.track_state_ready.s(),
+            ).delay()
+        self.message_user(
+            request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
+        )

@@ -1,5 +1,7 @@
 {% url url as url %}
-<a
-  class="navbar-item {% if request.path == url %}is-active{% endif %}"
-  href="{{ url }}"
->{{ name }}</a>
+<a class="navbar-item {% if request.path == url %}is-active{% endif %}" href="{{ url }}">
+  {% if icon %}
+  <span class="icon"><i class="fas fa-{{icon}}"></i></span>
+  {% endif %}
+  <span>{{ name }}</span>
+</a>
