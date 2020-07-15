@@ -10,3 +10,5 @@ static/admin/
 static/debug_toolbar/
 node_modules/
 build/
+.coverage
+htmlcov

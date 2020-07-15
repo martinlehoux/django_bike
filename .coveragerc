@@ -1,0 +1,14 @@
+[run]
+plugins =
+    # django_coverage_plugin
+branch = True
+omit =
+    **/migrations/*.py
+    **/apps.py
+    **/templates/auth/*.html
+    **/templates/registration/*.html
+    **/main/templates/*.html
+
+[report]
+sort = -Cover
+show_missing = True
