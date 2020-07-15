@@ -83,7 +83,7 @@ class TrackStatRealTest(TestMixin, TestCase):
         stat.compute()
 
         self.assertIsClose(stat.distance, 19.31, 0.05)
-        self.assertAlmostEquals(
+        self.assertAlmostEqual(
             stat.duration,
             timedelta(minutes=58, seconds=22),
             delta=timedelta(seconds=10),
