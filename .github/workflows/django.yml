@@ -24,7 +24,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
       run: pip install -r requirements.txt
     - name: Run Tests
-      run: python manage.py test
+      run: pytest
       env:
         SERVER_TYPE: test
         SECRET_KEY: test-secret-key
