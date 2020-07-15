@@ -9,7 +9,6 @@ urlpatterns = [
     path("accounts/", include("apps.account.urls")),
     path("", RedirectView.as_view(url="track/", permanent=False), name="index"),
     path("track/", include("apps.track.urls")),
-    path("notification/", include("apps.notification.urls")),
 ]
 
 if settings.DEBUG:
