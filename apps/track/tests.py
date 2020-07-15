@@ -164,3 +164,32 @@ class TrackPermissionsTestCase(TestCase):
         self.client.force_login(self.user2)
         res = self.client.get(url)
         self.assertContains(res, "Track 1")
+
+    def test_track_list_view(self):
+        now = timezone.now()
+        res: HttpResponse
+        track1 = Track.objects.create(name="Track 1", datetime=now, user=self.user1)
+        track2_private = Track.objects.create(
+            name="Track 2.1", datetime=now, user=self.user2
+        )
+        track2_public = Track.objects.create(
+            name="Track 2.2", datetime=now, user=self.user2, public=True
+        )
+        url = reverse("track:list")
+
+        res = self.client.get(url)
+        self.assertNotContains(res, track1.name)
+        self.assertNotContains(res, track2_private.name)
+        self.assertContains(res, track2_public.name)
+
+        self.client.force_login(self.user1)
+        res = self.client.get(url)
+        self.assertContains(res, track1.name)
+        self.assertNotContains(res, track2_private.name)
+        self.assertContains(res, track2_public.name)
+
+        self.client.force_login(self.user2)
+        res = self.client.get(url)
+        self.assertNotContains(res, track1.name)
+        self.assertContains(res, track2_private.name)
+        self.assertContains(res, track2_public.name)
