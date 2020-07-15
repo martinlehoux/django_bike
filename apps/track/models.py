@@ -112,6 +112,8 @@ class TrackData:
 
         points = self.track.point_set.all()
         alt_cum = []
+        if not points:
+            return []
         last_low_alt = points[0].alt
         for index, point in enumerate(points):
             if index == 0:

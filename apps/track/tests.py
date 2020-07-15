@@ -3,7 +3,7 @@ import csv
 from datetime import timedelta
 
 from django.utils import timezone
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.files import File
 from django.contrib.auth import get_user_model
 from django.utils.dateparse import parse_duration
@@ -114,6 +114,7 @@ class PointModelTestCase(TestCase):
         self.assertEqual(track.point_set.first(), point1)
 
 
+@override_settings(TRACK_CHARTS_DISPLAY=True)
 class TrackPermissionsTestCase(TestCase):
     user1: User
     user2: User
