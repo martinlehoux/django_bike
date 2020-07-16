@@ -13,9 +13,8 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 12
-      - run: cd webapp
-      - run: npm install
-      - run: npm run build
+      - run: cd webapp && npm install
+      - run: cd webapp && npm run build
   test:
     runs-on: ubuntu-latest
     steps:
