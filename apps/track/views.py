@@ -15,6 +15,7 @@ from . import charts
 
 class TrackListView(generic.ListView):
     model = Track
+    paginate_by = 10
 
     def get_queryset(self):
         q = Q(public=True)
