@@ -25,6 +25,7 @@ pytest-django = "^3.9.0"
 pytest-cov = "^2.10.0"
 django_coverage_plugin = "^1.8.0"
 pytest-asyncio = "^0.14.0"
+django-redis = "^4.12.1"
 
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"

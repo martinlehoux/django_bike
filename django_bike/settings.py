@@ -115,10 +115,8 @@ STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
-if DOCKER:
-    CELERY_BROKER_URL = "redis://redis:6379"
-else:
-    CELERY_BROKER_URL = "redis://localhost:6379"
+REDIS_HOSTNAME = "redis" if DOCKER else "localhost"
+CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:6379/0"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
 LOGIN_REDIRECT_URL = reverse_lazy("track:list")
@@ -189,3 +187,12 @@ AUTHENTICATION_BACKENDS = (
     "rules.permissions.ObjectPermissionBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOSTNAME}:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "django_bike.cache",
+    }
+}

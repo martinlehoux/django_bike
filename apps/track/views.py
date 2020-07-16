@@ -3,6 +3,8 @@ from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
@@ -79,8 +81,9 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if settings.TRACK_CHARTS_DISPLAY:
         track: Track = self.object
+        key = make_template_fragment_key("track_charts", [track.pk])
+        if settings.TRACK_CHARTS_DISPLAY and cache.get(key) is None:
             data = TrackData(track)
             context["charts"] = [
                 charts.MapChart(track, data).plot(),
