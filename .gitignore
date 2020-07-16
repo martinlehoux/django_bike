@@ -6,8 +6,7 @@ media/
 .env
 mail/
 pgdata/
-static/admin/
-static/debug_toolbar/
+static/
 node_modules/
 build/
 .coverage

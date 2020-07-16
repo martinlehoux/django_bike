@@ -14,5 +14,12 @@ flower:
 docker-stop:
 	docker ps -q | xargs docker kill
 
+docker-build-restart:
+	docker-compose up --build --force-recreate -d
+
+docker-webapp:
+	docker build -t django_bike/webapp -f Dockerfile.webapp .
+	docker run --rm -v ${PWD}/webapp/public/build:/webapp/public/build -t django_bike/webapp
+
 export:
 	poetry export -f requirements.txt -o requirements.txt --without-hashes
