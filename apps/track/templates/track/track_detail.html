@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load cache %}
+
 {% block content %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
@@ -8,7 +10,7 @@
     <div class="level-left">
       <div>
         <h2 class="title">{{track.name}}</h2>
-        <h2 class="subtitle">{{track.datetime}}</h2>
+        <h2 class="subtitle">{{track.datetime}}, by {{track.user}}</h2>
       </div>
     </div>
     <div class="level-right">
@@ -27,36 +29,59 @@
   <div class="level">
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Duration</p>
-        <p class="title">{{track_stat.duration}}</p>
+        <p class="heading">
+          <span class="icon">
+            <i class="fas fa-stopwatch"></i>
+          </span>
+          Duration
+        </p>
+        <p class="title">{{track.trackstat.duration}}</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Distance</p>
-        <p class="title">{{track_stat.distance|floatformat:1}} km</p>
+        <p class="heading">
+          <span class="icon">
+            <i class="fas fa-arrows-alt-h"></i>
+          </span>
+          Distance
+        </p>
+        <p class="title">{{track.trackstat.distance|floatformat:1}} km</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Positive elevation</p>
-        <p class="title">{{track_stat.pos_ele|floatformat:0}} m</p>
+        <p class="heading">
+          <span class="icon">
+            <i class="fas fa-arrows-alt-v"></i>
+          </span>
+          Positive elevation
+        </p>
+        <p class="title">{{track.trackstat.pos_ele|floatformat:0}} m</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
       <div>
-        <p class="heading">Average speed</p>
-        <p class="title">{{track_stat.mean_speed|floatformat:1}} km/h</p>
+        <p class="heading">
+          <span class="icon">
+            <i class="fas fa-tachometer-alt"></i>
+          </span>
+          Average speed
+        </p>
+        <p class="title">{{track.trackstat.mean_speed|floatformat:1}} km/h</p>
       </div>
     </div>
   </div>
 </div>
 
+{% cache None track_charts track.pk %}
 {% autoescape off %}
 {% for chart in charts %}
   <div class="box">{{chart}}</div>
 {% endfor %}
 {% endautoescape %}
+{% endcache %}
+{% comment %} <iframe src="/track/{{track.pk}}/chart/alt_vs_dist.AltVSDistChart" frameborder="0" class="box"></iframe> {% endcomment %}
 
 {% include "track/track_delete_modal.html" %}
 {% include "track/track_edit_modal.html" %}

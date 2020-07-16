@@ -51,6 +51,7 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
 
 class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
     model = Track
+    template_name_suffix = "_detail"
     form_class = TrackEditForm
     permission_denied_message = (
         "You are not allowed to access this track: {} with this method."
