@@ -49,8 +49,6 @@ services:
       - ./media:/django_bike/media
       - ./django_bike:/django_bike/django_bike
       - ./apps:/django_bike/apps
-      - ./templates:/django_bike/templates
-      - ./static:/django_bike/static
     depends_on:
       - redis
       - db
