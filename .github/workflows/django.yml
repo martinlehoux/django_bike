@@ -29,8 +29,10 @@ jobs:
       with:
         path: .cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+    - name: Upgrade pip
+      run: pip install --upgrade pip
     - name: Test pip
-      run: ls ~/.cache
+      run: pip cache dir
     - name: Install Dependencies
       if: steps.cache-pip.outputs.cache-hit != 'true'
       run: pip install -r requirements.txt
