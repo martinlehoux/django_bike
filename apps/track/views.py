@@ -18,7 +18,11 @@ class TrackListView(generic.ListView):
         q = Q(public=True)
         if self.request.user.is_authenticated:
             q |= Q(user=self.request.user)
-        return Track.objects.filter(q).order_by("-datetime")
+        return (
+            Track.objects.filter(q)
+            .order_by("-datetime")
+            .select_related("trackstat", "user")
+        )
 
 
 class TrackCreateView(LoginRequiredMixin, generic.CreateView):
