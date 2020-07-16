@@ -6,7 +6,7 @@ from django.conf import settings
 
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
-from .models import Track
+from .models import Track, TrackData
 from .forms import TrackCreateForm, TrackEditForm
 from . import charts
 
@@ -63,8 +63,7 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
     }
 
     def get_permission_denied_message(self):
-        track = self.get_object()
-        return self.permission_denied_message.format(track)
+        return self.permission_denied_message.format(self.object)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -80,15 +79,15 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        track: Track = self.get_object()
-        context["track_stat"] = track.trackstat
         if settings.TRACK_CHARTS_DISPLAY:
+        track: Track = self.object
+            data = TrackData(track)
             context["charts"] = [
-                charts.MapChart(track).plot(),
-                charts.AltVSDistChart(track).plot(),
-                charts.SlopeVSDistChart(track).plot(),
-                charts.SpeedVSDistChart(track).plot(),
-                charts.PowerVSTimeChart(track).plot(),
+                charts.MapChart(track, data).plot(),
+                charts.AltVSDistChart(track, data).plot(),
+                charts.SlopeVSDistChart(track, data).plot(),
+                charts.SpeedVSDistChart(track, data).plot(),
+                charts.PowerVSTimeChart(track, data).plot(),
             ]
         return context
 

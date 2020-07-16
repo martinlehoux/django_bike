@@ -17,9 +17,9 @@ class BaseChart:
     y_data_method: str
     y_smoother: int = 0
 
-    def __init__(self, track: Track):
+    def __init__(self, track: Track, data: TrackData = None):
         self.track = track
-        self.data = TrackData(track)
+        self.data = data or TrackData(track)
         self.layout = self.get_layout()
         self.figure = self.get_figure()
 
