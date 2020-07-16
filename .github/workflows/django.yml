@@ -5,6 +5,17 @@ on:
   - pull_request
 
 jobs:
+  build-webapp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: cd webapp
+      - run: npm install
+      - run: npm run build
   test:
     runs-on: ubuntu-latest
     steps:
