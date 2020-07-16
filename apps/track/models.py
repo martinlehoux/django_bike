@@ -78,39 +78,39 @@ class TrackData:
     DIST_FACTOR = 0.88
     MIN_POS_ELE = 8
     track: Track
+    _point_set: models.QuerySet
 
     def __init__(self, track: Track):
         assert isinstance(track, Track)
         self.track = track
+        self._point_set = self.track.point_set.all()
 
     def time(self) -> List[timedelta]:
-        return [point.time for point in self.track.point_set.all()]
+        return [point.time for point in self._point_set]
 
     def lon(self) -> List[float]:
-        return [point.lon for point in self.track.point_set.all()]
+        return [point.lon for point in self._point_set]
 
     def lat(self) -> List[float]:
-        return [point.lat for point in self.track.point_set.all()]
+        return [point.lat for point in self._point_set]
 
     def x(self) -> List[float]:
-        return [point.x for point in self.track.point_set.all()]
+        return [point.x for point in self._point_set]
 
     def y(self) -> List[float]:
-        return [point.y for point in self.track.point_set.all()]
+        return [point.y for point in self._point_set]
 
     def dist(self) -> List[float]:
         """km"""
-        return [
-            point.dist * self.DIST_FACTOR / 1000 for point in self.track.point_set.all()
-        ]
+        return [point.dist * self.DIST_FACTOR / 1000 for point in self._point_set]
 
     def alt(self) -> List[float]:
-        return [point.alt for point in self.track.point_set.all()]
+        return [point.alt for point in self._point_set]
 
     def alt_cum(self) -> List[float]:
         # https://www.gpsvisualizer.com/tutorials/elevation_gain.html
 
-        points = self.track.point_set.all()
+        points = self._point_set
         alt_cum = []
         if not points:
             return []
@@ -129,7 +129,7 @@ class TrackData:
 
     def slope(self) -> List[float]:
         slope = [0]
-        points = self.track.point_set.all()
+        points = self._point_set
         for index, point in list(enumerate(points))[1:]:
             previous = points[index - 1]
             try:
@@ -144,7 +144,7 @@ class TrackData:
 
     def speed(self) -> List[float]:
         speed = [0]
-        points = self.track.point_set.all()
+        points = self._point_set
         for index, point in list(enumerate(points))[1:]:
             previous = points[index - 1]
             if point.time == previous.time:
@@ -160,7 +160,7 @@ class TrackData:
     def acceleration(self) -> List[float]:
         acceleration = [0]
         speed = [s / 3.6 for s in self.speed()]
-        points = self.track.point_set.all()
+        points = self._point_set
         for index, point in list(enumerate(points))[1:]:
             previous = points[index - 1]
             if point.time == previous.time:
@@ -184,7 +184,7 @@ class TrackData:
         slope = self.slope()
         speed = [s / 3.6 for s in self.speed()]
         acceleration = self.acceleration()
-        points = self.track.point_set.all()
+        points = self._point_set
         for index, point in list(enumerate(points))[1:]:
             weight = MASS * GRAVITY  # N = kg * m/s2
             normal = weight * cos(slope[index] / 100)  # N
