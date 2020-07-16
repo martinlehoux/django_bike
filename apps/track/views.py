@@ -65,6 +65,8 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
     }
 
     def get_permission_denied_message(self):
+        if not hasattr(self, "object"):
+            self.object = self.get_object()
         return self.permission_denied_message.format(self.object)
 
     def get_form_kwargs(self):
