@@ -1,8 +1,22 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
 <div class="box">
   <h1 class="title">Profile</h1>
+  <div class="columns is-centered">
+    <div class="column is-half">
+      <figure class="image is-128x128 container">
+        <img src="{% static 'images/default-user.png' %}" class="is-rounded">
+      </figure>
+      <h2 class="title has-text-centered">@{{ user.username }}</h2>
+      <h3 class="subtitle has-text-centered">
+        {% comment %} <span class="icon"><i class="fa fas-enveloppe"></i></span> {% endcomment %}
+        <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+      </h3>
+    </div>
+  </div>
   <div class="field is-grouped">
     <p class="control">
       <a href="{% url 'password_change' %}" class="button">Change password</a>
