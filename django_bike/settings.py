@@ -133,8 +133,9 @@ if DEBUG:
 SERVER_EMAIL = "martin@lehoux.net"
 
 if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, "mail")
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "localhost"
+    EMAIL_PORT = 25
 
 if DOCKER:
     EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
