@@ -1,4 +1,4 @@
-<div id="track-delete-modal" class="modal">
+<div class="modal" id="track-delete-modal">
   <div class="modal-background"></div>
   <div class="modal-content">
     <form method="post" action="{% url 'track:delete' track.pk %}" class="box">{% csrf_token %}
