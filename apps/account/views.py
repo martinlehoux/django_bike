@@ -8,6 +8,7 @@ from django.contrib.auth.views import (
     PasswordChangeDoneView,
     PasswordResetDoneView,
     PasswordResetCompleteView,
+    PasswordResetView,
 )
 
 from apps.notification import notify
@@ -49,3 +50,8 @@ class PasswordResetCompleteView(PasswordResetCompleteView):
     def dispatch(self, request, *args, **kwargs):
         messages.success(request, "Password reset complete")
         return redirect("login")
+
+
+class PasswordResetView(PasswordResetView):
+    email_template_name = "email/password_reset/email.txt"
+    html_email_template_name = "email/password_reset/email.html"
