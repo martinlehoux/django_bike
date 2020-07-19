@@ -200,3 +200,5 @@ else:
             "KEY_PREFIX": "django_bike.cache",
         }
     }
+
+AVATAR_SIZE = (128, 128)
