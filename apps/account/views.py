@@ -1,5 +1,6 @@
 from django.shortcuts import redirect
-from django.views.generic import DetailView
+from django.urls import reverse_lazy
+from django.views.generic import DetailView, UpdateView, FormView
 from django.contrib.auth import get_user, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -13,6 +14,9 @@ from django.contrib.auth.views import (
 
 from apps.notification import notify
 
+from .forms import AvatarForm
+from .models import Profile
+
 User = get_user_model()
 
 
@@ -21,6 +25,19 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_object(self, queryset=None):
         return get_user(self.request)
+
+    def get_context_data(self, **kwags):
+        context = super().get_context_data(**kwags)
+        context["avatar_form"] = AvatarForm(instance=self.request.user)
+        return context
+
+
+class AvatarUploadView(LoginRequiredMixin, UpdateView):
+    form_class = AvatarForm
+    success_url = reverse_lazy("profile")
+
+    def get_object(self, queryset=None):
+        return get_user(self.request).profile
 
 
 class PasswordChangeDoneView(PasswordChangeDoneView):

@@ -6,13 +6,19 @@
 <div class="box">
   <h1 class="title">Profile</h1>
   <div class="columns is-centered">
-    <div class="column is-half">
+    <div class="column is-half is-centered">
       <figure class="image is-128x128 container">
-        <img src="{% static 'images/default-user.png' %}" class="is-rounded">
+        <img src="{{ user.profile.avatar.url }}" class="is-rounded">
       </figure>
+      <div class="buttons is-centered">
+        <button class="button is-rounded is-small" value="avatar-upload-modal" name="modal-open">
+          <span class="icon"><i class="fas fa-camera"></i></span>
+          <span>Change avatar</span>
+        </button>
+      </div>
       <h2 class="title has-text-centered">@{{ user.username }}</h2>
       <h3 class="subtitle has-text-centered">
-        {% comment %} <span class="icon"><i class="fa fas-enveloppe"></i></span> {% endcomment %}
+        <span class="icon"><i class="fas fa-envelope"></i></span>
         <a href="mailto:{{ user.email }}">{{ user.email }}</a>
       </h3>
     </div>
@@ -23,4 +29,5 @@
     </p>
   </div>
 </div>
+{% include 'auth/avatar_upload_modal.html' %}
 {% endblock content %}
