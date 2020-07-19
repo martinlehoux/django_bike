@@ -1,14 +1,23 @@
+# Python
 *.egg-info
 *.pyc
+
+# IDE
 .vscode
+
+# Data
 *.sqlite3
-media/
-.env
-mail/
 pgdata/
+media/account/avatar/
+media/track/source/
 /static/
-node_modules/
-build/
+
+# Config
+.env
 .coverage
 htmlcov
+
+# Node
+node_modules/
+build/
 apps/main/templates/email/**/*.html
