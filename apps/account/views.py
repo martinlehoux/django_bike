@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, UpdateView, FormView
+from django.views.generic import DetailView, UpdateView
 from django.contrib.auth import get_user, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -15,7 +15,7 @@ from django.contrib.auth.views import (
 from apps.notification import notify
 
 from .forms import AvatarForm
-from .models import Profile
+from .charts.exercise_history import ExerciseHistoryChart
 
 User = get_user_model()
 
@@ -29,6 +29,7 @@ class ProfileView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwags):
         context = super().get_context_data(**kwags)
         context["avatar_form"] = AvatarForm(instance=self.request.user)
+        context["exercise_chart"] = ExerciseHistoryChart(self.request.user).plot()
         return context
 
 

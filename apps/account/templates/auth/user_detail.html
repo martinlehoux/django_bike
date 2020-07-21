@@ -3,6 +3,7 @@
 {% load static %}
 
 {% block content %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <div class="box">
   <h1 class="title">Profile</h1>
   <div class="columns is-centered">
@@ -28,6 +29,9 @@
       <a href="{% url 'password_change' %}" class="button">Change password</a>
     </p>
   </div>
+  {% autoescape off %}
+  <div class="box">{{exercise_chart}}</div>
+  {% endautoescape %}
 </div>
 {% include 'auth/avatar_upload_modal.html' %}
 {% endblock content %}
