@@ -19,10 +19,10 @@ DOCKER = SERVER_TYPE in ["prod", "stage"]
 INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
-    "apps.main",
-    "apps.account",
-    "apps.track",
-    "apps.notification",
+    "apps.main.apps.MainConfig",
+    "apps.account.apps.AccountConfig",
+    "apps.track.apps.TrackConfig",
+    "apps.notification.apps.NotificationConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
