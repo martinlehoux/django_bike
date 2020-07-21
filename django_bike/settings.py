@@ -65,7 +65,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "django_bike.wsgi.application"
-ASGI_APPLICATION = "django_bike.asgi.application"
+ASGI_APPLICATION = "django_bike.routing.application"
 
 CHANNEL_LAYERS = {
     "default": {
@@ -155,13 +155,19 @@ LOGGING = {
             "()": "django.utils.log.ServerFormatter",
             "format": "[{server_time}] {message}",
             "style": "{",
-        }
+        },
+        "simple": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}][{name}] {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
             "level": "INFO",
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
         "django.server": {
             "level": "INFO",
@@ -181,6 +187,12 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "django.channels.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps": {"level": "INFO", "handlers": ["console"]},
     },
 }
 
