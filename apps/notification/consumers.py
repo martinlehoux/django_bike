@@ -1,9 +1,12 @@
 from typing import List
+import logging
 
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 
 from .models import Notification
+
+logger = logging.getLogger(__name__)
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
@@ -13,9 +16,10 @@ class NotificationConsumer(AsyncJsonWebsocketConsumer):
         await self.accept()
         notifications = await self.get_all_notifications(self.user)
         await self.send_json({"type": "list", "notifications": notifications})
+        logger.info(f"{self.user} websocket connected")
 
     async def disconnect(self, code):
-        pass
+        logger.info(f"{self.user} websocket disconnected: {code}")
 
     async def receive_json(self, data):
         if data["type"] == "delete":
