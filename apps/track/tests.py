@@ -18,14 +18,6 @@ from .tasks import track_parse_source
 User = get_user_model()
 
 
-class TrackModelTestCase(TestCase):
-    user: User
-
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = User.objects.create_user("Kagamino")
-
-
 class TrackDataRealTest(FileSystemTestCase):
     user: User
     track1: Track
