@@ -17,7 +17,7 @@ class StatQuery:
 
 class ExerciseHistoryChart(BaseChart):
     name = "Exercise History"
-    x_title = TimeAggregate.DAY
+    x_title = TimeAggregate.WEEK_DAY
     y_title = "Kilometers"
 
     def get_data(self):

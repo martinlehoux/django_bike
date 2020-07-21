@@ -1,9 +1,14 @@
+from datetime import datetime, timedelta
+import pytz
+
 from django.test import TestCase
 from django.conf import settings
 from django.contrib.auth import get_user_model, models
 from PIL import Image
 
+from apps.track.models import Track
 from .forms import AvatarForm
+from .charts.exercise_history import ExerciseHistoryChart
 
 User = get_user_model()
 models.User
@@ -26,3 +31,30 @@ class ProfileTestCase(TestCase):
 
         avatar = Image.open(user.profile.avatar.path)
         self.assertEqual(avatar.size, settings.AVATAR_SIZE)
+
+
+class TrackProfileTestCase(TestCase):
+    user: User
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user("Kagamino")
+
+    def test_track_time_stat(self):
+        now = datetime(2020, 7, 15, 12, tzinfo=pytz.utc)
+        self.assertEqual(now.weekday(), 2)  # Wednesday
+
+        for i in range(100):
+            track = Track.objects.create(
+                name="Track 1", datetime=now - timedelta(days=i // 2), user=self.user
+            )
+            track.trackstat.distance = 10 * (i % 3 + 1)
+            track.trackstat.save()
+
+        # This week
+        chart = ExerciseHistoryChart(self.user, now)
+        data = chart.get_data()[0]
+
+        self.assertEqual(data.x, tuple(range(1, 8)))
+        self.assertEqual(data.y, (0, 0, 50.0, 40.0, 30.0, 0, 0))
+
