@@ -1,12 +1,41 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block content %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 <div class="box">
   <h1 class="title">Profile</h1>
+  <div class="columns is-centered">
+    <div class="column is-half is-centered">
+      <figure class="image is-128x128 container">
+        <img src="{{ user.profile.avatar.url }}" class="is-rounded">
+      </figure>
+      <div class="buttons is-centered">
+        <button class="button is-rounded is-small" value="avatar-upload-modal" name="modal-open">
+          <span class="icon"><i class="fas fa-camera"></i></span>
+          <span>Change avatar</span>
+        </button>
+      </div>
+      <h2 class="title has-text-centered">@{{ user.username }}</h2>
+      <h3 class="subtitle has-text-centered">
+        <span class="icon"><i class="fas fa-envelope"></i></span>
+        <a href="mailto:{{ user.email }}">{{ user.email }}</a>
+      </h3>
+    </div>
+  </div>
   <div class="field is-grouped">
     <p class="control">
       <a href="{% url 'password_change' %}" class="button">Change password</a>
     </p>
   </div>
+  <form method="get">
+    <h1 class="title">Exercise History chart</h1>
+    {% include "form.html" with action="Change chart" form=exercise_history_form %}
+  </form>
+  {% autoescape off %}
+  <div class="box">{{exercise_chart}}</div>
+  {% endautoescape %}
 </div>
+{% include 'auth/avatar_upload_modal.html' %}
 {% endblock content %}

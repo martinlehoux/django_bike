@@ -15,16 +15,22 @@ export class Notif {
   }
 }
 
-export class HttpService {
-  async getNotifications(): Promise<Array<Notif>> {
-    return fetch("/notification/")
-      .then((res) => res.json())
-      .then(dataList => dataList.map(data => new Notif(data)))
+
+export class WebSocketMessage {
+  public type: "list" | "new" | "delete"
+  public notification: any
+  public notifications: Array<any>
+  public pk: number
+}
+
+export class WebSocketService {
+  public socket: WebSocket
+
+  constructor() {
+    this.socket = new WebSocket(`ws://${location.host}/ws/notification/`);
   }
 
-  async deleteNotification(pk: number) {
-    return fetch(`/notification/${pk}`, {
-      method: "DELETE",
-    });
+  deleteNotif(pk: number) {
+    this.socket.send(JSON.stringify({ type: "delete", pk }));
   }
 }

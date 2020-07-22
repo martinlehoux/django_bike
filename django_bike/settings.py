@@ -19,10 +19,10 @@ DOCKER = SERVER_TYPE in ["prod", "stage"]
 INTERNAL_IPS = ["127.0.0.1"]
 
 INSTALLED_APPS = [
-    "apps.main",
-    "apps.account",
-    "apps.track",
-    "apps.notification",
+    "apps.main.apps.MainConfig",
+    "apps.account.apps.AccountConfig",
+    "apps.track.apps.TrackConfig",
+    "apps.notification.apps.NotificationConfig",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     "django.forms",
     "django_cleanup.apps.CleanupConfig",
     "rules.apps.AutodiscoverRulesConfig",
+    "channels",
 ]
 
 MIDDLEWARE = [
@@ -64,6 +65,14 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "django_bike.wsgi.application"
+ASGI_APPLICATION = "django_bike.routing.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+    },
+}
 
 if SERVER_TYPE in ["dev", "test"]:
     DATABASES = {
@@ -106,10 +115,8 @@ STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
-if DOCKER:
-    CELERY_BROKER_URL = "redis://redis:6379"
-else:
-    CELERY_BROKER_URL = "redis://localhost:6379"
+REDIS_HOSTNAME = "redis" if DOCKER else "localhost"
+CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:6379/0"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
 LOGIN_REDIRECT_URL = reverse_lazy("track:list")
@@ -126,8 +133,9 @@ if DEBUG:
 SERVER_EMAIL = "martin@lehoux.net"
 
 if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
-    EMAIL_FILE_PATH = os.path.join(BASE_DIR, "mail")
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = "localhost"
+    EMAIL_PORT = 25
 
 if DOCKER:
     EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
@@ -147,13 +155,19 @@ LOGGING = {
             "()": "django.utils.log.ServerFormatter",
             "format": "[{server_time}] {message}",
             "style": "{",
-        }
+        },
+        "simple": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[{server_time}][{name}] {message}",
+            "style": "{",
+        },
     },
     "handlers": {
         "console": {
             "level": "INFO",
             "filters": ["require_debug_true"],
             "class": "logging.StreamHandler",
+            "formatter": "simple",
         },
         "django.server": {
             "level": "INFO",
@@ -173,6 +187,12 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "django.channels.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "apps": {"level": "INFO", "handlers": ["console"]},
     },
 }
 
@@ -180,3 +200,17 @@ AUTHENTICATION_BACKENDS = (
     "rules.permissions.ObjectPermissionBackend",
     "django.contrib.auth.backends.ModelBackend",
 )
+
+if SERVER_TYPE == "test":
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": f"redis://{REDIS_HOSTNAME}:6379/1",
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+            "KEY_PREFIX": "django_bike.cache",
+        }
+    }
+
+AVATAR_SIZE = (128, 128)

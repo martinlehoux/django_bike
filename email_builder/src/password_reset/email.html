@@ -1,0 +1,24 @@
+{% extends 'email/base.html' %}
+
+{% block content %}
+<article class="message is-info">
+  <div class="message-header">
+    <p>Reset password request</p>
+  </div>
+  <div class="message-body">
+    You're receiving this email because you requested a password reset for your user account at {{ site_name }}
+    <br>
+    Please go to the following page and choose a new password:
+    <br>
+    {% block reset_link %}
+    <a href="{{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}">
+      {{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
+    </a>
+    {% endblock %}
+    <br>
+    Your username, in case you’ve forgotten: <span class="is-bold">{{ user.get_username }}</span>
+    <br>
+    Thanks for using our site, the {{ site_name }} team
+  </div>
+</article>
+{% endblock content %}

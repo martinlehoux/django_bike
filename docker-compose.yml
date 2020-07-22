@@ -49,8 +49,6 @@ services:
       - ./media:/django_bike/media
       - ./django_bike:/django_bike/django_bike
       - ./apps:/django_bike/apps
-      - ./templates:/django_bike/templates
-      - ./static:/django_bike/static
     depends_on:
       - redis
       - db
@@ -58,3 +56,15 @@ services:
       PYTHONUNBUFFERED: 1
       SERVER_TYPE: stage
     command: sh start-server.sh
+
+  flower:
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=redis://redis:6379
+      - FLOWER_PORT=8888
+      - FLOWER_URL_PREFIX=flower
+    ports:
+      - 8888:8888
+    depends_on:
+      - redis
+      - worker

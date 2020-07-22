@@ -1,0 +1,14 @@
+<div class="modal" id="avatar-upload-modal">
+  <div class="modal-background"></div>
+  <div class="modal-content">
+    <form method="post" class="box" enctype="multipart/form-data" action="{% url 'avatar-upload' %}">{% csrf_token %}
+      <h1 class="title">Change avatar</h1>
+      {% include "form.html" with action="Upload" form=avatar_form %}
+      <div class="field is-grouped">
+        <p class="control">
+          <button type="button" class="button" value="avatar-upload-modal" name="modal-close">Cancel</button>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>

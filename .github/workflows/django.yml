@@ -5,6 +5,16 @@ on:
   - pull_request
 
 jobs:
+  build-webapp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: cd webapp && npm install
+      - run: cd webapp && npm run build
   test:
     runs-on: ubuntu-latest
     steps:
@@ -13,18 +23,19 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-    # - name: Cache pip
-    #   uses: actions/cache@v1
-    #   id: cache
-    #   with:
-    #     path: .cache/pip
-    #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-    #     restore-keys: ${{ runner.os }}-test
+    - name: Cache pip
+      uses: actions/cache@v1
+      id: cache-pip
+      with:
+        path: /home/runner/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
     - name: Install Dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
+      # if: steps.cache-pip.outputs.cache-hit != 'true'
       run: pip install -r requirements.txt
+    - name: Test pip
+      run: pip freeze
     - name: Run Tests
-      run: python manage.py test
+      run: python -m pytest
       env:
         SERVER_TYPE: test
         SECRET_KEY: test-secret-key

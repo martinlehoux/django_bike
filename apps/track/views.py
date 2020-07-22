@@ -3,22 +3,29 @@ from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.core.cache import cache
+from django.core.cache.utils import make_template_fragment_key
 
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
-from .models import Track
+from .models import Track, TrackData
 from .forms import TrackCreateForm, TrackEditForm
 from . import charts
 
 
 class TrackListView(generic.ListView):
     model = Track
+    paginate_by = 10
 
     def get_queryset(self):
         q = Q(public=True)
         if self.request.user.is_authenticated:
             q |= Q(user=self.request.user)
-        return Track.objects.filter(q).order_by("-datetime")
+        return (
+            Track.objects.filter(q)
+            .order_by("-datetime")
+            .select_related("trackstat", "user")
+        )
 
 
 class TrackCreateView(LoginRequiredMixin, generic.CreateView):
@@ -47,6 +54,7 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
 
 class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
     model = Track
+    template_name_suffix = "_detail"
     form_class = TrackEditForm
     permission_denied_message = (
         "You are not allowed to access this track: {} with this method."
@@ -58,8 +66,9 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
     }
 
     def get_permission_denied_message(self):
-        track = self.get_object()
-        return self.permission_denied_message.format(track)
+        if not hasattr(self, "object"):
+            self.object = self.get_object()
+        return self.permission_denied_message.format(self.object)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -75,15 +84,16 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        track: Track = self.get_object()
-        context["track_stat"] = track.trackstat
-        if settings.TRACK_CHARTS_DISPLAY:
+        track: Track = self.object
+        key = make_template_fragment_key("track_charts", [track.pk])
+        if settings.TRACK_CHARTS_DISPLAY and cache.get(key) is None:
+            data = TrackData(track)
             context["charts"] = [
-                charts.MapChart(track).plot(),
-                charts.AltVSDistChart(track).plot(),
-                charts.SlopeVSDistChart(track).plot(),
-                charts.SpeedVSDistChart(track).plot(),
-                charts.PowerVSTimeChart(track).plot(),
+                charts.MapChart(track, data).plot(),
+                charts.AltVSDistChart(track, data).plot(),
+                charts.SlopeVSDistChart(track, data).plot(),
+                charts.SpeedVSDistChart(track, data).plot(),
+                charts.PowerVSTimeChart(track, data).plot(),
             ]
         return context
 

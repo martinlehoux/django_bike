@@ -3,6 +3,9 @@
 
 {% block content %}
 <div class="columns is-multiline box">
+  <div class="is-full column">
+    {% include 'paginator.html' %}
+  </div>
 {% for track in object_list %}
   <div class="is-full column">
     <div class="box">

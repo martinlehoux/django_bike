@@ -1,0 +1,5 @@
+Django Bikes
+You received a new message
+
+{% block content %}
+{% endblock content %}

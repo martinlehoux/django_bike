@@ -1,0 +1,17 @@
+{
+  "name": "email_builder",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node index.js build",
+    "dev": "node index.js ../apps/main/templates/email"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "inline-css": "^2.6.3",
+    "juice": "^7.0.0"
+  }
+}
