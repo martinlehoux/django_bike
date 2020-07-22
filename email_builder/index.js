@@ -20,8 +20,10 @@ fs.writeFileSync(`${outputDir}/base.html`, html)
 
 fs.readdirSync("src").forEach(name => {
     if (fs.statSync(`src/${name}`).isDirectory()) {
+        console.info(`Compiling ${name}...`)
         const file = fs.readFileSync(`src/${name}/email.html`, { encoding: "utf-8" })
         const html = juice.inlineContent(file, css, options)
+        fs.mkdirSync(`${outputDir}/${name}`)
         fs.writeFileSync(`${outputDir}/${name}/email.html`, html)
     }
 })
