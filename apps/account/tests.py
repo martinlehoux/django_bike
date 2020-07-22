@@ -7,7 +7,7 @@ from django.contrib.auth import get_user_model, models
 from PIL import Image
 
 from apps.track.models import Track
-from .forms import AvatarForm
+from .forms import AvatarForm, WeekTimeRange, MonthTimeRange
 from .charts.exercise_history import ExerciseHistoryChart
 
 User = get_user_model()
@@ -52,9 +52,60 @@ class TrackProfileTestCase(TestCase):
             track.trackstat.save()
 
         # This week
-        chart = ExerciseHistoryChart(self.user, now)
+        chart = ExerciseHistoryChart(self.user, WeekTimeRange, now)
         data = chart.get_data()[0]
 
-        self.assertEqual(data.x, tuple(range(1, 8)))
+        self.assertEqual(
+            data.x,
+            (
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ),
+        )
         self.assertEqual(data.y, (0, 0, 50.0, 40.0, 30.0, 0, 0))
 
+        # This month
+        chart = ExerciseHistoryChart(self.user, MonthTimeRange, now)
+        data = chart.get_data()[0]
+        self.assertEqual(data.x, tuple(range(1, 32)))
+        self.assertEqual(
+            data.y,
+            (
+                0,
+                50.0,
+                40.0,
+                30.0,
+                50.0,
+                40.0,
+                30.0,
+                50.0,
+                40.0,
+                30.0,
+                50.0,
+                40.0,
+                30.0,
+                50.0,
+                40.0,
+                30.0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+            ),
+        )
