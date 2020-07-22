@@ -29,6 +29,10 @@
       <a href="{% url 'password_change' %}" class="button">Change password</a>
     </p>
   </div>
+  <form method="get">
+    <h1 class="title">Exercise History chart</h1>
+    {% include "form.html" with action="Change chart" form=exercise_history_form %}
+  </form>
   {% autoescape off %}
   <div class="box">{{exercise_chart}}</div>
   {% endautoescape %}

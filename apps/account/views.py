@@ -14,7 +14,7 @@ from django.contrib.auth.views import (
 
 from apps.notification import notify
 
-from .forms import AvatarForm
+from .forms import AvatarForm, ExerciseHistoryForm
 from .charts.exercise_history import ExerciseHistoryChart
 
 User = get_user_model()
@@ -28,8 +28,15 @@ class ProfileView(LoginRequiredMixin, DetailView):
 
     def get_context_data(self, **kwags):
         context = super().get_context_data(**kwags)
+        exercise_form = ExerciseHistoryForm(self.request.GET)
+        exercise_history_chart = None
+        if exercise_form.is_valid():
+            exercise_history_chart = ExerciseHistoryChart(
+                self.request.user, exercise_form.time_range_choice
+            ).plot()
         context["avatar_form"] = AvatarForm(instance=self.request.user)
-        context["exercise_chart"] = ExerciseHistoryChart(self.request.user).plot()
+        context["exercise_history_form"] = exercise_form
+        context["exercise_chart"] = exercise_history_chart
         return context
 
 

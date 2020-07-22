@@ -8,6 +8,8 @@ from django.utils import timezone
 
 class TimeRangeQuery:
     now: datetime
+    time_aggregate: str
+    stat_query: str = "trackstat__distance"
 
     def __init__(self, now: datetime = timezone.now()):
         self.now = now
@@ -23,6 +25,8 @@ class TimeRangeQuery:
 
 
 class WeekTimeRange(TimeRangeQuery):
+    time_aggregate = "datetime__week_day"
+
     @property
     def query(self) -> Q:
         return Q(datetime__gte=self.now - timedelta(self.now.weekday()))
@@ -30,8 +34,7 @@ class WeekTimeRange(TimeRangeQuery):
     def fill_data(
         self, summary: QuerySet, key: str, value: str
     ) -> Tuple[List[float], List[float]]:
-        print(summary)
-        x = list(range(1, 8))
+        x = list(calendar.day_name)
         y = [0 for i in x]
         for data in summary:
             y[data[key]] = data[value]
@@ -39,6 +42,8 @@ class WeekTimeRange(TimeRangeQuery):
 
 
 class MonthTimeRange(TimeRangeQuery):
+    time_aggregate = "datetime__day"
+
     @property
     def query(self) -> Q:
         return Q(datetime__gte=self.now - timedelta(self.now.day - 1))

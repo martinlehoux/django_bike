@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.utils import timezone
 from django.db.models import Sum
 from plotly import graph_objs as go
 
@@ -6,25 +9,26 @@ from .base import BaseChart
 from . import time_range_query
 
 
-class TimeAggregate:
-    WEEK_DAY = "datetime__week_day"
-    DAY = "datetime__day"
-
-
-class StatQuery:
-    DISTANCE = "trackstat__distance"
-
-
 class ExerciseHistoryChart(BaseChart):
     name = "Exercise History"
-    x_title = TimeAggregate.WEEK_DAY
+    time_range: type = time_range_query.WeekTimeRange
+    x_title = ""
     y_title = "Kilometers"
 
+    def __init__(
+        self,
+        user,
+        time_range: type = time_range_query.WeekTimeRange,
+        now: datetime = timezone.now(),
+    ):
+        self.time_range = time_range
+        super().__init__(user, now)
+
     def get_data(self):
-        time_query = time_range_query.WeekTimeRange(self.now)
+        time_query = self.time_range(self.now)
         tracks = Track.objects.filter(time_query.query)
-        summary = tracks.values(TimeAggregate.WEEK_DAY).annotate(
-            distance=Sum(StatQuery.DISTANCE)
+        summary = tracks.values(time_query.time_aggregate).annotate(
+            distance=Sum(time_query.stat_query)
         )
-        x, y = time_query.fill_data(summary, TimeAggregate.WEEK_DAY, "distance")
-        return [go.Bar(x=x, y=y, name=self.name,)]
+        x, y = time_query.fill_data(summary, time_query.time_aggregate, "distance")
+        return [go.Bar(x=x, y=y, name=self.name)]

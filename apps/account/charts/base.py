@@ -13,7 +13,6 @@ User = get_user_model()
 class BaseChart:
     user: User
     now: datetime
-    layout: go.Layout
     figure: go.Figure
     name: str
     x_title: str
@@ -22,14 +21,16 @@ class BaseChart:
     def __init__(self, user: User, now=timezone.now()):
         self.user = user
         self.now = now
-        self.layout = self.get_layout()
         self.figure = self.get_figure()
 
-    def get_layout(self):
+    def get_layout(self, data):
+        y_range = [0, max(max(fig.y) for fig in data) + 5]
+        if y_range == [0, 0]:
+            y_range = [0, 10]
         return go.Layout(
             title=self.name,
             xaxis=dict(title=self.x_title),
-            yaxis=dict(title=self.y_title),
+            yaxis=dict(title=self.y_title, range=y_range),
             margin=dict(r=0, l=0, t=40, b=0),
         )
 
@@ -37,7 +38,9 @@ class BaseChart:
         raise NotImplementedError()
 
     def get_figure(self):
-        return go.Figure(data=self.get_data(), layout=self.layout)
+        data = self.get_data()
+        layout = self.get_layout(data)
+        return go.Figure(data=data, layout=layout)
 
     def plot(self):
         return plot(self.figure, output_type="div", include_plotlyjs=False)

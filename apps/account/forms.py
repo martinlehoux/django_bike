@@ -1,8 +1,11 @@
+from typing import Callable
+
 from django import forms
 from django.conf import settings
 from PIL import Image
 
 from .models import Profile
+from .charts.time_range_query import WeekTimeRange, MonthTimeRange, TimeRangeQuery
 
 
 class AvatarForm(forms.ModelForm):
@@ -26,3 +29,16 @@ class AvatarForm(forms.ModelForm):
         resized = cropped.resize((AVATAR_WIDTH, AVATAR_HEIGHT), Image.ANTIALIAS)
         resized.save(profile.avatar.path)
         return profile
+
+
+class ExerciseHistoryForm(forms.Form):
+    TIME_RANGE_CHOICES = {"week": WeekTimeRange, "month": MonthTimeRange}
+    time_range = forms.ChoiceField(
+        choices=[(key, key) for key in TIME_RANGE_CHOICES.keys()],
+        initial=TIME_RANGE_CHOICES["week"],
+    )
+
+    @property
+    def time_range_choice(self) -> Callable[..., TimeRangeQuery]:
+        assert self.is_valid()
+        return self.TIME_RANGE_CHOICES[self.cleaned_data["time_range"]]
