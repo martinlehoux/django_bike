@@ -17,6 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = SERVER_TYPE in ["dev"]
 DOCKER = SERVER_TYPE in ["prod", "stage"]
 INTERNAL_IPS = ["127.0.0.1"]
+REDIS_HOSTNAME = "redis" if DOCKER else "localhost"
 
 INSTALLED_APPS = [
     "apps.main.apps.MainConfig",
@@ -70,7 +71,7 @@ ASGI_APPLICATION = "django_bike.routing.application"
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {"hosts": [("127.0.0.1", 6379)]},
+        "CONFIG": {"hosts": [(REDIS_HOSTNAME, 6379)]},
     },
 }
 
@@ -115,7 +116,6 @@ STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
-REDIS_HOSTNAME = "redis" if DOCKER else "localhost"
 CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:6379/0"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
