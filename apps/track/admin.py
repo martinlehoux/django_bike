@@ -1,8 +1,11 @@
 from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
 from celery import chain
 
 from .models import Track, TrackStat
 from . import tasks
+
+User = get_user_model()
 
 
 class TrackStatInline(admin.StackedInline):
@@ -28,7 +31,10 @@ class TrackAdmin(admin.ModelAdmin):
     actions = ["compute_stats"]
 
     def save_form(self, request, form, change):
-        form.instance.user = request.user
+        try:
+            form.instance.user
+        except User.DoesNotExist:
+            form.instance.user = request.user
         return super().save_form(request, form, change)
 
     def compute_stats(self, request, queryset):
