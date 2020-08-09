@@ -1,0 +1,29 @@
+{% if form.non_field_errors %}
+  <div class="notification is-danger">
+    <button type="button" class="delete"></button>
+    {% for error in form.non_field_errors %}
+      <p>{{error}}</p>
+    {% endfor %}
+  </div>
+{% endif %}
+  <div class="field is-grouped is-horizontal">
+  {% for field in form %}
+    <label
+      for="{{field.id_for_label}}"
+      class="label"
+    >
+      {% comment %} {{field.label}} {% endcomment %}
+      {% for error in field.errors %}
+        <span class="tag is-danger">{{error}}</span>
+      {% endfor %}
+    </label>
+    <div class="control">
+      {{field}}
+    </div>
+  {% endfor %}
+  {% if action %}
+    <div class="control">
+      <button class="button is-link">{{action}}</button>
+    </div>
+  {% endif %}
+  </div>
