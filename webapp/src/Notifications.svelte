@@ -6,7 +6,6 @@
   let notifications: Array<Notif> = [];
 
   const service = new WebSocketService();
-  let socket: WebSocket;
 
   onMount(async () => {
     service.socket.onmessage = function (event) {
@@ -25,7 +24,7 @@
   });
 
   function deleteNotif(pk: number) {
-    socket.send(JSON.stringify({ type: "delete", pk }));
+    service.socket.send(JSON.stringify({ type: "delete", pk }));
   }
 </script>
 
