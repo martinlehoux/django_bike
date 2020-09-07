@@ -253,6 +253,16 @@ def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
     return new_array
 
 
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
+    text = models.TextField(blank=False)
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.author} @ {self.track} @ {self.datetime}"
+
+
 @receiver(post_save, sender=Track)
 def track_pre_save(sender, instance: Track, *args, **kwargs):
     if not TrackStat.objects.filter(track=instance).exists():
