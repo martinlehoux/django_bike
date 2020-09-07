@@ -98,6 +98,11 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
                 charts.PowerVSTimeChart(track, data).plot(),
             ]
         context["comment_form"] = CommentCreateForm()
+        context["comment_set"] = (
+            track.comment_set.select_related("author__profile")
+            .all()
+            .order_by("-datetime")
+        )
         return context
 
 
