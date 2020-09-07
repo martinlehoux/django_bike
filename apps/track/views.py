@@ -1,5 +1,7 @@
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import get_object_or_404
 from django.views import generic
+from django.views.generic import edit
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
@@ -9,7 +11,7 @@ from django.core.cache.utils import make_template_fragment_key
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
 from .models import Track, TrackData
-from .forms import TrackCreateForm, TrackEditForm
+from .forms import TrackCreateForm, TrackEditForm, CommentCreateForm
 from . import charts
 
 
@@ -95,6 +97,7 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
                 charts.SpeedVSDistChart(track, data).plot(),
                 charts.PowerVSTimeChart(track, data).plot(),
             ]
+        context["comment_form"] = CommentCreateForm()
         return context
 
 
@@ -102,3 +105,16 @@ class TrackDeleteView(PermissionRequiredMethodMixin, generic.DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
     permission_required = "track.delete_track"
+
+
+class TrackCommentView(PermissionRequiredMethodMixin, generic.CreateView):
+    form_class = CommentCreateForm
+    permission_required = "track.comment_track"
+
+    def get_success_url(self) -> str:
+        return reverse("track:detail", args=[self.object.track.pk])
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return super().form_valid(form)

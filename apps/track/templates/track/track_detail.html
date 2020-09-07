@@ -86,3 +86,28 @@
 {% include "track/track_delete_modal.html" %}
 {% include "track/track_edit_modal.html" %}
 {% endblock content %}
+
+{% block side %}
+<div class="panel box">
+  <p class="panel-heading">Comments</p>
+  <form method="post" action="{% url 'track:comment' track.pk %}">{% csrf_token %}
+    {% include "form.html" with form=comment_form %}
+    <div class="control">
+      <button class="button is-link is-fullwidth">
+        <span class="icon">
+          <i class="fas fa-paper-plane"></i>
+        </span>
+        <span>Send</span>
+      </button>
+    </div>
+  </form>
+  {% for comment in track.comment_set.all %}
+    <div class="panel-block">
+      <span class="panel-icon">
+        <figure class="image is-16x16"><img class="is-rounded" src="{{ comment.author.profile.avatar.url }}" alt="Avatar"></figure>
+      </span>
+      {{ comment.text }}
+    </div>
+  {% endfor %}
+</div>
+{% endblock side %}
