@@ -264,6 +264,11 @@ class Comment(models.Model):
 
 
 class Like(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "track"], name="like_unique")
+        ]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
     datetime = models.DateTimeField(auto_now_add=True)
