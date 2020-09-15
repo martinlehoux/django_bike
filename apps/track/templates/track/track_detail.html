@@ -114,8 +114,8 @@
 {% endblock content %}
 
 {% block side %}
-<div class="panel box">
-  <p class="panel-heading">Comments ({{track.comment_set.count}})</p>
+<div class="box">
+  <h2 class="header">Comments ({{track.comment_set.count}})</h2>
   <form method="post" action="{% url 'track:comment' track.pk %}">{% csrf_token %}
     {% include "form.html" with form=comment_form %}
     <div class="control">
@@ -127,13 +127,26 @@
       </button>
     </div>
   </form>
+  <br>
   {% for comment in comment_set %}
-    <div class="panel-block">
-      <span class="panel-icon">
-        <figure class="image is-16x16"><img class="is-rounded" src="{{ comment.author.profile.avatar.url }}" alt="Avatar"></figure>
-      </span>
-      <p class="has-text-justified">{{ comment.text }}</p>
-    </div>
+    <article class="media">
+      <figure class="media-left">
+        <p class="image is-32x32">
+          <img src="{{ comment.author.profile.avatar.url }}" alt="Avatar">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{{comment.author}}</strong>
+            <br>
+            <small>on {{comment.datetime}}</small>
+            <br>
+            {{ comment.text }}
+          </p>
+        </div>
+      </div>
+    </article>
   {% endfor %}
 </div>
 {% endblock side %}
