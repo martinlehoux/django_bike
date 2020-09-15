@@ -28,6 +28,7 @@ class TrackAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("uuid", "points_count", "user")
     list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
+    search_fields = ["user__username", "user__first_name", "user__last_name", "name", "datetime"]
     actions = ["compute_stats"]
 
     def save_form(self, request, form, change):
@@ -52,9 +53,11 @@ class CommentAdmin(admin.ModelAdmin):
     fields = ["author", "track", "text", "datetime"]
     readonly_fields = ["author", "track", "datetime"]
     list_display = ["author", "track", "datetime"]
+    search_fields = ["author__username", "author__first_name", "author__last_name", "track__name", "datetime"]
 
 
 @admin.register(Like)
 class LikeAdmin(admin.ModelAdmin):
     list_display = ["user", "track", "datetime"]
+    search_fields = ["user__username", "user__first_name", "user__last_name", "track__name", "datetime"]
     list_display_links = None
