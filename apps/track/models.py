@@ -260,7 +260,16 @@ class Comment(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f"{self.author} @ {self.track} @ {self.datetime}"
+        return f"Comment: {self.author} @ {self.track} @ {self.datetime}"
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Like: {self.user} @ {self.track} @ {self.datetime}"
 
 
 @receiver(post_save, sender=Track)
