@@ -27,6 +27,7 @@ class TrackListView(generic.ListView):
             Track.objects.filter(q)
             .order_by("-datetime")
             .select_related("trackstat", "user")
+            .prefetch_related("like_set", "comment_set")
         )
 
 

@@ -1,4 +1,22 @@
 <div class="field is-grouped is-grouped-multiline">
+  {% comment %} Likes {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-thumbs-up"></i>
+      </span>
+      <span class="tag">{{track.like_set.count}}</span>
+    </span>
+  </div>
+  {% comment %} Comments {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas fa-comments"></i>
+      </span>
+      <span class="tag">{{track.comment_set.count}}</span>
+    </span>
+  </div>
   {% comment %} User {% endcomment %}
   <div class="control">
     <span class="tags has-addons">
