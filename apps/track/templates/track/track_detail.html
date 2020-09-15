@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load cache %}
+{% load track_tags %}
 
 {% block content %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -15,13 +16,38 @@
     </div>
     <div class="level-right">
       <div class="field is-grouped">
+        {% user_likes_track request.user track as should_unlike %}
         {% if request.user == track.user %}
+          <p class="control">
+            <button class="button" disabled>
+              <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+              <span>{{track.like_set.count}}</span>
+            </button>
+          </p>
           <p class="control">
             <button class="button is-primary" value="track-edit-modal" name="modal-open">Edit</button>
           </p>  
-        <p class="control">
-          <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
-        </p>
+          <p class="control">
+            <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
+          </p>
+        {% elif should_unlike %}
+          <p class="control">
+            <form action="{% url 'track:unlike' track.pk %}" method="post">{% csrf_token %}
+              <button class="button is-success">
+                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                <span>{{track.like_set.count}}</span>
+              </button>
+            </form>
+          </p>
+        {% else %}
+          <p class="control">
+            <form action="{% url 'track:like' track.pk %}" method="post">{% csrf_token %}
+              <button class="button is-success is-outlined">
+                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                <span>{{track.like_set.count}}</span>
+              </button>
+            </form>
+          </p>
         {% endif %}
       </div>
     </div>
@@ -89,7 +115,7 @@
 
 {% block side %}
 <div class="panel box">
-  <p class="panel-heading">Comments</p>
+  <p class="panel-heading">Comments ({{track.comment_set.count}})</p>
   <form method="post" action="{% url 'track:comment' track.pk %}">{% csrf_token %}
     {% include "form.html" with form=comment_form %}
     <div class="control">

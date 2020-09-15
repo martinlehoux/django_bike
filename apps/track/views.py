@@ -10,7 +10,7 @@ from django.core.cache.utils import make_template_fragment_key
 
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
-from .models import Track, TrackData
+from .models import Track, TrackData, Like
 from .forms import TrackCreateForm, TrackEditForm, CommentCreateForm
 from . import charts
 
@@ -124,3 +124,29 @@ class TrackCommentView(PermissionRequiredMethodMixin, generic.CreateView):
         form.instance.author = self.request.user
         form.instance.track = get_object_or_404(Track, pk=self.kwargs["pk"])
         return super().form_valid(form)
+
+
+class TrackLikeView(PermissionRequiredMethodMixin, generic.CreateView):
+    model = Like
+    fields = []
+    permission_required = "track.like_track"
+
+    def get_success_url(self) -> str:
+        return reverse("track:detail", args=[self.object.track.pk])
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return super().form_valid(form)
+
+
+class TrackUnlikeView(PermissionRequiredMethodMixin, generic.DeleteView):
+    model = Like
+    permission_required = "track.like_track"
+
+    def get_success_url(self) -> str:
+        return reverse("track:detail", args=[self.object.track.pk])
+
+    def get_object(self) -> Like:
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return get_object_or_404(Like, user=self.request.user, track=track)
