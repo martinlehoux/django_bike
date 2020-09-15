@@ -2,7 +2,7 @@ from django.contrib import admin, messages
 from django.contrib.auth import get_user_model
 from celery import chain
 
-from .models import Track, TrackStat, Comment
+from .models import Track, TrackStat, Comment, Like
 from . import tasks
 
 User = get_user_model()
@@ -52,3 +52,9 @@ class CommentAdmin(admin.ModelAdmin):
     fields = ["author", "track", "text", "datetime"]
     readonly_fields = ["author", "track", "datetime"]
     list_display = ["author", "track", "datetime"]
+
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ["user", "track", "datetime"]
+    list_display_links = None
