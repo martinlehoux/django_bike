@@ -10,6 +10,7 @@ from django.db.models.signals import post_save
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core.validators import MaxLengthValidator
 
 from .parsers import PARSERS
 
@@ -256,7 +257,7 @@ def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
 class Comment(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
-    text = models.TextField(blank=False)
+    text = models.TextField(blank=False, validators=[MaxLengthValidator(200)])
     datetime = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:

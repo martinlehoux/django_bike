@@ -1,3 +1,4 @@
+from django.http.response import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import get_object_or_404
 from django.views import generic
@@ -117,13 +118,23 @@ class TrackCommentView(PermissionRequiredMethodMixin, generic.CreateView):
     form_class = CommentCreateForm
     permission_required = "track.comment_track"
 
-    def get_success_url(self) -> str:
+    def get_success_url(self, track: Track = None) -> str:
+        if track:
+            return reverse("track:detail", args=[track.pk])
         return reverse("track:detail", args=[self.object.track.pk])
 
     def form_valid(self, form):
         form.instance.author = self.request.user
         form.instance.track = get_object_or_404(Track, pk=self.kwargs["pk"])
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        notify.error(
+            self.request.user,
+            f"An error happened while commenting: {form.errors.as_text()}",
+        )
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return HttpResponseRedirect(self.get_success_url(track))
 
 
 class TrackLikeView(PermissionRequiredMethodMixin, generic.CreateView):
