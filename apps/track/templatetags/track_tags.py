@@ -10,11 +10,23 @@ register = template.Library()
 @stringfilter
 def state_class(value):
     if value == Track.StateChoices.PROCESSING:
-        return "is-warning"
+        return "is-loading is-warning"
     if value == Track.StateChoices.READY:
         return "is-success"
     if value == Track.StateChoices.ERROR:
         return "is-danger"
+    return ""
+
+
+@register.filter
+@stringfilter
+def state_icon(value):
+    if value == Track.StateChoices.PROCESSING:
+        return ""
+    if value == Track.StateChoices.READY:
+        return "fa-map-marked"
+    if value == Track.StateChoices.ERROR:
+        return "fa-ban"
     return ""
 
 

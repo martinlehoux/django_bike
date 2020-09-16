@@ -1,0 +1,9 @@
+{% load track_tags %}
+
+<a
+  href="{% if track.state == "ready" %}{% url 'track:detail' track.pk %}{% else %}#{% endif %}"
+  class="button {{track.state|state_class}}"
+  {% if track.state == "error" %}disabled{% endif %}
+>
+  <span class="icon"><i class="fas {{track.state|state_icon}}"></i></span>
+</a>
