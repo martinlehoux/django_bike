@@ -1,8 +1,11 @@
 from django.contrib import admin, messages
+from django.contrib.auth import get_user_model
 from celery import chain
 
-from .models import Track, TrackStat
+from .models import Track, TrackStat, Comment, Like
 from . import tasks
+
+User = get_user_model()
 
 
 class TrackStatInline(admin.StackedInline):
@@ -25,10 +28,14 @@ class TrackAdmin(admin.ModelAdmin):
     )
     readonly_fields = ("uuid", "points_count", "user")
     list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
+    search_fields = ["user__username", "user__first_name", "user__last_name", "name", "datetime"]
     actions = ["compute_stats"]
 
     def save_form(self, request, form, change):
-        form.instance.user = request.user
+        try:
+            form.instance.user
+        except User.DoesNotExist:
+            form.instance.user = request.user
         return super().save_form(request, form, change)
 
     def compute_stats(self, request, queryset):
@@ -39,3 +46,18 @@ class TrackAdmin(admin.ModelAdmin):
         self.message_user(
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
         )
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    fields = ["author", "track", "text", "datetime"]
+    readonly_fields = ["author", "track", "datetime"]
+    list_display = ["author", "track", "datetime"]
+    search_fields = ["author__username", "author__first_name", "author__last_name", "track__name", "datetime"]
+
+
+@admin.register(Like)
+class LikeAdmin(admin.ModelAdmin):
+    list_display = ["user", "track", "datetime"]
+    search_fields = ["user__username", "user__first_name", "user__last_name", "track__name", "datetime"]
+    list_display_links = None

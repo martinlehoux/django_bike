@@ -2,6 +2,7 @@ from typing import Callable
 
 from django import forms
 from django.conf import settings
+from django.http import QueryDict
 from PIL import Image
 
 from .models import Profile
@@ -35,10 +36,15 @@ class ExerciseHistoryForm(forms.Form):
     TIME_RANGE_CHOICES = {"week": WeekTimeRange, "month": MonthTimeRange}
     time_range = forms.ChoiceField(
         choices=[(key, key) for key in TIME_RANGE_CHOICES.keys()],
-        initial=TIME_RANGE_CHOICES["week"],
     )
 
     @property
     def time_range_choice(self) -> Callable[..., TimeRangeQuery]:
         assert self.is_valid()
         return self.TIME_RANGE_CHOICES[self.cleaned_data["time_range"]]
+
+    def __init__(self, data: QueryDict, *args, **kwargs):
+        data = data.copy()
+        if not data.get("time_range"):
+            data["time_range"] = "week"
+        super().__init__(data, *args, **kwargs)

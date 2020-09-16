@@ -14,6 +14,7 @@ const options = {
 if (!fs.existsSync(outputDir)) {
     fs.mkdirSync(outputDir);
 }
+console.info(`Compiling base...`)
 const baseFile = fs.readFileSync("src/base.html", { encoding: "utf-8" })
 const html = juice.inlineContent(baseFile, css, options)
 fs.writeFileSync(`${outputDir}/base.html`, html)
@@ -23,7 +24,10 @@ fs.readdirSync("src").forEach(name => {
         console.info(`Compiling ${name}...`)
         const file = fs.readFileSync(`src/${name}/email.html`, { encoding: "utf-8" })
         const html = juice.inlineContent(file, css, options)
-        fs.mkdirSync(`${outputDir}/${name}`)
+        const dir = `${outputDir}/${name}`
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir)
+        }
         fs.writeFileSync(`${outputDir}/${name}/email.html`, html)
     }
 })

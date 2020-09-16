@@ -14,20 +14,12 @@
           <div>
             <p class="title is-4">
               {{track.name}}
-              <span class="tag {{track.state|state_class}}">{{track.state}}</span>
             </p>
             <p class="subtitle is-6">{{track.datetime}}</p>
           </div>
         </div>
         <div class="level-right">
-          <a
-            href="{% if track.state == "ready" %}{% url 'track:detail' track.pk %}{% else %}#{% endif %}"
-            class="button is-link"
-            {% if track.state != "ready" %}disabled{% endif %}
-          >
-            <span class="icon"><i class="fas fa-map-marked"></i></span>
-            <span>See</span> 
-          </a>
+        {% include "track/track_view_button.html" %}
         </div>
       </div>
       {% include "track/track_tags.html" %}

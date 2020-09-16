@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
 {% load cache %}
+{% load track_tags %}
 
 {% block content %}
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
@@ -15,14 +16,39 @@
     </div>
     <div class="level-right">
       <div class="field is-grouped">
+        {% user_likes_track request.user track as should_unlike %}
         {% if request.user == track.user %}
+          <p class="control">
+            <button class="button" disabled>
+              <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+              <span>{{track.like_set.count}}</span>
+            </button>
+          </p>
           <p class="control">
             <button class="button is-primary" value="track-edit-modal" name="modal-open">Edit</button>
           </p>  
+          <p class="control">
+            <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
+          </p>
+        {% elif should_unlike %}
+          <p class="control">
+            <form action="{% url 'track:unlike' track.pk %}" method="post">{% csrf_token %}
+              <button class="button is-success">
+                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                <span>{{track.like_set.count}}</span>
+              </button>
+            </form>
+          </p>
+        {% else %}
+          <p class="control">
+            <form action="{% url 'track:like' track.pk %}" method="post">{% csrf_token %}
+              <button class="button is-success is-outlined">
+                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                <span>{{track.like_set.count}}</span>
+              </button>
+            </form>
+          </p>
         {% endif %}
-        <p class="control">
-          <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
-        </p>
       </div>
     </div>
   </div>
@@ -86,3 +112,41 @@
 {% include "track/track_delete_modal.html" %}
 {% include "track/track_edit_modal.html" %}
 {% endblock content %}
+
+{% block side %}
+<div class="box">
+  <h2 class="header">Comments ({{track.comment_set.count}})</h2>
+  <form method="post" action="{% url 'track:comment' track.pk %}">{% csrf_token %}
+    {% include "form.html" with form=comment_form %}
+    <div class="control">
+      <button class="button is-link is-fullwidth">
+        <span class="icon">
+          <i class="fas fa-paper-plane"></i>
+        </span>
+        <span>Send (max 200 char)</span>
+      </button>
+    </div>
+  </form>
+  <br>
+  {% for comment in comment_set %}
+    <article class="media">
+      <figure class="media-left">
+        <p class="image is-32x32">
+          <img src="{{ comment.author.profile.avatar.url }}" alt="Avatar">
+        </p>
+      </figure>
+      <div class="media-content">
+        <div class="content">
+          <p>
+            <strong>{{comment.author}}</strong>
+            <br>
+            <small>on {{comment.datetime}}</small>
+            <br>
+            {{ comment.text }}
+          </p>
+        </div>
+      </div>
+    </article>
+  {% endfor %}
+</div>
+{% endblock side %}

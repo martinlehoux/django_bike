@@ -1,5 +1,8 @@
-from django.urls import reverse_lazy
+from django.http.response import HttpResponseRedirect
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import get_object_or_404
 from django.views import generic
+from django.views.generic import edit
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
@@ -8,8 +11,8 @@ from django.core.cache.utils import make_template_fragment_key
 
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
-from .models import Track, TrackData
-from .forms import TrackCreateForm, TrackEditForm
+from .models import Track, TrackData, Like
+from .forms import TrackCreateForm, TrackEditForm, CommentCreateForm
 from . import charts
 
 
@@ -25,6 +28,7 @@ class TrackListView(generic.ListView):
             Track.objects.filter(q)
             .order_by("-datetime")
             .select_related("trackstat", "user")
+            .prefetch_related("like_set", "comment_set")
         )
 
 
@@ -89,12 +93,18 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
         if settings.TRACK_CHARTS_DISPLAY and cache.get(key) is None:
             data = TrackData(track)
             context["charts"] = [
-                charts.MapChart(track, data).plot(),
                 charts.AltVSDistChart(track, data).plot(),
                 charts.SlopeVSDistChart(track, data).plot(),
                 charts.SpeedVSDistChart(track, data).plot(),
+                charts.MapChart(track, data).plot(),
                 charts.PowerVSTimeChart(track, data).plot(),
             ]
+        context["comment_form"] = CommentCreateForm()
+        context["comment_set"] = (
+            track.comment_set.select_related("author__profile")
+            .all()
+            .order_by("-datetime")
+        )
         return context
 
 
@@ -102,3 +112,52 @@ class TrackDeleteView(PermissionRequiredMethodMixin, generic.DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
     permission_required = "track.delete_track"
+
+
+class TrackCommentView(PermissionRequiredMethodMixin, generic.CreateView):
+    form_class = CommentCreateForm
+    permission_required = "track.comment_track"
+
+    def get_success_url(self, track: Track = None) -> str:
+        if track:
+            return reverse("track:detail", args=[track.pk])
+        return reverse("track:detail", args=[self.object.track.pk])
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        notify.error(
+            self.request.user,
+            f"An error happened while commenting: {form.errors.as_text()}",
+        )
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return HttpResponseRedirect(self.get_success_url(track))
+
+
+class TrackLikeView(PermissionRequiredMethodMixin, generic.CreateView):
+    model = Like
+    fields = []
+    permission_required = "track.like_track"
+
+    def get_success_url(self) -> str:
+        return reverse("track:detail", args=[self.object.track.pk])
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        form.instance.track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return super().form_valid(form)
+
+
+class TrackUnlikeView(PermissionRequiredMethodMixin, generic.DeleteView):
+    model = Like
+    permission_required = "track.like_track"
+
+    def get_success_url(self) -> str:
+        return reverse("track:detail", args=[self.object.track.pk])
+
+    def get_object(self) -> Like:
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        return get_object_or_404(Like, user=self.request.user, track=track)

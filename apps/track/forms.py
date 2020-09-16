@@ -4,7 +4,7 @@ from django import forms
 from celery import chain
 
 from apps.main.widgets import TextListInput
-from .models import Track
+from .models import Track, Comment
 from . import tasks
 
 
@@ -64,3 +64,16 @@ class TrackEditForm(forms.ModelForm):
         #     cleaned_data["date"], cleaned_data["time"]
         # )
         return cleaned_data
+
+
+class CommentCreateForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["text"]
+        widgets = {
+            "text": forms.Textarea(attrs={"rows": 4, "cols": 15, "maxlength": 200}),
+        }
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.fields["text"].label = ""

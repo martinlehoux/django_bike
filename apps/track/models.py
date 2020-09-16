@@ -10,7 +10,9 @@ from django.db.models.signals import post_save
 from django.shortcuts import reverse
 from django.contrib.auth import get_user_model
 from django.utils import timezone
+from django.core.validators import MaxLengthValidator
 
+from apps.main.utils import smoother
 from .parsers import PARSERS
 
 
@@ -142,6 +144,45 @@ class TrackData:
                 slope.append(slope[-1])
         return slope
 
+    def slope_v2(self) -> List[float]:
+        points = self._point_set
+        slope = [None for i in range(len(points))]
+        slope[0] = 0
+        # Every 30 points
+        i = 30  #  TODO May be false
+        for i in range(30, len(points), 30):
+            point: Point = points[i]
+            previous: Point = points[i - 30]
+            try:
+                slope[i] = (
+                    (point.alt - previous.alt)
+                    / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
+                    * 100
+                )
+            except ZeroDivisionError:
+                slope[i] = slope[i - 30]
+        # Fill last point
+        if i < len(points) - 1:
+            point: Point = points.last()
+            previous: Point = points[i]
+            try:
+                slope[-1] = (
+                    (point.alt - previous.alt)
+                    / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
+                    * 100
+                )
+            except ZeroDivisionError:
+                slope[-1] = slope[i]
+        # Complete
+        for i in range(len(slope)):
+            if slope[i] is None:
+                last = i - i % 30
+                next = min(len(slope) - 1, i - i % 30 + 30)
+                slope[i] = (
+                    1 / 30 * (slope[last] * (i - last) + slope[next] * (next - i))
+                )
+        return slope
+
     def speed(self) -> List[float]:
         speed = [0]
         points = self._point_set
@@ -244,13 +285,28 @@ class TrackStat(models.Model):
         return 0.0
 
 
-def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
-    new_array = []
-    for i in range(len(array)):
-        start = max(i - smooth_size, 0)
-        end = min(i + smooth_size, len(array))
-        new_array.append(sum(array[start:end]) / len(array[start:end]))
-    return new_array
+class Comment(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
+    text = models.TextField(blank=False, validators=[MaxLengthValidator(200)])
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Comment: {self.author} @ {self.track} @ {self.datetime}"
+
+
+class Like(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["user", "track"], name="like_unique")
+        ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"Like: {self.user} @ {self.track} @ {self.datetime}"
 
 
 @receiver(post_save, sender=Track)

@@ -19,3 +19,6 @@ def track_public(user: User, track: Track) -> bool:
 rules.add_perm("track.view_track", is_track_owner | track_public)
 rules.add_perm("track.edit_track", is_track_owner)
 rules.add_perm("track.delete_track", is_track_owner)
+# TODO Add rule for friends
+rules.add_perm("track.comment_track", is_track_owner | track_public)
+rules.add_perm("track.like_track", track_public)
