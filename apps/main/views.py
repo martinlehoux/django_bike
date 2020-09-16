@@ -1,6 +1,7 @@
 from typing import Dict, Union, Tuple
 
 from django.core.exceptions import ImproperlyConfigured
+from django.views import generic
 from rules.contrib.views import PermissionRequiredMixin
 
 
@@ -18,3 +19,7 @@ class PermissionRequiredMethodMixin(PermissionRequiredMixin):
             if perms is not None:
                 return (perms,) if isinstance(perms, str) else perms
         return super().get_permission_required()
+
+
+class IndexView(generic.TemplateView):
+    template_name = "index.html"

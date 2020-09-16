@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="box">
+  <h1 class="title">Welcome on Django Bike</h1>
+</div>
+
+<article class="box">
+  <h2 class="title">Release 0.7</h2>
+  <h2 class="subtitle">16 Sept 2020</h2>
+
+  <h3 class="is-size-3">Features</h3>
+  <ul>
+    <li>
+      <strong>Comments and Likes</strong>
+      You can now like other people's tracks (if they are set to public), and comment them along your own tracks.
+      Enjoy sharing your performances with the community !
+    </li>
+    <li>
+      <strong>Forms</strong>
+      Display an unified inline form anywere, and TextArea is available to use in code.
+    </li>
+    <li>
+      <strong>README</strong>
+      Improved installation instructions.
+    </li>
+    <li>
+      <strong>Browsing</strong>
+      Django Bike is available in HTTPS with HTTP/2, with this new domain name : <strong>bike.lehoux.net</strong> .
+    </li>
+  </ul>
+
+  <h3 class="is-size-3">Fixes</h3>
+  <ul>
+    <li>
+      <strong>Invalid headers</strong>
+      Headers from the wrong origin are now denied to access Django.
+    </li>
+    <li>
+      <strong>Email templates build</strong>
+      The email Javascript app used to fail the build stage.
+    </li>
+    <li>
+      <strong>Columns size</strong>
+      Columns were not using the whole page width.
+    </li>
+    <li>
+      <strong>Track admin user ownership</strong>
+      Saving a track would change the owner to the current admin user. It now does so only if there is no owner.
+    </li>
+    <li>
+      <strong>Delete track button</strong>
+      It would show to anybody, now only for the owner (this was only a display issue).
+    </li>
+    <li>
+      <strong>Weekly and Monthly charts</strong>
+      There was an error in the form to choose the time period, so none would show.
+    </li>
+    <li>
+      <strong>Delete notifications</strong>
+      The delete button click wouldn't work.
+    </li>
+    <li class="content">
+      <strong>Dependencies upgrades</strong>
+      <ul>
+        <li>rollup-plugin-terser from 5.3.0 to 7.0.1</li>
+        <li>serialize-javascriptfrom 2.1.2 to 4.0.0</li>
+        <li>jest-worker from 24.9.0 to 26.3.0</li>
+        <li>terser from 4.8.0 to 5.2.1</li>
+      </ul>
+    </li>
+  </ul>
+</article>
+{% endblock content %}

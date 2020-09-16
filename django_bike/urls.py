@@ -4,10 +4,12 @@ from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic.base import RedirectView
 
+from apps.main.views import IndexView
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("accounts/", include("apps.account.urls")),
-    path("", RedirectView.as_view(url="track/", permanent=False), name="index"),
+    path("", IndexView.as_view(), name="index"),
     path("track/", include("apps.track.urls")),
 ]
 
