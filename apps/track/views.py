@@ -93,10 +93,10 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
         if settings.TRACK_CHARTS_DISPLAY and cache.get(key) is None:
             data = TrackData(track)
             context["charts"] = [
-                charts.MapChart(track, data).plot(),
                 charts.AltVSDistChart(track, data).plot(),
                 charts.SlopeVSDistChart(track, data).plot(),
                 charts.SpeedVSDistChart(track, data).plot(),
+                charts.MapChart(track, data).plot(),
                 charts.PowerVSTimeChart(track, data).plot(),
             ]
         context["comment_form"] = CommentCreateForm()

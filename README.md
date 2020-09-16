@@ -28,7 +28,7 @@
 **Build the email**
 - `cd email_builder`
 - `npm i`
-- `npm run dev`
+- `npm run build`
 
 **Start the server**
 - `./manage.py createsuperuser`
