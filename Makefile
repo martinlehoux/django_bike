@@ -1,4 +1,4 @@
-ENV = /Users/mlehoux/.virtualenv/django-bike-gzBAQnCM-py3.8
+ENV = /home/kagamino/.cache/pypoetry/virtualenvs/django-bike-AGosmyMN-py3.8
 
 # Containers
 redis:
@@ -32,3 +32,11 @@ docker-webapp:
 
 export:
 	poetry export -f requirements.txt -o requirements.txt --without-hashes
+
+# Production
+update:
+	git pull
+	docker-compose up -d --no-deps --build db flower redis web worker
+
+logs:
+	docker-compose logs -f --tail=10

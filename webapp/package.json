@@ -1,5 +1,6 @@
 {
   "name": "svelte-app",
+  "description": "Webapp plugin for static front",
   "repository": {
     "type": "git",
     "url": "https://github.com/martinlehoux/django_bike"
