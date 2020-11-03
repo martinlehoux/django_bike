@@ -1,4 +1,5 @@
 ![Django CI](https://github.com/martinlehoux/django_bike/workflows/Django%20CI/badge.svg)
+[![Website bike.lehoux.net](https://img.shields.io/website-up-down-green-red/http/bike.lehoux.net.svg)](https://bike.lehoux.net)
 
 ## Installation
 
