@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:14
 WORKDIR /webapp/
 
 COPY webapp/package.json .
@@ -12,7 +12,7 @@ COPY webapp/src ./src
 RUN npm run build
 
 
-FROM node:12
+FROM node:14
 WORKDIR /email_builder/
 
 COPY email_builder/package.json .
