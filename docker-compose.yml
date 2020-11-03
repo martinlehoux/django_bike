@@ -46,11 +46,9 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
+      - ./static:/django_bike/static
       - ./media:/django_bike/media
       - ./django_bike:/django_bike/django_bike
-      - ./apps:/django_bike/apps
-      - ./static:/django_bike/static
-      - ./media:/django/media
     depends_on:
       - redis
       - db

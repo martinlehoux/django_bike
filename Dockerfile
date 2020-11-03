@@ -1,4 +1,4 @@
-FROM node:12
+FROM node:14
 WORKDIR /webapp/
 
 COPY webapp/package.json .
@@ -12,7 +12,7 @@ COPY webapp/src ./src
 RUN npm run build
 
 
-FROM node:12
+FROM node:14
 WORKDIR /email_builder/
 
 COPY email_builder/package.json .
@@ -33,6 +33,7 @@ RUN pip install -r requirements.txt
 
 COPY django_bike/.env /django_bike/.env
 COPY manage.py /django_bike/
+COPY apps /django_bike/apps
 COPY --from=0 /webapp/public/build /django_bike/webapp/public/build
 COPY --from=1 /email_builder/build /django_bike/apps/main/templates/email
 COPY start-server.sh /django_bike/

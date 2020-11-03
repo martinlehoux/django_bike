@@ -1,8 +1,21 @@
 ![Django CI](https://github.com/martinlehoux/django_bike/workflows/Django%20CI/badge.svg)
+[![Website bike.lehoux.net](https://img.shields.io/website-up-down-green-red/http/bike.lehoux.net.svg)](https://bike.lehoux.net)
 
 ## Installation
 
-**Create python environement**
+### Production
+
+**Update**
+
+```bash
+git pull
+docker-compose up -d --no-deps --build db flower redis web worker
+```
+
+### Development
+
+**Create python environment**
+
 - `python3 -m venv env`
 - `source env/bin/activate`
 - `pip install -r requirements.txt`
@@ -12,8 +25,8 @@
 - Edit this new file and fill the required values.
   - `SERVER_TYPE` should be a value of `dev`, `test`, `stage`, `prod`
   - `JAWG_TOKEN` is used to retrieve altitudes for GPX. See https://www.jawg.io/.
-  - `POSTGRES_PASSWORD` is not required in developement mode (using SQLite3)
-  - `SENDGRID_KEY` is not required in developement mode (using Maildev). See https://sendgrid.com/.
+  - `POSTGRES_PASSWORD` is not required in development mode (using SQLite3)
+  - `SENDGRID_KEY` is not required in development mode (using Maildev). See https://sendgrid.com/.
   - `SECRET_KEY` can be generated using python : 
     ```python3
     >>> from django.core.management.utils import get_random_secret_key

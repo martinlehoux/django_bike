@@ -1,5 +1,10 @@
 {
   "name": "svelte-app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martinlehoux/django_bike"
+  },
+  "license": "MIT",
   "version": "1.0.0",
   "scripts": {
     "build": "rollup -c",
@@ -23,7 +28,6 @@
     "rollup-plugin-postcss": "^3.1.8",
     "sass": "^1.26.10",
     "sirv-cli": "^0.4.4",
-    "svelma": "^0.3.2",
     "svelte-preprocess": "^4.3.0",
     "tslib": "^2.0.1",
     "typescript": "^3.9.7"
