@@ -3,6 +3,9 @@ import os
 from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
 
+# APPS SETTINGS
+from .apps_settings.martor import *
+
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
 SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
@@ -97,7 +100,7 @@ else:
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",  # noqa: E501
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
@@ -215,32 +218,3 @@ else:
     }
 
 AVATAR_SIZE = (128, 128)
-
-MARTOR_TOOLBAR_BUTTONS = [
-    "bold",
-    "italic",
-    "horizontal",
-    "heading",
-    "pre-code",
-    "blockquote",
-    "unordered-list",
-    "ordered-list",
-    "link",
-    "emoji",
-    "help",
-]
-MARTOR_ENABLE_LABEL = True
-MARTOR_MARKDOWN_EXTENSIONS = [
-    "markdown.extensions.extra",
-    "markdown.extensions.nl2br",
-    "markdown.extensions.smarty",
-    "markdown.extensions.fenced_code",
-    # Custom markdown extensions.
-    "martor.extensions.urlize",
-    # 'martor.extensions.del_ins',      # ~~strikethrough~~ and ++underscores++
-    # 'martor.extensions.mention',      # to parse markdown mention
-    "martor.extensions.emoji",  # to parse markdown emoji
-    # 'martor.extensions.mdx_video',    # to parse embed/iframe video
-    "martor.extensions.escape_html",  # to handle the XSS vulnerabilities
-    "apps.extensions.martor_bulma",
-]
