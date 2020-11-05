@@ -7,6 +7,7 @@ from django.views.generic.base import RedirectView
 from apps.main.views import IndexView
 
 urlpatterns = [
+    path("martor/", include("martor.urls")),
     path("admin/", admin.site.urls),
     path("accounts/", include("apps.account.urls")),
     path("", IndexView.as_view(), name="index"),

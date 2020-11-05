@@ -4,6 +4,8 @@ from django.core.exceptions import ImproperlyConfigured
 from django.views import generic
 from rules.contrib.views import PermissionRequiredMixin
 
+from .models import ReleaseNote
+
 
 class PermissionRequiredMethodMixin(PermissionRequiredMixin):
     permission_required_map: Dict[str, Union[str, Tuple[str]]] = None
@@ -23,3 +25,8 @@ class PermissionRequiredMethodMixin(PermissionRequiredMixin):
 
 class IndexView(generic.TemplateView):
     template_name = "index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["release_notes"] = ReleaseNote.objects.all()
+        return context
