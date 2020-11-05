@@ -3,13 +3,11 @@
 {% block content %}
 Reset password request
 
-You're receiving this email because you requested a password reset for your user account at {{ site_name }}
+You're receiving this email because you requested a password reset for your user account at Django Bike.
 
 Please go to the following page and choose a new password:
 {% block reset_link %}
     {{ protocol }}://{{ domain }}{% url 'password_reset_confirm' uidb64=uid token=token %}
 {% endblock %}
 Your username, in case you’ve forgotten: {{ user.get_username }}
-
-Thanks for using our site, the {{ site_name }} team
 {% endblock content %}

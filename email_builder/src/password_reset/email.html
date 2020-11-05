@@ -6,7 +6,7 @@
     <p>Reset password request</p>
   </div>
   <div class="message-body">
-    You're receiving this email because you requested a password reset for your user account at {{ site_name }}
+    You're receiving this email because you requested a password reset for your user account at Django Bike.
     <br>
     Please go to the following page and choose a new password:
     <br>
@@ -17,8 +17,6 @@
     {% endblock %}
     <br>
     Your username, in case you’ve forgotten: <span class="is-bold">{{ user.get_username }}</span>
-    <br>
-    Thanks for using our site, the {{ site_name }} team
   </div>
 </article>
 {% endblock content %}
