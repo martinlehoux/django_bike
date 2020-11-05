@@ -3,3 +3,7 @@ You received a new message
 
 {% block content %}
 {% endblock content %}
+
+
+Thanks for using our site,
+the Django Bike team

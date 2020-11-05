@@ -6,16 +6,25 @@
   <title>Document</title>
 </head>
 <body>
-  <section class="hero is-primary is-bold">
+  <section class="hero is-primary is-bold is-fullheight">
     <div class="hero-body">
-      <div class="container mb-6">
+      <div class="container has-text-centered">
         <h1 class="title">Django Bikes</h1>
         <h2 class="subtitle">You received a new message</h2>
       </div>
+    </div>
+    <div class="hero-body">
       <div class="container">
         {% block content %}
         {% endblock content %}
       </div>
+    </div>
+    <div class="hero-foot">
+      <p class="mb-6 has-text-centered">
+        Thanks for using our site,
+        <br>
+        the Django Bike team
+      </p>
     </div>
   </section>
 </body>
