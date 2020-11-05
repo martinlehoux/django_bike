@@ -1,9 +1,11 @@
 import shutil
 from pathlib import Path
-from typing import List
+from typing import Any, Dict, List
 
 from django.conf import settings
 from django.test import TestCase, override_settings
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 
 @override_settings(MEDIA_ROOT="media-test/")
@@ -36,3 +38,25 @@ def smoother(array: List[float], smooth_size: int = 30) -> List[float]:
         end = min(i + smooth_size, len(array))
         new_array.append(sum(array[start:end]) / len(array[start:end]))
     return new_array
+
+
+def send_mail_template(
+    subject: str,
+    template: str,
+    from_email: str,
+    recipient_list: List[str],
+    context: Dict[str, Any] = None,
+    fail_silently=False,
+):
+    if context is None:
+        context = {}
+    message = render_to_string(f"email/{template}/email.txt", context)
+    html_message = render_to_string(f"email/{template}/email.html", context)
+    return send_mail(
+        subject,
+        message,
+        from_email,
+        recipient_list,
+        fail_silently,
+        html_message=html_message,
+    )

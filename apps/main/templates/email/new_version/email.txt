@@ -1,0 +1,14 @@
+{% extends 'email/base.txt' %}
+{% comment %}
+Context:
+    release_note: ReleaseNote
+{% endcomment %}
+
+{% block content %}
+A new version of Django Bike has been released! Here is what has changed.
+
+{{ release_note.get_version_type_display }} {{ release_note.version_number }}
+{{ release_note.version_date }}
+
+{{ release_note.description }}
+{% endblock content %}

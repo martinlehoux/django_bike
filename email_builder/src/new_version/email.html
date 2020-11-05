@@ -1,0 +1,24 @@
+{% extends 'email/base.html' %}
+{% load martortags %}
+{% comment %}
+Context:
+  release_note: ReleaseNote
+{% endcomment %}
+
+{% block content %}
+<article class="message is-info">
+  <div class="message-header">
+    <p>New version released</p>
+  </div>
+  <div class="message-body">
+    A new version of Django Bike has been released! Here is what has changed.
+    <br>
+    
+    <h2 class="title is-2">{{ release_note.get_version_type_display }} {{ release_note.version_number }}</h2>
+    <h2 class="subtitle">{{ release_note.version_date }}</h2>
+    
+    <hr/>
+    {{ release_note.description|safe_markdown }}
+  </div>
+</article>
+{% endblock content %}
