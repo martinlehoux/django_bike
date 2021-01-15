@@ -1,0 +1,65 @@
+<article class="box">
+  <h2 class="title">Release 0.7</h2>
+  <h2 class="subtitle">16 Sep 2020</h2>
+
+  <h3 class="is-size-3">Features</h3>
+  <ul>
+    <li>
+      <strong>Comments and Likes</strong>
+      You can now like other people's tracks (if they are set to public), and comment them along your own tracks.
+      Enjoy sharing your performances with the community!
+    </li>
+    <li>
+      <strong>Track state</strong>
+      Cooler way to display a track state in the track list
+    </li>
+    <li>
+      <strong>Track admin search</strong>
+      Tracks, Comments and Likes are searchable in the admin pages.
+    </li>
+    <li>
+      <strong>Forms</strong>
+      Display an unified inline form anywere, and TextArea is available to use in code.
+    </li>
+    <li>
+      <strong>README</strong>
+      Improved installation instructions.
+    </li>
+    <li>
+      <strong>Browsing</strong>
+      Django Bike is available in HTTPS with HTTP/2, with this new domain name : <strong>bike.lehoux.net</strong> .
+    </li>
+  </ul>
+
+  <h3 class="is-size-3">Fixes</h3>
+  <ul>
+    <li>
+      <strong>Invalid headers</strong>
+      Headers from the wrong origin are now denied to access Django.
+    </li>
+    <li>
+      <strong>Email templates build</strong>
+      The email Javascript app used to fail the build stage.
+    </li>
+    <li>
+      <strong>Columns size</strong>
+      Columns were not using the whole page width.
+    </li>
+    <li>
+      <strong>Track admin user ownership</strong>
+      Saving a track would change the owner to the current admin user. It now does so only if there is no owner.
+    </li>
+    <li>
+      <strong>Delete track button</strong>
+      It would show to anybody, now only for the owner (this was only a display issue).
+    </li>
+    <li>
+      <strong>Weekly and Monthly charts</strong>
+      There was an error in the form to choose the time period, so none would show.
+    </li>
+    <li>
+      <strong>Delete notifications</strong>
+      The delete button click wouldn't work.
+    </li>
+  </ul>
+</article>

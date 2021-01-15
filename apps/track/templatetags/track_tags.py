@@ -1,7 +1,7 @@
 from django import template
 from django.template.defaultfilters import stringfilter
 
-from ..models import Track, Like
+from ..models import Like, Track
 
 register = template.Library()
 
