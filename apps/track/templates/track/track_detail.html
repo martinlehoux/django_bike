@@ -16,7 +16,6 @@
     </div>
     <div class="level-right">
       <div class="field is-grouped">
-        {% user_likes_track request.user track as should_unlike %}
         {% if request.user == track.user %}
           <p class="control">
             <button class="button" disabled>
@@ -30,24 +29,34 @@
           <p class="control">
             <button class="button is-danger" value="track-delete-modal" name="modal-open">Delete</button>
           </p>
-        {% elif should_unlike %}
+        {% elif request.user.is_anonymous %}
           <p class="control">
-            <form action="{% url 'track:unlike' track.pk %}" method="post">{% csrf_token %}
-              <button class="button is-success">
-                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
-                <span>{{track.like_set.count}}</span>
-              </button>
-            </form>
+            <span class="button is-success is-outlined" disabled>
+              <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+              <span>{{track.like_set.count}}</span>
+            </span>
           </p>
         {% else %}
-          <p class="control">
-            <form action="{% url 'track:like' track.pk %}" method="post">{% csrf_token %}
-              <button class="button is-success is-outlined">
-                <span class="icon"><i class="fas fa-thumbs-up"></i></span>
-                <span>{{track.like_set.count}}</span>
-              </button>
-            </form>
-          </p>
+          {% user_likes_track request.user track as should_unlike %}
+          {% if should_unlike %}
+            <p class="control">
+              <form action="{% url 'track:unlike' track.pk %}" method="post">{% csrf_token %}
+                <button class="button is-success">
+                  <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                  <span>{{track.like_set.count}}</span>
+                </button>
+              </form>
+            </p>
+          {% else %}
+            <p class="control">
+              <form action="{% url 'track:like' track.pk %}" method="post">{% csrf_token %}
+                <button class="button is-success is-outlined">
+                  <span class="icon"><i class="fas fa-thumbs-up"></i></span>
+                  <span>{{track.like_set.count}}</span>
+                </button>
+              </form>
+            </p>
+          {% endif %}
         {% endif %}
       </div>
     </div>
