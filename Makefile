@@ -18,7 +18,7 @@ lint:
 	$(ENV)/bin/black django_bike apps
 
 test:
-	SERVER_TYPE=test $(ENV)/bin/pytest apps
+	$(ENV)/bin/pytest apps
 
 docker-stop:
 	docker ps -q | xargs docker kill

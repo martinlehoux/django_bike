@@ -37,5 +37,5 @@ jobs:
     - name: Run Tests
       run: python -m pytest
       env:
-        SERVER_TYPE: test
         SECRET_KEY: test-secret-key
+        DJANGO_SETTINGS_MODULE: django_bike.settings.test

@@ -7,8 +7,8 @@ import dotenv
 
 
 def main():
-    dotenv.read_dotenv(Path(os.path.dirname(__file__)) / "django_bike" / ".env")
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings")
+    dotenv.read_dotenv(Path(__file__).parent / "django_bike" / ".env")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings.dev")
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
