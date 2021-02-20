@@ -6,13 +6,21 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('track', '0011_track_state'),
+        ("track", "0011_track_state"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='track',
-            name='state',
-            field=models.CharField(choices=[('processing', 'Processing'), ('ready', 'Ready'), ('error', 'Error')], default='ready', max_length=32),
+            model_name="track",
+            name="state",
+            field=models.CharField(
+                choices=[
+                    ("processing", "Processing"),
+                    ("ready", "Ready"),
+                    ("error", "Error"),
+                ],
+                default="ready",
+                max_length=32,
+            ),
         ),
     ]

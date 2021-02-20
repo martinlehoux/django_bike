@@ -6,16 +6,10 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('track', '0005_auto_20200610_2246'),
+        ("track", "0005_auto_20200610_2246"),
     ]
 
     operations = [
-        migrations.RenameModel(
-            old_name='TrackPoint',
-            new_name='Point',
-        ),
-        migrations.AlterModelOptions(
-            name='point',
-            options={'ordering': ['time']},
-        ),
+        migrations.RenameModel(old_name="TrackPoint", new_name="Point",),
+        migrations.AlterModelOptions(name="point", options={"ordering": ["time"]},),
     ]

@@ -7,13 +7,11 @@ import uuid
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('track', '0002_auto_20200610_2230'),
+        ("track", "0002_auto_20200610_2230"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='track',
-            name='uuid',
-            field=models.UUIDField(default=uuid.uuid4),
+            model_name="track", name="uuid", field=models.UUIDField(default=uuid.uuid4),
         ),
     ]

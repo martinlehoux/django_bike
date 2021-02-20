@@ -9,18 +9,20 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('track', '0001_initial'),
+        ("track", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='track',
-            name='public',
-            field=models.BooleanField(default=False),
+            model_name="track", name="public", field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='track',
-            name='user',
-            field=models.ForeignKey(blank=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="track",
+            name="user",
+            field=models.ForeignKey(
+                blank=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

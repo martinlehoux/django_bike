@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('track', '0007_auto_20200611_0226'),
+        ("track", "0007_auto_20200611_0226"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='track',
-            name='gpx_file',
-            field=models.FileField(blank=True, null=True, upload_to=apps.track.models.gpx_file_path),
+            model_name="track",
+            name="gpx_file",
+            field=models.FileField(
+                blank=True, null=True, upload_to=apps.track.models.gpx_file_path
+            ),
         ),
     ]

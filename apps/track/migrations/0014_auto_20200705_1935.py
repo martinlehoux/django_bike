@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('track', '0013_auto_20200705_1931'),
+        ("track", "0013_auto_20200705_1931"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='trackstat',
-            name='duration',
+            model_name="trackstat",
+            name="duration",
             field=models.DurationField(blank=True, default=datetime.timedelta(0)),
         ),
     ]
