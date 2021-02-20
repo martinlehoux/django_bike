@@ -1,5 +1,3 @@
-ENV = /Users/mlehoux/.virtualenv/django-bike-gzBAQnCM-py3.8
-
 # Containers
 redis:
 	docker run -p 6379:6379 redis
@@ -20,7 +18,7 @@ lint:
 	poetry run flake8
 
 test:
-	$(ENV)/bin/pytest apps
+	poetry run pytest apps
 
 docker-stop:
 	docker ps -q | xargs docker kill
