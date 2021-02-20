@@ -1,19 +1,19 @@
-from pathlib import Path
 import csv
 from datetime import timedelta
+from pathlib import Path
 
-from django.utils import timezone
-from django.test import TestCase, override_settings
-from django.core.files import File
 from django.contrib.auth import get_user_model
-from django.utils.dateparse import parse_duration
-from django.urls import reverse
+from django.core.files import File
 from django.http import HttpResponse
+from django.test import TestCase, override_settings
+from django.urls import reverse
+from django.utils import timezone
+from django.utils.dateparse import parse_duration
 
 from apps.main.utils import FileSystemTestCase, TestMixin
-from .models import Track, Point, TrackData, TrackStat
-from .tasks import track_parse_source
 
+from .models import Point, Track, TrackData, TrackStat
+from .tasks import track_parse_source
 
 User = get_user_model()
 
