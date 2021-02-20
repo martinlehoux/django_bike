@@ -32,6 +32,8 @@ jobs:
     - name: Install Dependencies
       # if: steps.cache-pip.outputs.cache-hit != 'true'
       run: pip install -r requirements.txt
+    - name: Install Lint dependencies
+      run: pip install isort black flake8
     - name: Isort
       run: python -m isort --check-only .
     - name: Black
