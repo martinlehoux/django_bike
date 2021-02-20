@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 import dotenv
-
 from celery import Celery
 
 dotenv.read_dotenv(Path(__file__).parent / ".env")

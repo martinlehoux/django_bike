@@ -1,21 +1,20 @@
+from django.contrib import messages
+from django.contrib.auth import get_user, get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import (
+    PasswordChangeDoneView,
+    PasswordResetCompleteView,
+    PasswordResetDoneView,
+    PasswordResetView,
+)
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, UpdateView
-from django.contrib.auth import get_user, get_user_model
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib import messages
-
-from django.contrib.auth.views import (
-    PasswordChangeDoneView,
-    PasswordResetDoneView,
-    PasswordResetCompleteView,
-    PasswordResetView,
-)
 
 from apps.notification import notify
 
-from .forms import AvatarForm, ExerciseHistoryForm
 from .charts.exercise_history import ExerciseHistoryChart
+from .forms import AvatarForm, ExerciseHistoryForm
 
 User = get_user_model()
 

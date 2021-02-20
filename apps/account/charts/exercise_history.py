@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from django.utils import timezone
 from django.db.models import Sum
+from django.utils import timezone
 from plotly import graph_objs as go
 
 from apps.track.models import Track
-from .base import BaseChart
+
 from . import time_range_query
+from .base import BaseChart
 
 
 class ExerciseHistoryChart(BaseChart):

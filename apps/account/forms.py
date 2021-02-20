@@ -5,8 +5,8 @@ from django.conf import settings
 from django.http import QueryDict
 from PIL import Image
 
+from .charts.time_range_query import MonthTimeRange, TimeRangeQuery, WeekTimeRange
 from .models import Profile
-from .charts.time_range_query import WeekTimeRange, MonthTimeRange, TimeRangeQuery
 
 
 class AvatarForm(forms.ModelForm):

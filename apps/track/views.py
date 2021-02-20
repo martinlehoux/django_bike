@@ -1,22 +1,22 @@
-from django.http.response import HttpResponseRedirect
-from django.urls import reverse_lazy, reverse
-from django.shortcuts import get_object_or_404
-from django.views import generic
-from django.views.generic import edit
-from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
+from django.db.models import Q
+from django.http.response import HttpResponseRedirect
+from django.shortcuts import get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
-from .models import Track, TrackData, Like
-from .forms import TrackCreateForm, TrackEditForm, CommentCreateForm
+
 from . import charts
+from .forms import CommentCreateForm, TrackCreateForm, TrackEditForm
+from .models import Like, Track, TrackData
 
 
-class TrackListView(generic.ListView):
+class TrackListView(ListView):
     model = Track
     paginate_by = 10
 
@@ -32,7 +32,7 @@ class TrackListView(generic.ListView):
         )
 
 
-class TrackCreateView(LoginRequiredMixin, generic.CreateView):
+class TrackCreateView(LoginRequiredMixin, CreateView):
     model = Track
     template_name_suffix = "_create_form"
     form_class = TrackCreateForm
@@ -50,13 +50,15 @@ class TrackCreateView(LoginRequiredMixin, generic.CreateView):
     def form_valid(self, form):
         notify.info(
             self.request.user,
-            f"{form.instance.name} track was created and will be parsed in a few seconds",
+            "{} track was created and will be parsed in a few seconds".format(
+                form.instance.name
+            ),
         )
         form.instance.user = self.request.user
         return super().form_valid(form)
 
 
-class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
+class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
     model = Track
     template_name_suffix = "_detail"
     form_class = TrackEditForm
@@ -108,13 +110,13 @@ class TrackDetailView(PermissionRequiredMethodMixin, generic.UpdateView):
         return context
 
 
-class TrackDeleteView(PermissionRequiredMethodMixin, generic.DeleteView):
+class TrackDeleteView(PermissionRequiredMethodMixin, DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
     permission_required = "track.delete_track"
 
 
-class TrackCommentView(PermissionRequiredMethodMixin, generic.CreateView):
+class TrackCommentView(PermissionRequiredMethodMixin, CreateView):
     form_class = CommentCreateForm
     permission_required = "track.comment_track"
 
@@ -137,7 +139,7 @@ class TrackCommentView(PermissionRequiredMethodMixin, generic.CreateView):
         return HttpResponseRedirect(self.get_success_url(track))
 
 
-class TrackLikeView(PermissionRequiredMethodMixin, generic.CreateView):
+class TrackLikeView(PermissionRequiredMethodMixin, CreateView):
     model = Like
     fields = []
     permission_required = "track.like_track"
@@ -151,7 +153,7 @@ class TrackLikeView(PermissionRequiredMethodMixin, generic.CreateView):
         return super().form_valid(form)
 
 
-class TrackUnlikeView(PermissionRequiredMethodMixin, generic.DeleteView):
+class TrackUnlikeView(PermissionRequiredMethodMixin, DeleteView):
     model = Like
     permission_required = "track.like_track"
 

@@ -1,4 +1,4 @@
-from .base import BaseChart, smoother, go
+from .base import BaseChart, go, smoother
 
 
 class AltVSDistChart(BaseChart):

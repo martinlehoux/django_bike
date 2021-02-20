@@ -1,5 +1,5 @@
-from xml.etree import ElementTree
 from typing import List
+from xml.etree import ElementTree
 
 from django.utils.dateparse import parse_datetime
 

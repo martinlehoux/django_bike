@@ -3,7 +3,6 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 
 import apps.notification.routing
 
-
 application = ProtocolTypeRouter(
     {
         "websocket": AuthMiddlewareStack(

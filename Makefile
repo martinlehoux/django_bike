@@ -15,7 +15,9 @@ maildev:
 
 # Utils
 lint:
-	$(ENV)/bin/black django_bike apps
+	poetry run isort .
+	poetry run black .
+	poetry run flake8
 
 test:
 	$(ENV)/bin/pytest apps
