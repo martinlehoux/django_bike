@@ -53,7 +53,7 @@ class TrackAdmin(admin.ModelAdmin):
         self.message_user(
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
         )
-            ).delay()
+
         self.message_user(
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
         )
