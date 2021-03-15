@@ -3,7 +3,7 @@ WORKDIR /webapp/
 
 COPY webapp/package.json .
 COPY webapp/package-lock.json .
-RUN npm install
+RUN npm ci
 
 COPY webapp/rollup.config.js .
 COPY webapp/tsconfig.json .
@@ -17,7 +17,7 @@ WORKDIR /email_builder/
 
 COPY email_builder/package.json .
 COPY email_builder/package-lock.json .
-RUN npm install
+RUN npm ci
 
 COPY email_builder/src ./src
 COPY email_builder/index.js .

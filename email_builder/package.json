@@ -1,7 +1,11 @@
 {
   "name": "email_builder",
+  "description": "Inline CSS for Django email templates",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/martinlehoux/django_bike"
+  },
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
