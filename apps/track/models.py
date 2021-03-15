@@ -255,7 +255,7 @@ class TrackData:
 
 
 class TrackStat(models.Model):
-    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)  # type: ignore
+    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)
     pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)
     duration = models.DurationField(default=timedelta(), blank=True)
     distance = models.FloatField(default=0.0, blank=True)

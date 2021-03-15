@@ -15,7 +15,7 @@ class PermissionRequiredMethodMixin(PermissionRequiredMixin):
                     f"{name} has a wrong permission_required_map attribute. "
                     "It should be a mapping from http method to permission."
                 )
-            perms = self.permission_required_map.get(self.request.method)  # type: ignore
+            perms = self.permission_required_map.get(self.request.method)
             if perms is not None:
                 return (perms,) if isinstance(perms, str) else perms
         return super().get_permission_required()
