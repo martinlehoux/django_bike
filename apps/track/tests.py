@@ -48,7 +48,11 @@ class TrackStatRealTest(TestMixin, TestCase):
     def setUpTestData(cls):
         now = timezone.now()
         cls.user = User.objects.create_user("Kagamino")
-        cls.track = Track.objects.create(name="Track 1", datetime=now, user=cls.user,)
+        cls.track = Track.objects.create(
+            name="Track 1",
+            datetime=now,
+            user=cls.user,
+        )
         with open(
             Path(__file__).parent
             / "tests"

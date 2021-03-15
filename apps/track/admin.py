@@ -47,7 +47,12 @@ class TrackAdmin(admin.ModelAdmin):
     def compute_stats(self, request, queryset):
         for track in queryset:
             chain(
-                tasks.track_compute_stat.s(track.pk), tasks.track_state_ready.s(),
+                tasks.track_compute_stat.s(track.pk),
+                tasks.track_state_ready.s(),
+            ).delay()
+        self.message_user(
+            request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
+        )
             ).delay()
         self.message_user(
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS

@@ -50,7 +50,8 @@ class AvatarUploadView(LoginRequiredMixin, UpdateView):
 class PasswordChangeDoneView(PasswordChangeDoneView):
     def dispatch(self, request, *args, **kwargs):
         notify.success(
-            request.user, "Your password was changed successfully.",
+            request.user,
+            "Your password was changed successfully.",
         )
         return redirect("profile")
 

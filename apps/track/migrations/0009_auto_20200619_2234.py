@@ -11,7 +11,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameField(
-            model_name="track", old_name="gpx_file", new_name="source_file",
+            model_name="track",
+            old_name="gpx_file",
+            new_name="source_file",
         ),
         migrations.AddField(
             model_name="track",

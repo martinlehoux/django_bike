@@ -14,7 +14,9 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AddField(
-            model_name="track", name="public", field=models.BooleanField(default=False),
+            model_name="track",
+            name="public",
+            field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
             model_name="track",

@@ -11,6 +11,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name="track", name="datetime", field=models.DateTimeField(blank=True),
+            model_name="track",
+            name="datetime",
+            field=models.DateTimeField(blank=True),
         ),
     ]

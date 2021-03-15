@@ -41,7 +41,8 @@ def track_error(track: Track, message: str, err: Exception):
     track.state = Track.StateChoices.ERROR
     track.save()
     notify.error(
-        track.user, f"An error has occured while processing {track} track: {err}",
+        track.user,
+        f"An error has occured while processing {track} track: {err}",
     )
     raise err
 

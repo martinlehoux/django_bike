@@ -16,7 +16,8 @@ def forward(apps, schema_editor):
             parts[1] = "source"
             new_name = "/".join(parts)
             os.rename(
-                Path(settings.MEDIA_ROOT) / name, Path(settings.MEDIA_ROOT) / new_name,
+                Path(settings.MEDIA_ROOT) / name,
+                Path(settings.MEDIA_ROOT) / new_name,
             )
             track.source_file.name = new_name
             track.save()

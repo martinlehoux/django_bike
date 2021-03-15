@@ -12,5 +12,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameModel(old_name="TrackComment", new_name="Comment",),
+        migrations.RenameModel(
+            old_name="TrackComment",
+            new_name="Comment",
+        ),
     ]

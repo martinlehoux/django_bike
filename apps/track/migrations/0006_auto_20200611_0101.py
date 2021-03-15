@@ -10,6 +10,12 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameModel(old_name="TrackPoint", new_name="Point",),
-        migrations.AlterModelOptions(name="point", options={"ordering": ["time"]},),
+        migrations.RenameModel(
+            old_name="TrackPoint",
+            new_name="Point",
+        ),
+        migrations.AlterModelOptions(
+            name="point",
+            options={"ordering": ["time"]},
+        ),
     ]
