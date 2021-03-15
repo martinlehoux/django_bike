@@ -5,6 +5,9 @@ from xml.etree.ElementTree import ParseError
 
 import celery
 import requests
+from celery import (
+    chain,  # https://docs.celeryproject.org/en/stable/userguide/canvas.html
+)
 from celery.utils.log import get_task_logger
 from django.conf import settings
 
@@ -48,9 +51,16 @@ def track_error(track: Track, message: str, err: Exception):
 
 
 @celery.shared_task
-def track_parse_source(track_pk: int, parser: str) -> int:
-    parser = PARSERS[parser]()
+def track_clear_points(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
+    track.point_set.delete()
+    return track_pk
+
+
+@celery.shared_task
+def track_parse_source(track_pk: int) -> int:
+    track = Track.objects.get(pk=track_pk)
+    parser = PARSERS[track.parser]()
     track.state = Track.StateChoices.PROCESSING
     track.save()
     try:
@@ -152,3 +162,12 @@ def track_state_ready(track_pk: int) -> int:
     track.save()
     notify.success(track.user, f"{track.name} track is ready")
     return track_pk
+
+
+def track_compute_trace(track_pk: int):
+    return chain(
+        track_parse_source.s(track_pk),
+        track_compute_coordinates.s(),
+        track_retrieve_alt.s(),
+        track_compute_dist.s(),
+    )
