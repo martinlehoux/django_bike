@@ -35,7 +35,7 @@ class TrackAdmin(admin.ModelAdmin):
         "name",
         "datetime",
     ]
-    actions = ["compute_stats"]
+    actions = ["compute_trace", "compute_stats"]
 
     def save_form(self, request, form, change):
         try:
@@ -54,6 +54,14 @@ class TrackAdmin(admin.ModelAdmin):
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
         )
 
+    def compute_trace(self, request, queryset):
+        for track in queryset:
+            chain(
+                tasks.track_clear_points.s(track.pk),
+                tasks.track_compute_trace.s(),
+                tasks.track_compute_stat.s(),
+                tasks.track_state_ready.s(),
+            ).delay()
         self.message_user(
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
         )

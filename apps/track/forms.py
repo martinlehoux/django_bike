@@ -27,10 +27,7 @@ class TrackCreateForm(forms.ModelForm):
         self.instance.state = Track.StateChoices.PROCESSING
         track = super().save(commit=commit)
         chain(
-            tasks.track_parse_source.s(track.pk, self.cleaned_data["parser"]),
-            tasks.track_compute_coordinates.s(),
-            tasks.track_retrieve_alt.s(),
-            tasks.track_compute_dist.s(),
+            tasks.track_compute_trace(track.pk),
             tasks.track_compute_stat.s(),
             tasks.track_state_ready.s(),
         ).delay()

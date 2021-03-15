@@ -28,13 +28,14 @@ class TrackDataRealTest(FileSystemTestCase):
         cls.user = User.objects.create_user("Kagamino")
         cls.track1 = Track.objects.create(
             name="Track 1",
+            parser="amazfit-gpx-parser",
             datetime=now,
             user=cls.user,
             source_file=File(
                 open(Path(__file__).parent / "tests" / "track_zero_div.gpx")
             ),
         )
-        track_parse_source(cls.track1.pk, "amazfit-gpx-parser")
+        track_parse_source(cls.track1.pk)
 
     def test_slope(self):
         data = TrackData(self.track1)
