@@ -5,9 +5,8 @@
   <h1 class="title">Welcome on Django Bike</h1>
 </div>
 
-{% include "release-notes/0.8.2.html" %}
-{% include "release-notes/0.8.1.html" %}
-{% include "release-notes/0.8.html" %}
-{% include "release-notes/0.7.html" %}
+{% for release in releases %}
+  {% include "release-note.html" %}
+{% endfor %}
 
 {% endblock content %}

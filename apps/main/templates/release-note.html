@@ -1,0 +1,36 @@
+{% comment %}
+release:
+    features:
+        <title>: <description>
+    fixes:
+        <title>: <description>
+{% endcomment %}
+
+<article class="box">
+    <h2 class="title">{{ release.name }}</h2>
+    <h2 class="subtitle">{{ release.date }}</h2>
+
+    {% if release.features %}
+    <h3 class="is-size-3">Features</h3>
+    <ul>
+    {% for title, description in release.features.items %}
+        <li>
+            <strong>{{ title }}</strong>
+            {{ description }}
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if release.fixes %}
+    <h3 class="is-size-3">Fixes</h3>
+    <ul>
+    {% for title, description in release.fixes.items %}
+        <li>
+            <strong>{{ title }}</strong>
+            {{ description }}
+        </li>
+    {% endfor %}
+    </ul>
+    {% endif %}
+</article>
