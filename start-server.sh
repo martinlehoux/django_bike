@@ -4,5 +4,4 @@ do
 done
 python manage.py migrate
 python manage.py collectstatic --no-input
-python manage.py runserver 0.0.0.0:8000
-# gunicorn django_bike.wsgi:application --bind 0.0.0.0:8000
+daphne --bind 0.0.0.0 --port 8000 django_bike.wsgi:application 
