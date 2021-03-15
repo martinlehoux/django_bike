@@ -2,14 +2,16 @@ import uuid
 from datetime import timedelta
 from math import atan, cos, sin, sqrt
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
 from django.contrib.auth import get_user_model
 from django.core.validators import MaxLengthValidator
 from django.db import models
+from django.db.models.manager import Manager
+from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.shortcuts import reverse
+from django.urls import reverse
 from django.utils import timezone
 
 from apps.main.utils import smoother
@@ -65,6 +67,10 @@ class Track(models.Model):
         max_length=32, choices=StateChoices.choices, default=StateChoices.READY
     )
 
+    # Typing
+    comment_set: Manager["Comment"]
+    point_set: Manager["Point"]
+
     @property
     def points_count(self) -> int:
         return self.point_set.count()
@@ -80,7 +86,7 @@ class TrackData:
     DIST_FACTOR = 0.88
     MIN_POS_ELE = 8
     track: Track
-    _point_set: models.QuerySet
+    _point_set: QuerySet[Point]
 
     def __init__(self, track: Track):
         assert isinstance(track, Track)
@@ -130,7 +136,7 @@ class TrackData:
         return alt_cum
 
     def slope(self) -> List[float]:
-        slope = [0]
+        slope = [0.0]
         points = self._point_set
         for index, point in list(enumerate(points))[1:]:
             previous = points[index - 1]
@@ -146,12 +152,12 @@ class TrackData:
 
     def slope_v2(self) -> List[float]:
         points = self._point_set
-        slope = [None for i in range(len(points))]
-        slope[0] = 0
+        slope: List[Optional[float]] = [None for _ in range(len(points))]
+        slope[0] = 0.0
         # Every 30 points
         i = 30  #  TODO May be false
         for i in range(30, len(points), 30):
-            point: Point = points[i]
+            point = points[i]
             previous: Point = points[i - 30]
             try:
                 slope[i] = (
@@ -163,16 +169,21 @@ class TrackData:
                 slope[i] = slope[i - 30]
         # Fill last point
         if i < len(points) - 1:
-            point: Point = points.last()
-            previous: Point = points[i]
-            try:
-                slope[-1] = (
-                    (point.alt - previous.alt)
-                    / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
-                    * 100
-                )
-            except ZeroDivisionError:
-                slope[-1] = slope[i]
+            point = points.last()
+            if point is None:
+                slope[-1] = 0.0
+            else:
+                previous: Point = points[i]
+                try:
+                    slope[-1] = (
+                        (point.alt - previous.alt)
+                        / sqrt(
+                            (point.x - previous.x) ** 2 + (point.y - previous.y) ** 2
+                        )
+                        * 100
+                    )
+                except ZeroDivisionError:
+                    slope[-1] = slope[i]
         # Complete
         for i in range(len(slope)):
             if slope[i] is None:
@@ -184,7 +195,7 @@ class TrackData:
         return slope
 
     def speed(self) -> List[float]:
-        speed = [0]
+        speed = [0.0]
         points = self._point_set
         for index, point in list(enumerate(points))[1:]:
             previous = points[index - 1]
@@ -199,7 +210,7 @@ class TrackData:
         return speed
 
     def acceleration(self) -> List[float]:
-        acceleration = [0]
+        acceleration = [0.0]
         speed = [s / 3.6 for s in self.speed()]
         points = self._point_set
         for index, point in list(enumerate(points))[1:]:
@@ -215,13 +226,13 @@ class TrackData:
 
     def power(self) -> List[float]:
         ROLLING_RESISTANCE = 0.005  # TODO
-        MASS = 80  # kg # TODO
+        MASS = 80.0  # kg # TODO
         GRAVITY = 9.87  # m/s2
         AIR_DENSITY = 1.225  # kg/m3
         DRAG_COEF = 0.9  # TODO
         WIND_SURFACE = 0.44704  # m2 # TODO
         # W = kg.m2/s3
-        power = [0]
+        power = [0.0]
         slope = self.slope()
         speed = [s / 3.6 for s in self.speed()]
         acceleration = self.acceleration()
@@ -244,7 +255,7 @@ class TrackData:
 
 
 class TrackStat(models.Model):
-    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)
+    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)  # type: ignore
     pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)
     duration = models.DurationField(default=timedelta(), blank=True)
     distance = models.FloatField(default=0.0, blank=True)

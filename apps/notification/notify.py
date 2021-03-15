@@ -1,29 +1,32 @@
-from django.contrib.auth import get_user_model
+from typing import Union
+
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.contrib.auth.models import AnonymousUser
 
 from .models import Notification
 
-User = get_user_model()
+RequestUser = Union[AbstractBaseUser, AnonymousUser]
 
 
-def info(user: User, content: str):
+def info(user: RequestUser, content: str):
     Notification.objects.create(
         user=user, content=content, level=Notification.Level.INFO
     )
 
 
-def success(user: User, content: str):
+def success(user: RequestUser, content: str):
     Notification.objects.create(
         user=user, content=content, level=Notification.Level.SUCCESS
     )
 
 
-def warning(user: User, content: str):
+def warning(user: RequestUser, content: str):
     Notification.objects.create(
         user=user, content=content, level=Notification.Level.WARNING
     )
 
 
-def error(user: User, content: str):
+def error(user: RequestUser, content: str):
     Notification.objects.create(
         user=user, content=content, level=Notification.Level.ERROR
     )
