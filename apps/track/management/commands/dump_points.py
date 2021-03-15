@@ -1,10 +1,10 @@
-from pathlib import Path
 import csv
 import uuid
+from pathlib import Path
 
-from django.core.management.base import CommandParser, BaseCommand
+from django.core.management.base import BaseCommand, CommandParser
 
-from apps.track.models import Track, Point
+from apps.track.models import Point, Track
 
 
 class Command(BaseCommand):

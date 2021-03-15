@@ -1,5 +1,5 @@
-from plotly.offline import plot
 from plotly import graph_objs as go
+from plotly.offline import plot
 
 from ..models import Track, TrackData, smoother
 

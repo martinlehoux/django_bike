@@ -1,15 +1,16 @@
-from math import radians, cos, sin, asin, sqrt
+import time
+from math import asin, cos, radians, sin, sqrt
 from typing import List
 from xml.etree.ElementTree import ParseError
-import time
 
 import celery
+import requests
 from celery.utils.log import get_task_logger
 from django.conf import settings
-import requests
 
 from apps.notification import notify
-from .models import Track, Point, TrackStat
+
+from .models import Point, Track, TrackStat
 from .parsers import PARSERS
 
 logger = get_task_logger(__name__)
@@ -40,7 +41,8 @@ def track_error(track: Track, message: str, err: Exception):
     track.state = Track.StateChoices.ERROR
     track.save()
     notify.error(
-        track.user, f"An error has occured while processing {track} track: {err}",
+        track.user,
+        f"An error has occured while processing {track} track: {err}",
     )
     raise err
 
@@ -89,8 +91,9 @@ def track_retrieve_alt(track_pk: int) -> int:
         for i in range(len(points) // 500 + 1):
             time.sleep(1)  # API rate limit
             logger.info("Get altitudes for points %d to %d", i * 500, i * 500 + 499)
+            token = settings.JAWG_TOKEN
             response = requests.post(
-                f"https://api.jawg.io/elevations/locations?access-token={settings.JAWG_TOKEN}",
+                f"https://api.jawg.io/elevations/locations?access-token={token}",
                 json={
                     "locations": "|".join(
                         f"{point.lat},{point.lon}"

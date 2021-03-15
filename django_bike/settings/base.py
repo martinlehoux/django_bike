@@ -1,23 +1,20 @@
 import os
+from pathlib import Path
 
-from django.urls import reverse_lazy
 from django.contrib.messages import constants as messages
+from django.urls import reverse_lazy
 
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
-SERVER_TYPE = os.environ.get("SERVER_TYPE", "dev")
 JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
 TRACK_CHARTS_DISPLAY = bool(os.environ.get("TRACK_CHARTS_DISPLAY", True))
 
-assert SERVER_TYPE in ["dev", "test", "stage", "prod"]
+BASE_DIR = Path(__file__).parent.parent.parent
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-DEBUG = SERVER_TYPE in ["dev"]
-DOCKER = SERVER_TYPE in ["prod", "stage"]
+DEBUG = False
 INTERNAL_IPS = ["127.0.0.1"]
-REDIS_HOSTNAME = "redis" if DOCKER else "localhost"
+REDIS_HOSTNAME = "localhost"
 
 INSTALLED_APPS = [
     "apps.main.apps.MainConfig",
@@ -75,28 +72,21 @@ CHANNEL_LAYERS = {
     },
 }
 
-if SERVER_TYPE in ["dev", "test"]:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
-        }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "django_bike",
+        "USER": "django_bike",
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
+        "HOST": "db",
+        "PORT": "5432",
     }
-else:
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": "django_bike",
-            "USER": "django_bike",
-            "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
-            "HOST": "db",
-            "PORT": "5432",
-        }
-    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"  # noqa: E501
     },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
@@ -126,20 +116,8 @@ MESSAGE_TAGS = {
     messages.ERROR: "danger",
 }
 
-if DEBUG:
-    INSTALLED_APPS.append("debug_toolbar")
-    MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
-
 SERVER_EMAIL = "martin@lehoux.net"
 
-if DEBUG:
-    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-    EMAIL_HOST = "localhost"
-    EMAIL_PORT = 25
-
-if DOCKER:
-    EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
-    SENDGRID_API_KEY = os.environ.get("SENDGRID_KEY")
 
 ADMINS = [("Martin Lehoux", "martin@lehoux.net")]
 
@@ -201,16 +179,13 @@ AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 
-if SERVER_TYPE == "test":
-    CACHES = {"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
-else:
-    CACHES = {
-        "default": {
-            "BACKEND": "django_redis.cache.RedisCache",
-            "LOCATION": f"redis://{REDIS_HOSTNAME}:6379/1",
-            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-            "KEY_PREFIX": "django_bike.cache",
-        }
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": f"redis://{REDIS_HOSTNAME}:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+        "KEY_PREFIX": "django_bike.cache",
     }
+}
 
 AVATAR_SIZE = (128, 128)

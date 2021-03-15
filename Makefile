@@ -1,5 +1,3 @@
-ENV = /Users/mlehoux/.virtualenv/django-bike-gzBAQnCM-py3.8
-
 # Containers
 redis:
 	docker run -p 6379:6379 redis
@@ -15,10 +13,12 @@ maildev:
 
 # Utils
 lint:
-	$(ENV)/bin/black django_bike apps
+	poetry run isort .
+	poetry run black .
+	poetry run flake8
 
 test:
-	SERVER_TYPE=test $(ENV)/bin/pytest apps
+	poetry run pytest apps
 
 docker-stop:
 	docker ps -q | xargs docker kill

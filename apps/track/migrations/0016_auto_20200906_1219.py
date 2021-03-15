@@ -8,12 +8,12 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('track', '0015_trackcomment'),
+        ("track", "0015_trackcomment"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='TrackComment',
-            new_name='Comment',
+            old_name="TrackComment",
+            new_name="Comment",
         ),
     ]

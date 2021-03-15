@@ -3,11 +3,11 @@ from __future__ import absolute_import, unicode_literals
 import os
 from pathlib import Path
 
-from celery import Celery
 import dotenv
+from celery import Celery
 
-dotenv.read_dotenv(Path(os.path.dirname(__file__)) / ".env")
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings")
+dotenv.read_dotenv(Path(__file__).parent / ".env")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "django_bike.settings.dev")
 
 app = Celery("django_bike")
 

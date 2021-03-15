@@ -1,11 +1,12 @@
-from typing import Any, List, Dict
+from typing import Any, Dict, List
 
-from django import forms
 from celery import chain
+from django import forms
 
 from apps.main.widgets import TextListInput
-from .models import Track, Comment
+
 from . import tasks
+from .models import Comment, Track
 
 
 class TrackCreateForm(forms.ModelForm):

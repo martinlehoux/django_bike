@@ -26,7 +26,6 @@ RUN npm run build
 
 FROM python:3.8
 WORKDIR /django_bike/
-ENV SERVER_TYPE stage
 
 COPY requirements.txt /django_bike/
 RUN pip install -r requirements.txt

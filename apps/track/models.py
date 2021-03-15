@@ -1,20 +1,20 @@
-from pathlib import Path
 import uuid
-from typing import List
-from math import sqrt, cos, sin, atan
 from datetime import timedelta
+from math import atan, cos, sin, sqrt
+from pathlib import Path
+from typing import List
 
-from django.dispatch import receiver
+from django.contrib.auth import get_user_model
+from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.shortcuts import reverse
-from django.contrib.auth import get_user_model
 from django.utils import timezone
-from django.core.validators import MaxLengthValidator
 
 from apps.main.utils import smoother
-from .parsers import PARSERS
 
+from .parsers import PARSERS
 
 User = get_user_model()
 

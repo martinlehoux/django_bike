@@ -1,8 +1,8 @@
-from django.db import models
-from django.contrib.auth import get_user_model
-from django.dispatch import receiver
-from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.contrib.auth import get_user_model
+from django.db import models
+from django.dispatch import receiver
 
 User = get_user_model()
 
