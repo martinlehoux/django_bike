@@ -1,0 +1,8 @@
+date: 2020-11-03
+features:
+  Server compression: Files are now served using Gzip compression. Your favourite website should load even faster than before!
+  Licensing: This website is now developped under the MIT license.
+fixes:
+  Email templates: Compiled email templates used to be unsuccessfully copied to correct location. This used to cause errors while sending emails to users.
+  Alternate text for images: This should improve accessibility for all users.
+  Upgrade dependencies: "The following dependencies were upgraded for security reasons: node-fetch@2.6.1, cryptography@3.2.1"

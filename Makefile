@@ -32,3 +32,11 @@ docker-webapp:
 
 export:
 	poetry export -f requirements.txt -o requirements.txt --without-hashes
+
+# Production
+update:
+	git pull
+	docker-compose up -d --no-deps --build db flower redis web worker
+
+logs:
+	docker-compose logs -f --tail=10

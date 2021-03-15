@@ -1,0 +1,7 @@
+date: 2021-03-15
+features:
+  Email templates: Modular and improved emails.
+  Release notes: Automatically load release notes into the index page.
+fixes:
+  NPM ci: Improved package installation performances.
+  Typing: Improved typing for code quality.
