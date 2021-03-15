@@ -1,0 +1,18 @@
+date: 2020-09-16
+features:
+  Comments and Likes: >
+    You can now like other people's tracks (if they are set to public), and comment them along your own tracks.
+    Enjoy sharing your performances with the community!
+  Track state: Cooler way to display a track state in the track list.
+  Track admin search: Tracks, Comments and Likes are searchable in the admin pages.
+  Forms: Display an unified inline form anywhere, and TextArea is available to use in code.
+  README: Improved installation instructions.
+  Browsing: "Django Bike is available in HTTPS with HTTP/2, with this new domain name : bike.lehoux.net."
+fixes:
+  Invalid headers: Headers from the wrong origin are now denied to access Django.
+  Email templates build: The email Javascript app used to fail the build stage.
+  Columns size: Columns were not using the whole page width.
+  Track admin user ownership: Saving a track would change the owner to the current admin user. It now does so only if there is no owner.
+  Delete track button: It would show to anybody, now only for the owner (this was only a display issue).
+  Weekly and Monthly charts: There was an error in the form to choose the time period, so none would show.
+  Delete notifications: The delete button click wouldn't work.

@@ -1,0 +1,5 @@
+date: 2021-03-15
+features:
+  Admin compute trace action: This new action makes it possible to recompute trace, to use up-to-date algorithm.
+fixes:
+  Redis connection: Correct Redis hostname on production.

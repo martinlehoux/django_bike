@@ -1,0 +1,4 @@
+date: 2021-03-15
+fixes:
+  Codebase infrastructure & quality: The settings are now split, depending on the instance type. Linting is updated to last standards.
+  Upgrade dependencies: "The following dependencies were upgraded for security reasons: cryptography@3.4.6"
