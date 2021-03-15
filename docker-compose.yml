@@ -26,6 +26,7 @@ services:
     volumes:
       - ./django_bike:/django_bike/django_bike
       - ./apps:/django_bike/apps
+      - ./extensions:/django_bike/extensions
       - ./media:/django_bike/media
     depends_on:
       - redis
