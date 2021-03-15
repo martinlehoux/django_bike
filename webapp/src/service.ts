@@ -27,7 +27,8 @@ export class WebSocketService {
   public socket: WebSocket
 
   constructor() {
-    this.socket = new WebSocket(`ws://${location.host}/ws/notification/`);
+    const wsProto = window.location.protocol === "https" ? "wss" : "ws";
+    this.socket = new WebSocket(`${wsProto}://${location.host}/ws/notification/`);
   }
 
   deleteNotif(pk: number) {
