@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from apps.main.views import PermissionRequiredMethodMixin
 from apps.notification import notify
+from extensions.views import PermissionRequiredMethodMixin
 
 from . import charts
 from .forms import CommentCreateForm, TrackCreateForm, TrackEditForm

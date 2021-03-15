@@ -33,6 +33,7 @@ RUN pip install -r requirements.txt
 COPY django_bike/.env /django_bike/.env
 COPY manage.py /django_bike/
 COPY apps /django_bike/apps
+COPY extensions /django/extensions
 COPY --from=0 /webapp/public/build /django_bike/webapp/public/build
 COPY --from=1 /email_builder/build /django_bike/apps/main/templates/email
 COPY start-server.sh /django_bike/
