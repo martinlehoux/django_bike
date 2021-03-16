@@ -60,6 +60,7 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
 
 class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
     model = Track
+    object: Track
     template_name_suffix = "_detail"
     form_class = TrackEditForm
     permission_denied_message = (
@@ -90,7 +91,7 @@ class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        track: Track = self.object
+        track = self.object
         key = make_template_fragment_key("track_charts", [track.pk])
         if cache.get(key) is None:
             data = TrackData(track)
