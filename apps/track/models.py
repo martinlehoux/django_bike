@@ -4,6 +4,7 @@ from math import atan, cos, sin, sqrt
 from pathlib import Path
 from typing import List, Optional
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import MaxLengthValidator
 from django.db import models
@@ -133,7 +134,12 @@ class TrackData:
                     last_low_alt = min(point.alt, last_low_alt)
         return alt_cum
 
+    # SLOPE
     def slope(self) -> List[float]:
+        method = settings.METHODS_VERSION.get("slope")
+        return getattr(self, method)()
+
+    def slope_v1(self) -> List[float]:
         slope = [0.0]
         points = self._point_set
         for index, point in list(enumerate(points))[1:]:
