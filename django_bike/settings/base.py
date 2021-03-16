@@ -170,7 +170,10 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
-        "apps": {"level": "INFO", "handlers": ["console"]},
+        "apps": {
+            "level": "INFO",
+            "handlers": ["console"],
+        },
     },
 }
 
