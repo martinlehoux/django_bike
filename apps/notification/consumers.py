@@ -3,6 +3,7 @@ from typing import List
 
 from channels.db import database_sync_to_async
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
+from django.contrib.auth.models import User
 
 from .models import Notification
 
@@ -10,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 
 class NotificationConsumer(AsyncJsonWebsocketConsumer):
+    user: User
+
     async def connect(self):
         self.user = self.scope["user"]
         await self.channel_layer.group_add(self.user.username, self.channel_name)
