@@ -13,7 +13,7 @@ from django.utils.dateparse import parse_duration
 from apps.main.utils import FileSystemTestCase, TestMixin
 
 from .models import Point, Track, TrackData, TrackStat
-from .tasks import track_parse_source
+from .tasks import haversine, track_parse_source
 
 
 class TrackDataRealTest(FileSystemTestCase):
@@ -188,3 +188,12 @@ class TrackPermissionsTestCase(TestCase):
         self.assertNotContains(res, track1.name)
         self.assertContains(res, track2_private.name)
         self.assertContains(res, track2_public.name)
+
+
+class TrackComputeTestCase(TestCase):
+    def test_haversine(self):
+        """Test the correct distance between Paris and New York"""
+        dist = haversine(2.2770205, 48.8589507, -74.1197637, 40.6976637) / 1000
+        ref_dist = 5834.0
+        # A 10km diff is 0.17% error
+        self.assertAlmostEqual(dist, ref_dist, delta=10.0)
