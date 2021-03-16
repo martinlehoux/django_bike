@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 import pytz
 from django.conf import settings
-from django.contrib.auth import get_user_model, models
+from django.contrib.auth.models import User
 from django.test import TestCase
 from PIL import Image
 
@@ -10,9 +10,6 @@ from apps.track.models import Track
 
 from .charts.exercise_history import ExerciseHistoryChart
 from .forms import AvatarForm, MonthTimeRange, WeekTimeRange
-
-User = get_user_model()
-models.User
 
 
 class ProfileTestCase(TestCase):

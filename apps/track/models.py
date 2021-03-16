@@ -4,7 +4,7 @@ from math import atan, cos, sin, sqrt
 from pathlib import Path
 from typing import List, Optional
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.db.models.manager import Manager
@@ -17,8 +17,6 @@ from django.utils import timezone
 from apps.main.utils import smoother
 
 from .parsers import PARSERS
-
-User = get_user_model()
 
 
 class Point(models.Model):

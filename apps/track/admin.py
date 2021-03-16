@@ -1,11 +1,9 @@
 from celery import chain
 from django.contrib import admin, messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 from . import tasks
 from .models import Comment, Like, Track, TrackStat
-
-User = get_user_model()
 
 
 class TrackStatInline(admin.StackedInline):

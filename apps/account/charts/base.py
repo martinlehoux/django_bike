@@ -1,12 +1,10 @@
 from datetime import datetime
 from typing import List
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.utils import timezone
 from plotly import graph_objs as go
 from plotly.offline import plot
-
-User = get_user_model()
 
 
 class BaseChart:

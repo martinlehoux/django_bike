@@ -1,6 +1,7 @@
 from django.contrib import messages
-from django.contrib.auth import get_user, get_user_model
+from django.contrib.auth import get_user
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.contrib.auth.views import (
     PasswordChangeDoneView,
     PasswordResetCompleteView,
@@ -15,8 +16,6 @@ from apps.notification import notify
 
 from .charts.exercise_history import ExerciseHistoryChart
 from .forms import AvatarForm, ExerciseHistoryForm
-
-User = get_user_model()
 
 
 class ProfileView(LoginRequiredMixin, DetailView):

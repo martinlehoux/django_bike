@@ -1,9 +1,7 @@
 import rules
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 
 from .models import Track
-
-User = get_user_model()
 
 
 @rules.predicate

@@ -2,7 +2,7 @@ import csv
 from datetime import timedelta
 from pathlib import Path
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.core.files import File
 from django.http import HttpResponse
 from django.test import TestCase, override_settings
@@ -14,8 +14,6 @@ from apps.main.utils import FileSystemTestCase, TestMixin
 
 from .models import Point, Track, TrackData, TrackStat
 from .tasks import track_parse_source
-
-User = get_user_model()
 
 
 class TrackDataRealTest(FileSystemTestCase):
