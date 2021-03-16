@@ -259,6 +259,9 @@ class TrackStat(models.Model):
     distance = models.FloatField(default=0.0, blank=True)
     mean_speed = models.FloatField(default=0.0, blank=True)
 
+    def __str__(self) -> str:
+        return f"TrackStat for {self.track.uuid}"
+
     def compute(self):
         data = TrackData(self.track)
         self.pos_ele = self._pos_ele(data)
