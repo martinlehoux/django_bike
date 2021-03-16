@@ -6,15 +6,14 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-
-def upload_avatar_to(instance: User, filename: str):
+def upload_avatar_to(instance: "Profile", filename: str):
     ext = Path(filename).suffix
     return f"account/avatar/{instance.user.username}{ext}"
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.PositiveIntegerField(blank=True, null=True)
+    user: User = models.OneToOneField(User, on_delete=models.CASCADE)  # type: ignore
+    age: int = models.PositiveIntegerField(blank=True, null=True)  # type: ignore
 
     avatar = models.ImageField(
         blank=True, upload_to=upload_avatar_to, default="default-avatar.png"
