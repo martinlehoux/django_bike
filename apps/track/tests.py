@@ -5,7 +5,7 @@ from pathlib import Path
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.http import HttpResponse
-from django.test import TestCase, override_settings
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.dateparse import parse_duration
@@ -109,7 +109,6 @@ class PointModelTestCase(TestCase):
         self.assertEqual(track.point_set.first(), point1)
 
 
-@override_settings(TRACK_CHARTS_DISPLAY=True)
 class TrackPermissionsTestCase(TestCase):
     user1: User
     user2: User

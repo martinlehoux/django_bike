@@ -92,7 +92,7 @@ class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         track: Track = self.object
         key = make_template_fragment_key("track_charts", [track.pk])
-        if settings.TRACK_CHARTS_DISPLAY and cache.get(key) is None:
+        if cache.get(key) is None:
             data = TrackData(track)
             context["charts"] = [
                 charts.AltVSDistChart(track, data).plot(),
