@@ -1,0 +1,9 @@
+date: 2021-03-16
+features:
+  Notifications: >
+    Display in admin panel.
+    Note that due to a non resolved issue, notification no longer work in production.
+    This will be repaired later on.
+fixes:
+  2021-03-15 downtime: An error in version 0.9 broke the website. A new feature was not ready to be deployed.
+  Dependencies: Upgraded channel to version 3.0.3.
