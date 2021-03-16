@@ -2,3 +2,4 @@ date: 2021-03-16
 features:
 fixes:
   Release tag ordering: Use a correct lexicographic order on releases.
+  Comments: Line breaks are correctly displayed.

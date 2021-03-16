@@ -150,9 +150,8 @@
             <strong>{{comment.author}}</strong>
             <br>
             <small>on {{comment.datetime}}</small>
-            <br>
-            {{ comment.text }}
           </p>
+          {{ comment.text|linebreaks }}
         </div>
       </div>
     </article>
