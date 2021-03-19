@@ -55,7 +55,9 @@ class Track(models.Model):
             gpx = gpxpy.parse(self.source_file.open())
             elevation_data.add_elevations(gpx)
             file = ContentFile(gpx.to_xml("1.1"))
-            self.source_file = file
+            filename = self.source_file.name
+            self.source_file.delete()
+            self.source_file.save(filename, file)
             self.datetime = gpx.get_time_bounds().start_time
             self.state = Track.StateChoices.READY
             self.save()
