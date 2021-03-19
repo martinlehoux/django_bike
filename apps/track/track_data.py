@@ -25,18 +25,6 @@ class TrackData:
     def time(self) -> List[timedelta]:
         return [p.point.time - self.track.datetime for p in self._points]
 
-    def lon(self) -> List[float]:
-        return []  # TODO
-
-    def lat(self) -> List[float]:
-        return []  # TODO
-
-    def x(self) -> List[float]:
-        return []  # TODO
-
-    def y(self) -> List[float]:
-        return []  # TODO
-
     def dist(self) -> List[float]:
         """km"""
         return [p.distance_from_start / 1000 for p in self._points]
