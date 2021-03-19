@@ -1,98 +1,31 @@
-import uuid
 from datetime import timedelta
 from math import atan, cos, sin, sqrt
-from pathlib import Path
 from typing import List, Optional
 
 import gpxpy
 from django.conf import settings
-from django.contrib.auth.models import User
-from django.core.validators import MaxLengthValidator
-from django.db import models
-from django.db.models.manager import Manager
-from django.db.models.query import QuerySet
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.urls import reverse
-from django.utils import timezone
+from gpxpy.gpx import GPX, PointData
 
-from .parsers import PARSERS
-
-
-class Point(models.Model):
-    class Meta:
-        ordering = ["time"]
-
-    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
-    lat = models.FloatField()
-    lon = models.FloatField()
-    time = models.DurationField()
-    alt = models.FloatField(default=0)
-    x = models.FloatField(default=0)
-    y = models.FloatField(default=0)
-    dist = models.FloatField(default=0)
-
-
-def source_file_path(track, filename):
-    suffixes = "".join(Path(filename).suffixes)
-    return (
-        Path()
-        / "track"
-        / "source"
-        / f"track_{track.name.lower()}_{track.uuid}{suffixes}"
-    )
-
-
-gpx_file_path = source_file_path  # TODO: depreciate
-
-
-class Track(models.Model):
-    class StateChoices(models.TextChoices):
-        PROCESSING = "processing", "Processing"
-        READY = "ready", "Ready"
-        ERROR = "error", "Error"
-
-    uuid = models.UUIDField(default=uuid.uuid4)
-    name = models.CharField(max_length=128)
-    datetime = models.DateTimeField(blank=True, default=timezone.now)
-    source_file = models.FileField(upload_to=source_file_path, blank=True, null=True)
-    parser = models.CharField(
-        max_length=32, choices=[(parser, parser) for parser in PARSERS.keys()]
-    )
-    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
-    public = models.BooleanField(default=False)
-    state = models.CharField(
-        max_length=32, choices=StateChoices.choices, default=StateChoices.READY
-    )
-
-    # Typing
-    comment_set: Manager["Comment"]
-    point_set: Manager["Point"]
-
-    @property
-    def points_count(self) -> int:
-        return self.point_set.count()
-
-    def __str__(self):
-        return f"{self.name} ({self.uuid})"
-
-    def get_absolute_url(self):
-        return reverse("track:detail", kwargs={"pk": self.pk})
+from .models import Track
 
 
 class TrackData:
     DIST_FACTOR = 0.88
     MIN_POS_ELE = 8
     track: Track
-    _point_set: QuerySet[Point]
+    _gpx: GPX
+    _points: List[PointData]
 
     def __init__(self, track: Track):
         assert isinstance(track, Track)
         self.track = track
-        self._point_set = self.track.point_set.all()
+        self._gpx = gpxpy.parse(track.source_file.open())
+        self._points = self._gpx.get_points_data()
 
     def time(self) -> List[timedelta]:
-        return [point.time for point in self._point_set]
+        return [p.point.time - self.track.datetime for p in self._points]
 
     def lon(self) -> List[float]:
         return [point.lon for point in self._point_set]
@@ -255,62 +188,6 @@ class TrackData:
             accel = MASS * speed[index] * acceleration[index]  # W = kg * m/s * m/s2
             power.append(rolling_resistance + wind + gravity + accel)
         return power
-
-
-class TrackStat(models.Model):
-    objects: Manager["TrackStat"]
-
-    track: Track = models.OneToOneField(
-        "track.Track",
-        on_delete=models.CASCADE,
-    )  # type: ignore
-    pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)  # m
-    duration = models.DurationField(default=timedelta(), blank=True)
-    distance = models.FloatField(default=0.0, blank=True)  # m
-    mean_speed = models.FloatField(default=0.0, blank=True)  # m/s
-
-    def __str__(self) -> str:
-        return f"TrackStat for {self.track.uuid}"
-
-    def compute(self):
-        gpx = gpxpy.parse(self.track.source_file.open())
-        moving_data = gpx.get_moving_data()
-        self.pos_ele = gpx.get_uphill_downhill().uphill
-        self.duration = timedelta(seconds=moving_data.moving_time)
-        self.distance = moving_data.moving_distance
-        self.mean_speed = self.distance / self.duration.total_seconds()
-
-    @property
-    def distance_km(self) -> float:
-        return self.distance / 1000
-
-    @property
-    def mean_speed_km_h(self) -> float:
-        return self.mean_speed * 3.6
-
-
-class Comment(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
-    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
-    text = models.TextField(blank=False, validators=[MaxLengthValidator(200)])
-    datetime = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return f"Comment: {self.author} @ {self.track} @ {self.datetime}"
-
-
-class Like(models.Model):
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=["user", "track"], name="like_unique")
-        ]
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    track = models.ForeignKey("track.Track", on_delete=models.CASCADE)
-    datetime = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self) -> str:
-        return f"Like: {self.user} @ {self.track} @ {self.datetime}"
 
 
 @receiver(post_save, sender=Track)

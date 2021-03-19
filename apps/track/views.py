@@ -13,7 +13,8 @@ from extensions.views import PermissionRequiredMethodMixin
 
 from . import charts
 from .forms import CommentCreateForm, TrackCreateForm, TrackEditForm
-from .models import Like, Track, TrackData
+from .models import Like, Track
+from .track_data import TrackData
 
 
 class TrackListView(ListView):

@@ -13,7 +13,7 @@ from django.conf import settings
 
 from apps.notification import notify
 
-from .models import Point, Track, TrackStat
+from .models import Track, TrackStat
 from .parsers import PARSERS
 
 logger = get_task_logger(__name__)

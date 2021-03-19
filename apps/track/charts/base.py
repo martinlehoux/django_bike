@@ -3,7 +3,8 @@ from plotly.offline import plot
 
 from apps.main.utils import smoother
 
-from ..models import Track, TrackData
+from ..models import Track
+from ..track_data import TrackData
 
 
 class BaseChart:
