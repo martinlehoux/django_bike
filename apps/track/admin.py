@@ -19,13 +19,12 @@ class TrackAdmin(admin.ModelAdmin):
         "datetime",
         "parser",
         "source_file",
-        "points_count",
         "user",
         "public",
         "state",
     )
-    readonly_fields = ("uuid", "points_count", "user")
-    list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
+    readonly_fields = ("uuid", "user")
+    list_display = ("name", "uuid", "datetime", "user", "public")
     search_fields = [
         "user__username",
         "user__first_name",
@@ -55,8 +54,7 @@ class TrackAdmin(admin.ModelAdmin):
     def compute_trace(self, request, queryset):
         for track in queryset:
             chain(
-                tasks.track_clear_points.s(track.pk),
-                tasks.track_compute_trace.s(),
+                tasks.track_compute_trace.s(track.pk),
                 tasks.track_compute_stat.s(),
                 tasks.track_state_ready.s(),
             ).delay()

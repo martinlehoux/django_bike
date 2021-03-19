@@ -24,16 +24,16 @@ class TrackData:
         return [p.point.time - self.track.datetime for p in self._points]
 
     def lon(self) -> List[float]:
-        return [point.lon for point in self._point_set]
+        return []  # TODO
 
     def lat(self) -> List[float]:
-        return [point.lat for point in self._point_set]
+        return []  # TODO
 
     def x(self) -> List[float]:
-        return [point.x for point in self._point_set]
+        return []  # TODO
 
     def y(self) -> List[float]:
-        return [point.y for point in self._point_set]
+        return []  # TODO
 
     def dist(self) -> List[float]:
         """km"""
