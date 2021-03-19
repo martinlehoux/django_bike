@@ -16,19 +16,6 @@ class TrackPermissionsTestCase(TestCase):
         cls.user1 = User.objects.create_user("Kagamino")
         cls.user2 = User.objects.create_user("Other")
 
-    def test_view_permission(self):
-        now = timezone.now()
-        track = Track.objects.create(name="Track 1", datetime=now, user=self.user1)
-
-        self.assertTrue(self.user1.has_perm("track.view_track", track))
-        self.assertFalse(self.user2.has_perm("track.view_track", track))
-
-        track.public = True
-        track.save()
-
-        self.assertTrue(self.user1.has_perm("track.view_track", track))
-        self.assertTrue(self.user2.has_perm("track.view_track", track))
-
     def test_detail_view(self):
         now = timezone.now()
         res: HttpResponse

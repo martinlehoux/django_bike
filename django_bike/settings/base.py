@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.forms",
     "django_cleanup.apps.CleanupConfig",
-    "rules.apps.AutodiscoverRulesConfig",
     "channels",
 ]
 
@@ -178,10 +177,7 @@ LOGGING = {
     },
 }
 
-AUTHENTICATION_BACKENDS = (
-    "rules.permissions.ObjectPermissionBackend",
-    "django.contrib.auth.backends.ModelBackend",
-)
+AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
 if not USE_CACHE:
     CACHES = {

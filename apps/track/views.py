@@ -8,7 +8,6 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
 from apps.notification import notify
-from extensions.views import PermissionRequiredMethodMixin
 
 from . import charts
 from .forms import CommentCreateForm, TrackCreateForm, TrackEditForm
@@ -52,7 +51,7 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
+class TrackDetailView(UpdateView):
     model = Track
     object: Track
     template_name_suffix = "_detail"
@@ -61,10 +60,15 @@ class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
         "You are not allowed to access this track: {} with this method."
     )
     raise_exception = True
-    permission_required_map = {
-        "GET": "track.view_track",
-        "POST": "track.edit_track",
-    }
+
+    def has_permission(self):
+        track: Track = self.get_object()
+        user = self.request.user
+        if self.request.method == "GET" and track.public:
+            return True
+        if track.user == user:
+            return True
+        return False
 
     def get_permission_denied_message(self):
         if not hasattr(self, "object"):
@@ -107,10 +111,16 @@ class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
         return context
 
 
-class TrackDeleteView(PermissionRequiredMethodMixin, DeleteView):
+class TrackDeleteView(DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
-    permission_required = "track.delete_track"
+
+    def has_permission(self):
+        user = self.request.user
+        track: Track = self.get_object()
+        if user == track.user:
+            return True
+        return False
 
 
 class TrackCommentView(CreateView):
@@ -145,11 +155,17 @@ class TrackCommentView(CreateView):
         return HttpResponseRedirect(self.get_success_url(track))
 
 
-class TrackLikeView(PermissionRequiredMethodMixin, CreateView):
+class TrackLikeView(CreateView):
     object: Like
     model = Like
     fields = []
-    permission_required = "track.like_track"
+
+    def has_permission(self):
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        user = self.request.user
+        if track.user == user:
+            return True
+        return False
 
     def get_success_url(self) -> str:
         return reverse("track:detail", args=[self.object.track.pk])
@@ -160,10 +176,16 @@ class TrackLikeView(PermissionRequiredMethodMixin, CreateView):
         return super().form_valid(form)
 
 
-class TrackUnlikeView(PermissionRequiredMethodMixin, DeleteView):
+class TrackUnlikeView(DeleteView):
     object: Like
     model = Like
-    permission_required = "track.like_track"
+
+    def has_permission(self):
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        user = self.request.user
+        if track.user == user:
+            return True
+        return False
 
     def get_success_url(self) -> str:
         return reverse("track:detail", args=[self.object.track.pk])

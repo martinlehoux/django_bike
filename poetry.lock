@@ -900,14 +900,6 @@ python-versions = "*"
 six = ">=1.7.0"
 
 [[package]]
-name = "rules"
-version = "2.2"
-description = "Awesome Django authorization, without the database"
-category = "main"
-optional = false
-python-versions = "*"
-
-[[package]]
 name = "sendgrid"
 version = "6.6.0"
 description = "Twilio SendGrid library for Python"
@@ -1106,7 +1098,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "fcdbb14bb1a48133a325bb74dfe6c039cd340d9921d066f877c2838948f27472"
+content-hash = "40294d9f41cb2e926530294546575e53956107649b1dd8fcc9b711251e2c0e97"
 
 [metadata.files]
 aioredis = [
@@ -1737,9 +1729,6 @@ requests = [
 ]
 retrying = [
     {file = "retrying-1.3.3.tar.gz", hash = "sha256:08c039560a6da2fe4f2c426d0766e284d3b736e355f8dd24b37367b0bb41973b"},
-]
-rules = [
-    {file = "rules-2.2.tar.gz", hash = "sha256:9bae429f9d4f91a375402990da1541f9e093b0ac077221d57124d06eeeca4405"},
 ]
 sendgrid = [
     {file = "sendgrid-6.6.0-py3-none-any.whl", hash = "sha256:e422c8263563ac7d664066d2f87b90bcb005b067eb7c33a9b1396442b2ed285b"},
