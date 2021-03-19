@@ -83,15 +83,16 @@ class TrackData:
     def acceleration(self) -> List[float]:
         acceleration = [0.0]
         speed = [s / 3.6 for s in self.speed()]
-        points = self._point_set
-        for index, point in list(enumerate(points))[1:]:
-            previous = points[index - 1]
-            if point.time == previous.time:
+        for index, current in list(enumerate(self._points))[1:]:
+            previous = self._points[index - 1]
+            if current.point.time == previous.point.time:
+                acceleration.append(acceleration[-1])
+            elif current.point.time is None or previous.point.time is None:
                 acceleration.append(acceleration[-1])
             else:
                 acceleration.append(
                     (speed[index] - speed[index - 1])
-                    / (point.time - previous.time).total_seconds()
+                    / (current.point.time - previous.point.time).total_seconds()
                 )
         return acceleration
 
@@ -107,8 +108,7 @@ class TrackData:
         slope = self.slope()
         speed = [s / 3.6 for s in self.speed()]
         acceleration = self.acceleration()
-        points = self._point_set
-        for index, point in list(enumerate(points))[1:]:
+        for index in range(1, len(self._points)):
             weight = MASS * GRAVITY  # N = kg * m/s2
             normal = weight * cos(slope[index] / 100)  # N
             rolling_resistance = (
@@ -121,7 +121,7 @@ class TrackData:
                 weight * speed[index] * sin(atan(slope[index] / 100))
             )  # W = N * m/s
             accel = MASS * speed[index] * acceleration[index]  # W = kg * m/s * m/s2
-            power.append(rolling_resistance + wind + gravity + accel)
+            power.append(max(rolling_resistance + wind + gravity + accel, 0))
         return power
 
 
