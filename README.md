@@ -69,3 +69,9 @@ To run: `docker run -p 1081:80 -p 25:25 maildev/maildev`
 Flower helps you monitor you workers and your Redis messages. The site will work the same if not activated.
 Depends on: **redis**
 To run: `celery flower -A django_bike`
+
+
+### References
+- http://www.movable-type.co.uk/scripts/latlong.html
+- https://github.com/tkrajina/gpxpy
+- https://github.com/tkrajina/srtm.py

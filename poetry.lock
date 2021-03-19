@@ -956,6 +956,17 @@ optional = false
 python-versions = ">=3.5"
 
 [[package]]
+name = "srtm.py"
+version = "0.3.7"
+description = "Python parser for the Shuttle Radar Topography Mission elevation data"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+requests = "*"
+
+[[package]]
 name = "starkbank-ecdsa"
 version = "1.1.0"
 description = "A lightweight and fast pure python ECDSA library"
@@ -1095,7 +1106,7 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "f8fbb0072e4bf4509b9a5636f78323affd0a559a77cb050b7fe5e7049917fe07"
+content-hash = "fcdbb14bb1a48133a325bb74dfe6c039cd340d9921d066f877c2838948f27472"
 
 [metadata.files]
 aioredis = [
@@ -1745,6 +1756,9 @@ six = [
 sqlparse = [
     {file = "sqlparse-0.4.1-py3-none-any.whl", hash = "sha256:017cde379adbd6a1f15a61873f43e8274179378e95ef3fede90b5aa64d304ed0"},
     {file = "sqlparse-0.4.1.tar.gz", hash = "sha256:0f91fd2e829c44362cbcfab3e9ae12e22badaa8a29ad5ff599f9ec109f0454e8"},
+]
+"srtm.py" = [
+    {file = "SRTM.py-0.3.7.tar.gz", hash = "sha256:38c8ba9900751cdc9e7f6d91af1a339cc4a8e2fcb7482c6d613fd3dc6c5d8c4c"},
 ]
 starkbank-ecdsa = [
     {file = "starkbank-ecdsa-1.1.0.tar.gz", hash = "sha256:423f81bb55c896a3c85ee98ac7da98826721eaee918f5c0c1dfff99e1972da0c"},

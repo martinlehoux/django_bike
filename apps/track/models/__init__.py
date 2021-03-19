@@ -1,4 +1,3 @@
-import gpxpy
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
@@ -15,6 +14,4 @@ def track_post_save(sender, instance: Track, created: bool, *args, **kwargs):
         track_stat.compute()
         track_stat.save()
     if created:
-        gpx = gpxpy.parse(instance.source_file.open())
-        instance.datetime = gpx.get_time_bounds().start_time
-        instance.save()
+        instance.parse_source()

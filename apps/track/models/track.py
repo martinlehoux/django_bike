@@ -1,10 +1,18 @@
 import uuid
+from logging import getLogger
 from pathlib import Path
 
+import gpxpy
+import srtm
 from django.contrib.auth.models import User
+from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
+
+from apps.notification import notify
+
+logger = getLogger(__name__)
 
 
 def source_file_path(track, filename):
@@ -40,3 +48,22 @@ class Track(models.Model):
 
     def get_absolute_url(self):
         return reverse("track:detail", kwargs={"pk": self.pk})
+
+    def parse_source(self):
+        elevation_data = srtm.get_data()
+        try:
+            gpx = gpxpy.parse(self.source_file.open())
+            elevation_data.add_elevations(gpx)
+            file = ContentFile(gpx.to_xml("1.1"))
+            self.source_file = file
+            self.datetime = gpx.get_time_bounds().start_time
+            self.state = Track.StateChoices.READY
+            self.save()
+        except Exception as err:
+            notify.error(
+                self.user,
+                f"An error occurred while parsing the track {self.uuid}: {err}",
+            )
+            logger.warn(err)
+            self.state = Track.StateChoices.ERROR
+            self.save()
