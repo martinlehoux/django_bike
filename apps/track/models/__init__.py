@@ -13,6 +13,6 @@ def track_post_save(sender, instance: Track, created: bool, *args, **kwargs):
         instance.parse_source()
     if not TrackStat.objects.filter(track=instance).exists():
         track_stat = TrackStat(track=instance)
-        if instance.source_file is not None:
+        if instance.source_file:
             track_stat.compute()
         track_stat.save()

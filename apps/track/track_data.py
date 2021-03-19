@@ -16,6 +16,8 @@ class TrackData:
 
     def __init__(self, track: Track):
         assert isinstance(track, Track)
+        if not track.source_file:
+            raise ValueError
         self.track = track
         self._gpx = gpxpy.parse(track.source_file.open())
         self._points = self._gpx.get_points_data()

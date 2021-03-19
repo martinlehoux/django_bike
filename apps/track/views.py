@@ -88,13 +88,16 @@ class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
         track = self.object
         key = make_template_fragment_key("track_charts", [track.pk])
         if cache.get(key) is None:
-            data = TrackData(track)
-            context["charts"] = [
-                charts.AltVSDistChart(track, data).plot(),
-                charts.SlopeVSDistChart(track, data).plot(),
-                charts.SpeedVSDistChart(track, data).plot(),
-                charts.PowerVSTimeChart(track, data).plot(),
-            ]
+            try:
+                data = TrackData(track)
+                context["charts"] = [
+                    charts.AltVSDistChart(track, data).plot(),
+                    charts.SlopeVSDistChart(track, data).plot(),
+                    charts.SpeedVSDistChart(track, data).plot(),
+                    charts.PowerVSTimeChart(track, data).plot(),
+                ]
+            except ValueError:
+                pass
         context["comment_form"] = CommentCreateForm()
         context["comment_set"] = (
             track.comment_set.select_related("author__profile")
