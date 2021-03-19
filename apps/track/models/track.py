@@ -3,6 +3,7 @@ from pathlib import Path
 
 import gpxpy
 import srtm
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.db import models
@@ -49,7 +50,9 @@ class Track(models.Model):
     def parse_source(self):
         elevation_data = srtm.get_data()
         gpx = gpxpy.parse(self.source_file.open())
-        elevation_data.add_elevations(gpx)
+        elevation_data.add_elevations(
+            gpx, smooth=True, gpx_smooth_no=settings.GPX_SMOOTH_NO
+        )
         file = ContentFile(gpx.to_xml("1.1"))
         filename = self.source_file.name
         self.source_file.delete()
