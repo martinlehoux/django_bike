@@ -24,13 +24,8 @@ class TrackCreateForm(forms.ModelForm):
         self.fields["name"].widget.attrs.update({"data_list": track_names})
 
     def save(self, commit=True):
-        self.instance.state = Track.StateChoices.PROCESSING
+        self.instance.state = Track.StateChoices.READY
         track = super().save(commit=commit)
-        chain(
-            tasks.track_compute_trace(track.pk),
-            tasks.track_compute_stat.s(),
-            tasks.track_state_ready.s(),
-        ).delay()
         return track
 
 

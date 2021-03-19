@@ -314,6 +314,12 @@ class Like(models.Model):
 
 
 @receiver(post_save, sender=Track)
-def track_pre_save(sender, instance: Track, *args, **kwargs):
+def track_post_save(sender, instance: Track, created: bool, *args, **kwargs):
     if not TrackStat.objects.filter(track=instance).exists():
-        TrackStat.objects.create(track=instance)
+        track_stat = TrackStat(track=instance)
+        track_stat.compute()
+        track_stat.save()
+    if created:
+        gpx = gpxpy.parse(instance.source_file.open())
+        instance.datetime = gpx.get_time_bounds().start_time
+        instance.save()
