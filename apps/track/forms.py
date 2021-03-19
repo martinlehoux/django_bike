@@ -1,18 +1,16 @@
 from typing import Any, Dict, List
 
-from celery import chain
 from django import forms
 
 from apps.main.widgets import TextListInput
 
-from . import tasks
 from .models import Comment, Track
 
 
 class TrackCreateForm(forms.ModelForm):
     class Meta:
         model = Track
-        fields = ["name", "source_file", "parser"]
+        fields = ["name", "source_file"]
 
     name = forms.CharField(
         max_length=128, required=True, strip=True, widget=TextListInput
