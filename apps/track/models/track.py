@@ -1,5 +1,4 @@
 import uuid
-from logging import getLogger
 from pathlib import Path
 
 import gpxpy
@@ -9,10 +8,6 @@ from django.core.files.base import ContentFile
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-
-from apps.notification import notify
-
-logger = getLogger(__name__)
 
 
 def source_file_path(track, filename):
@@ -38,6 +33,8 @@ class Track(models.Model):
     # Typing
     comment_set: models.Manager["Comment"]
     point_set: models.Manager["Point"]
+    objects: models.Manager["Track"]
+    trackstat: "TrackStat"
 
     @property
     def points_count(self) -> int:
@@ -51,21 +48,12 @@ class Track(models.Model):
 
     def parse_source(self):
         elevation_data = srtm.get_data()
-        try:
-            gpx = gpxpy.parse(self.source_file.open())
-            elevation_data.add_elevations(gpx)
-            file = ContentFile(gpx.to_xml("1.1"))
-            filename = self.source_file.name
-            self.source_file.delete()
-            self.source_file.save(filename, file)
-            self.datetime = gpx.get_time_bounds().start_time
-            self.state = Track.StateChoices.READY
-            self.save()
-        except Exception as err:
-            notify.error(
-                self.user,
-                f"An error occurred while parsing the track {self.uuid}: {err}",
-            )
-            logger.warning(err)
-            self.state = Track.StateChoices.ERROR
-            self.save()
+        gpx = gpxpy.parse(self.source_file.open())
+        elevation_data.add_elevations(gpx)
+        file = ContentFile(gpx.to_xml("1.1"))
+        filename = self.source_file.name
+        self.source_file.delete()
+        self.source_file.save(filename, file)
+        self.datetime = gpx.get_time_bounds().start_time
+        self.state = Track.StateChoices.READY
+        self.save()

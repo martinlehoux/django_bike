@@ -20,7 +20,7 @@ def track_error(track: Track, message: str, err: Exception):
 
 
 @celery.shared_task
-def track_compute_stat(track_pk: int):
+def track_compute_stat(track_pk: int) -> int:
     track = Track.objects.get(pk=track_pk)
     try:
         track.trackstat
@@ -29,6 +29,16 @@ def track_compute_stat(track_pk: int):
     track.trackstat.compute()
     track.trackstat.save()
     return track_pk
+
+
+@celery.shared_task
+def track_parse_source(track_pk: int) -> int:
+    track = Track.objects.get(pk=track_pk)
+    try:
+        track.parse_source()
+    except Exception as err:
+        track_error(track, str(err), err)
+    return track.pk
 
 
 @celery.shared_task
