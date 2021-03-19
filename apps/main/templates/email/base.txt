@@ -1,4 +1,4 @@
-Django Bikes
+{{ SITE_NAME }}
 You received a new message
 
 {% block content %}
@@ -6,4 +6,4 @@ You received a new message
 
 
 Thanks for using our site,
-the Django Bike team
+the {{ SITE_NAME }} team

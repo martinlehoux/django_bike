@@ -8,6 +8,7 @@ from django.urls import reverse_lazy
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
 USE_CACHE = bool(os.environ.get("USE_CACHE", True))
+SITE_NAME = os.environ.get("SITE_NAME", "Django Bikes")
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
@@ -56,6 +57,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "extensions.context_processors.settings_context_processor",
             ],
         },
     },

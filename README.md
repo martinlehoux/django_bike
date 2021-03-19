@@ -23,6 +23,8 @@ docker-compose up -d --no-deps --build db flower redis web worker
 **Configure project**
 - `cp django_bikes/template.env django_bikes/.env`
 - Edit this new file and fill the required values.
+  - `USE_CACHE` enable cache when filled with any value
+  - `SITE_NAME` used for displaying the site name
   - `POSTGRES_PASSWORD` is not required in development mode (using SQLite3)
   - `SENDGRID_KEY` is not required in development mode (using Maildev). See https://sendgrid.com/.
   - `SECRET_KEY` can be generated using python : 

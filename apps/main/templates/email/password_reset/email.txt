@@ -3,7 +3,7 @@
 {% block content %}
 Reset password request
 
-You're receiving this email because you requested a password reset for your user account at Django Bike.
+You're receiving this email because you requested a password reset for your user account at {{ SITE_NAME }}.
 
 Please go to the following page and choose a new password:
 {% block reset_link %}
