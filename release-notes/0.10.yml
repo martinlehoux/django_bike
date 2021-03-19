@@ -1,5 +1,7 @@
 date: 2021-03-16
 features:
+  GPXpy: Refactor all computation on track using a modern GPX lib.
+  Map chart: Map chart is deprecated. It will be replaced in a future release.
   USE_CACHE setting: Turn on/off the cache (for dev purposes).
 fixes:
   Release tag ordering: Use a correct lexicographic order on releases.

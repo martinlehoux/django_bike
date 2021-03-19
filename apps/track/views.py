@@ -100,7 +100,6 @@ class TrackDetailView(PermissionRequiredMethodMixin, UpdateView):
                 charts.AltVSDistChart(track, data).plot(),
                 charts.SlopeVSDistChart(track, data).plot(),
                 charts.SpeedVSDistChart(track, data).plot(),
-                charts.MapChart(track, data).plot(),
                 charts.PowerVSTimeChart(track, data).plot(),
             ]
         context["comment_form"] = CommentCreateForm()
