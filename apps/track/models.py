@@ -4,6 +4,7 @@ from math import atan, cos, sin, sqrt
 from pathlib import Path
 from typing import List, Optional
 
+import gpxpy
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.validators import MaxLengthValidator
@@ -14,8 +15,6 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
-
-from apps.main.utils import smoother
 
 from .parsers import PARSERS
 
@@ -259,48 +258,35 @@ class TrackData:
 
 
 class TrackStat(models.Model):
-    track: Track = models.OneToOneField("track.Track", on_delete=models.CASCADE)
-    pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)
+    objects: Manager["TrackStat"]
+
+    track: Track = models.OneToOneField(
+        "track.Track",
+        on_delete=models.CASCADE,
+    )  # type: ignore
+    pos_ele = models.FloatField("positive elevation", default=0.0, blank=True)  # m
     duration = models.DurationField(default=timedelta(), blank=True)
-    distance = models.FloatField(default=0.0, blank=True)
-    mean_speed = models.FloatField(default=0.0, blank=True)
+    distance = models.FloatField(default=0.0, blank=True)  # m
+    mean_speed = models.FloatField(default=0.0, blank=True)  # m/s
 
     def __str__(self) -> str:
         return f"TrackStat for {self.track.uuid}"
 
     def compute(self):
-        data = TrackData(self.track)
-        self.pos_ele = self._pos_ele(data)
-        self.duration = self._duration(data)
-        self.distance = self._distance(data)
-        self.mean_speed = self._mean_speed(data)
+        gpx = gpxpy.parse(self.track.source_file.open())
+        moving_data = gpx.get_moving_data()
+        self.pos_ele = gpx.get_uphill_downhill().uphill
+        self.duration = timedelta(seconds=moving_data.moving_time)
+        self.distance = moving_data.moving_distance
+        self.mean_speed = self.distance / self.duration.total_seconds()
 
-    def _pos_ele(self, data: TrackData) -> float:
-        alt_cum = smoother(data.alt_cum())
-        if alt_cum:
-            return alt_cum[-1]
-        return 0.0
+    @property
+    def distance_km(self) -> float:
+        return self.distance / 1000
 
-    def _duration(self, data: TrackData) -> timedelta:
-        duration = data.time()
-        if duration:
-            return duration[-1]
-        return timedelta()
-
-    def _distance(self, data: TrackData) -> float:
-        """km"""
-        distance = data.dist()
-        if distance:
-            return distance[-1]
-        return 0.0
-
-    def _mean_speed(self, data: TrackData) -> float:
-        """km/h"""
-        duration = self._duration(data)
-        distance = self._distance(data)
-        if duration:
-            return distance / duration.total_seconds() * 3600
-        return 0.0
+    @property
+    def mean_speed_km_h(self) -> float:
+        return self.mean_speed * 3.6
 
 
 class Comment(models.Model):
