@@ -7,4 +7,4 @@ features:
   Admin: Display track state in track list.
 fixes:
   Release tag ordering: Use a correct lexicographic order on releases.
-  Comments: Line breaks are correctly displayed.
+  Comments: Line breaks are correctly displayed. Prevent anonymous user from posting comments on public tracks.

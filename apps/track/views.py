@@ -113,10 +113,18 @@ class TrackDeleteView(PermissionRequiredMethodMixin, DeleteView):
     permission_required = "track.delete_track"
 
 
-class TrackCommentView(PermissionRequiredMethodMixin, CreateView):
+class TrackCommentView(CreateView):
     object: Comment
     form_class = CommentCreateForm
-    permission_required = "track.comment_track"
+
+    def has_permission(self):
+        user = self.request.user
+        track = get_object_or_404(Track, pk=self.kwargs["pk"])
+        if user == track.user:
+            return True
+        if not user.is_anonymous and track.public:
+            return True
+        return False
 
     def get_success_url(self, track: Track = None) -> str:
         if track:

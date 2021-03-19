@@ -125,6 +125,7 @@
 {% block side %}
 <div class="box">
   <h2 class="header">Comments ({{track.comment_set.count}})</h2>
+  {% if not request.user.is_anonymous %}
   <form method="post" action="{% url 'track:comment' track.pk %}">{% csrf_token %}
     {% include "form.html" with form=comment_form %}
     <div class="control">
@@ -137,6 +138,7 @@
     </div>
   </form>
   <br>
+  {% endif %}
   {% for comment in comment_set %}
     <article class="media">
       <figure class="media-left">
