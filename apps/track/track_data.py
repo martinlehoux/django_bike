@@ -23,15 +23,14 @@ class TrackData:
         self._points = self._gpx.get_points_data()
 
     def time(self) -> List[timedelta]:
-        return [p.point.time - self.track.datetime for p in self._points]
+        return [p.point.time - self.track.datetime for p in self._points]  # type: ignore
 
     def dist(self) -> List[float]:
         """km"""
         return [p.distance_from_start / 1000 for p in self._points]
 
-    def alt(self) -> List[Optional[float]]:
-        # TODO When empty ?
-        return [p.point.elevation for p in self._points]
+    def alt(self) -> List[float]:
+        return [p.point.elevation for p in self._points]  # type: ignore
 
     def slope(self) -> List[float]:
         slope = [0.0]
