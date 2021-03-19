@@ -24,7 +24,7 @@ class TrackAdmin(admin.ModelAdmin):
         "state",
     )
     readonly_fields = ("uuid", "user")
-    list_display = ("name", "uuid", "datetime", "user", "public")
+    list_display = ("name", "uuid", "datetime", "user", "public", "state")
     search_fields = [
         "user__username",
         "user__first_name",
