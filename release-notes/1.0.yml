@@ -1,4 +1,4 @@
-date: 2021-03-16
+date: 2021-03-19
 features:
   GPXpy: Refactor all computation on track using a modern GPX lib.
   Map chart: Map chart is deprecated. It will be replaced in a future release.
