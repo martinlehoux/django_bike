@@ -6,7 +6,6 @@ from django.urls import reverse_lazy
 
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
-JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
 USE_CACHE = bool(os.environ.get("USE_CACHE", True))
 
@@ -199,3 +198,4 @@ else:
     }
 
 AVATAR_SIZE = (128, 128)
+GPX_SMOOTH_NO = 100
