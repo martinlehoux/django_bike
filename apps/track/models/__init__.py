@@ -9,9 +9,10 @@ from .track_stat import TrackStat
 
 @receiver(post_save, sender=Track)
 def track_post_save(sender, instance: Track, created: bool, *args, **kwargs):
-    if not TrackStat.objects.filter(track=instance).exists():
-        track_stat = TrackStat(track=instance)
-        track_stat.compute()
-        track_stat.save()
     if created:
         instance.parse_source()
+    if not TrackStat.objects.filter(track=instance).exists():
+        track_stat = TrackStat(track=instance)
+        if instance.source_file is not None:
+            track_stat.compute()
+        track_stat.save()
