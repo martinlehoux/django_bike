@@ -6,8 +6,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 
-from ..parsers import PARSERS
-
 
 def source_file_path(track, filename):
     suffixes = "".join(Path(filename).suffixes)
@@ -32,9 +30,6 @@ class Track(models.Model):
     name = models.CharField(max_length=128)
     datetime = models.DateTimeField(blank=True, default=timezone.now)
     source_file = models.FileField(upload_to=source_file_path, blank=True, null=True)
-    parser = models.CharField(
-        max_length=32, choices=[(parser, parser) for parser in PARSERS.keys()]
-    )
     user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True)
     public = models.BooleanField(default=False)
     state = models.CharField(
