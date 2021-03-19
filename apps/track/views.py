@@ -49,12 +49,6 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
         return kwargs
 
     def form_valid(self, form):
-        notify.info(
-            self.request.user,
-            "{} track was created and will be parsed in a few seconds".format(
-                form.instance.name
-            ),
-        )
         form.instance.user = self.request.user
         return super().form_valid(form)
 
