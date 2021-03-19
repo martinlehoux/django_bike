@@ -6,15 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('track', '0021_auto_20200915_1528'),
+        ("track", "0021_auto_20200915_1528"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='track',
-            name='parser',
+            model_name="track",
+            name="parser",
         ),
         migrations.DeleteModel(
-            name='Point',
+            name="Point",
         ),
     ]

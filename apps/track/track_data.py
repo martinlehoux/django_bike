@@ -1,6 +1,6 @@
 from datetime import timedelta
 from math import atan, cos, sin
-from typing import List, Optional
+from typing import List
 
 import gpxpy
 from gpxpy.gpx import GPX, PointData
@@ -23,7 +23,7 @@ class TrackData:
         self._points = self._gpx.get_points_data()
 
     def time(self) -> List[timedelta]:
-        return [p.point.time - self.track.datetime for p in self._points]  # type: ignore
+        return [p.point.time - self.track.datetime for p in self._points]
 
     def dist(self) -> List[float]:
         """km"""
