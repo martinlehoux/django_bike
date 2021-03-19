@@ -16,7 +16,9 @@ class Migration(migrations.Migration):
             model_name="track",
             name="gpx_file",
             field=models.FileField(
-                blank=True, null=True, upload_to=apps.track.models.track.gpx_file_path
+                blank=True,
+                null=True,
+                upload_to=apps.track.models.track.source_file_path,
             ),
         ),
     ]

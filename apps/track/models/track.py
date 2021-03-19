@@ -8,16 +8,7 @@ from django.utils import timezone
 
 
 def source_file_path(track, filename):
-    suffixes = "".join(Path(filename).suffixes)
-    return (
-        Path()
-        / "track"
-        / "source"
-        / f"track_{track.name.lower()}_{track.uuid}{suffixes}"
-    )
-
-
-gpx_file_path = source_file_path  # TODO: depreciate
+    return Path() / "track" / "source" / f"{track.uuid}.gpx"
 
 
 class Track(models.Model):

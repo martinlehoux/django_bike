@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 (
                     "gpx_file",
                     models.FileField(
-                        null=True, upload_to=apps.track.models.track.gpx_file_path
+                        null=True, upload_to=apps.track.models.track.source_file_path
                     ),
                 ),
                 (
