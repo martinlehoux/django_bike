@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
@@ -13,7 +12,7 @@ from extensions.views import PermissionRequiredMethodMixin
 
 from . import charts
 from .forms import CommentCreateForm, TrackCreateForm, TrackEditForm
-from .models import Like, Track
+from .models import Comment, Like, Track
 from .track_data import TrackData
 
 
@@ -112,6 +111,7 @@ class TrackDeleteView(PermissionRequiredMethodMixin, DeleteView):
 
 
 class TrackCommentView(PermissionRequiredMethodMixin, CreateView):
+    object: Comment
     form_class = CommentCreateForm
     permission_required = "track.comment_track"
 
@@ -135,6 +135,7 @@ class TrackCommentView(PermissionRequiredMethodMixin, CreateView):
 
 
 class TrackLikeView(PermissionRequiredMethodMixin, CreateView):
+    object: Like
     model = Like
     fields = []
     permission_required = "track.like_track"
@@ -149,6 +150,7 @@ class TrackLikeView(PermissionRequiredMethodMixin, CreateView):
 
 
 class TrackUnlikeView(PermissionRequiredMethodMixin, DeleteView):
+    object: Like
     model = Like
     permission_required = "track.like_track"
 
