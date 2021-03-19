@@ -27,6 +27,7 @@ pytest-asyncio = "^0.14"
 django-redis = "^4.12"
 Pillow = "^7.2"
 PyYAML = "^5.4"
+gpxpy = "^1.4"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
