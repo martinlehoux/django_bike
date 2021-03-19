@@ -1,14 +1,13 @@
 from datetime import timedelta
-from math import atan, cos, sin, sqrt
+from math import atan, cos, sin
 from typing import List, Optional
 
 import gpxpy
-from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from gpxpy.gpx import GPX, PointData
 
-from .models import Track
+from .models import Track, TrackStat
 
 
 class TrackData:
