@@ -42,28 +42,9 @@ class TrackData:
         """km"""
         return [p.distance_from_start / 1000 for p in self._points]
 
-    def alt(self) -> List[float]:
-        return [point.alt for point in self._point_set]
-
-    def alt_cum(self) -> List[float]:
-        # https://www.gpsvisualizer.com/tutorials/elevation_gain.html
-
-        points = self._point_set
-        alt_cum = []
-        if not points:
-            return []
-        last_low_alt = points[0].alt
-        for index, point in enumerate(points):
-            if index == 0:
-                alt_cum.append(0)
-            elif point.alt >= last_low_alt + self.MIN_POS_ELE:
-                alt_cum.append(point.alt - last_low_alt + alt_cum[index - 1])
-                last_low_alt = point.alt
-            else:
-                alt_cum.append(alt_cum[index - 1])
-                if point.alt < last_low_alt:
-                    last_low_alt = min(point.alt, last_low_alt)
-        return alt_cum
+    def alt(self) -> List[Optional[float]]:
+        # TODO When empty ?
+        return [p.point.elevation for p in self._points]
 
     # SLOPE
     def slope(self) -> List[float]:
