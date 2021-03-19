@@ -64,6 +64,6 @@ class Track(models.Model):
                 self.user,
                 f"An error occurred while parsing the track {self.uuid}: {err}",
             )
-            logger.warn(err)
+            logger.warning(err)
             self.state = Track.StateChoices.ERROR
             self.save()
