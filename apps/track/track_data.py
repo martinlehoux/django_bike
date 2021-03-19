@@ -3,11 +3,9 @@ from math import atan, cos, sin
 from typing import List, Optional
 
 import gpxpy
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from gpxpy.gpx import GPX, PointData
 
-from .models import Track, TrackStat
+from .models import Track
 
 
 class TrackData:
@@ -122,15 +120,3 @@ class TrackData:
             accel = MASS * speed[index] * acceleration[index]  # W = kg * m/s * m/s2
             power.append(max(rolling_resistance + wind + gravity + accel, 0))
         return power
-
-
-@receiver(post_save, sender=Track)
-def track_post_save(sender, instance: Track, created: bool, *args, **kwargs):
-    if not TrackStat.objects.filter(track=instance).exists():
-        track_stat = TrackStat(track=instance)
-        track_stat.compute()
-        track_stat.save()
-    if created:
-        gpx = gpxpy.parse(instance.source_file.open())
-        instance.datetime = gpx.get_time_bounds().start_time
-        instance.save()
