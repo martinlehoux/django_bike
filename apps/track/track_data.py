@@ -46,72 +46,25 @@ class TrackData:
         # TODO When empty ?
         return [p.point.elevation for p in self._points]
 
-    # SLOPE
     def slope(self) -> List[float]:
-        method = settings.METHODS_VERSION.get("slope")
-        return getattr(self, method)()
-
-    def slope_v1(self) -> List[float]:
         slope = [0.0]
-        points = self._point_set
-        for index, point in list(enumerate(points))[1:]:
-            previous = points[index - 1]
-            try:
-                slope.append(
-                    (point.alt - previous.alt)
-                    / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
-                    * 100
-                )
-            except ZeroDivisionError:
+        for index, current in list(enumerate(self._points))[1:]:
+            previous = self._points[index - 1]
+            if current.point.elevation is None or previous.point.elevation is None:
                 slope.append(slope[-1])
-        return slope
-
-    def slope_v2(self) -> List[float]:
-        points = self._point_set
-        slope: List[Optional[float]] = [None for _ in range(len(points))]
-        slope[0] = 0.0
-        # Every 30 points
-        i = 30  #  TODO May be false
-        for i in range(30, len(points), 30):
-            point = points[i]
-            previous: Point = points[i - 30]
-            try:
-                slope[i] = (
-                    (point.alt - previous.alt)
-                    / sqrt((point.x - previous.x) ** 2 + (point.y - previous.y) ** 2)
-                    * 100
-                )
-            except ZeroDivisionError:
-                slope[i] = slope[i - 30]
-        # Fill last point
-        if i < len(points) - 1:
-            point = points.last()
-            if point is None:
-                slope[-1] = 0.0
+            elif current.distance_from_start == previous.distance_from_start:
+                slope.append(slope[-1])
             else:
-                previous: Point = points[i]
-                try:
-                    slope[-1] = (
-                        (point.alt - previous.alt)
-                        / sqrt(
-                            (point.x - previous.x) ** 2 + (point.y - previous.y) ** 2
-                        )
-                        * 100
-                    )
-                except ZeroDivisionError:
-                    slope[-1] = slope[i]
-        # Complete
-        for i in range(len(slope)):
-            if slope[i] is None:
-                last = i - i % 30
-                next = min(len(slope) - 1, i - i % 30 + 30)
-                slope[i] = (
-                    1 / 30 * (slope[last] * (i - last) + slope[next] * (next - i))
+                slope.append(
+                    (current.point.elevation - previous.point.elevation)
+                    / (current.distance_from_start - previous.distance_from_start)
+                    * 100
                 )
         return slope
 
     def speed(self) -> List[float]:
         """km / h"""
+        # TODO Remove non moving time ?
         speed = [0.0]
         for index, current in list(enumerate(self._points))[1:]:
             previous = self._points[index - 1]

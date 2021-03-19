@@ -199,6 +199,3 @@ else:
     }
 
 AVATAR_SIZE = (128, 128)
-METHODS_VERSION = {
-    "slope": "slope_v1",
-}
