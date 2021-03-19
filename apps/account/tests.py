@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from PIL import Image
 
-from apps.track.models import Track
+from apps.track.models import Track, TrackStat
 
 from .charts.exercise_history import ExerciseHistoryChart
 from .forms import AvatarForm, MonthTimeRange, WeekTimeRange
@@ -46,8 +46,9 @@ class TrackProfileTestCase(TestCase):
             track = Track.objects.create(
                 name="Track 1", datetime=now - timedelta(days=i // 2), user=self.user
             )
-            track.trackstat.distance = 10 * (i % 3 + 1)
-            track.trackstat.save()
+            track_stat = TrackStat(track=track)
+            track_stat.distance = 10 * (i % 3 + 1)
+            track_stat.save()
 
         # This week
         chart = ExerciseHistoryChart(self.user, WeekTimeRange, now)
