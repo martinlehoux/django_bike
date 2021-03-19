@@ -130,16 +130,18 @@ class TrackData:
         return slope
 
     def speed(self) -> List[float]:
+        """km / h"""
         speed = [0.0]
-        points = self._point_set
-        for index, point in list(enumerate(points))[1:]:
-            previous = points[index - 1]
-            if point.time == previous.time:
+        for index, current in list(enumerate(self._points))[1:]:
+            previous = self._points[index - 1]
+            if current.point.time == previous.point.time:
+                speed.append(speed[-1])
+            elif current.point.time is None or previous.point.time is None:
                 speed.append(speed[-1])
             else:
                 speed.append(
-                    (point.dist - previous.dist)
-                    / (point.time - previous.time).total_seconds()
+                    (current.distance_from_start - previous.distance_from_start)
+                    / (current.point.time - previous.point.time).total_seconds()
                     * 3.6
                 )
         return speed
