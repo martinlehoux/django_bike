@@ -12,7 +12,6 @@ from .models import Track
 
 
 class TrackData:
-    DIST_FACTOR = 0.88
     MIN_POS_ELE = 8
     track: Track
     _gpx: GPX
@@ -41,7 +40,7 @@ class TrackData:
 
     def dist(self) -> List[float]:
         """km"""
-        return [point.dist * self.DIST_FACTOR / 1000 for point in self._point_set]
+        return [p.distance_from_start / 1000 for p in self._points]
 
     def alt(self) -> List[float]:
         return [point.alt for point in self._point_set]
