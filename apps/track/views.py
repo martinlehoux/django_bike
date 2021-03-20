@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.cache import cache
 from django.core.cache.utils import make_template_fragment_key
 from django.db.models import Q
@@ -51,7 +51,7 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
-class TrackDetailView(UpdateView):
+class TrackDetailView(PermissionRequiredMixin, UpdateView):
     model = Track
     object: Track
     template_name_suffix = "_detail"
@@ -111,7 +111,7 @@ class TrackDetailView(UpdateView):
         return context
 
 
-class TrackDeleteView(DeleteView):
+class TrackDeleteView(PermissionRequiredMixin, DeleteView):
     model = Track
     success_url = reverse_lazy("track:list")
 
@@ -123,7 +123,7 @@ class TrackDeleteView(DeleteView):
         return False
 
 
-class TrackCommentView(CreateView):
+class TrackCommentView(PermissionRequiredMixin, CreateView):
     object: Comment
     form_class = CommentCreateForm
 
@@ -155,7 +155,7 @@ class TrackCommentView(CreateView):
         return HttpResponseRedirect(self.get_success_url(track))
 
 
-class TrackLikeView(CreateView):
+class TrackLikeView(PermissionRequiredMixin, CreateView):
     object: Like
     model = Like
     fields = []
@@ -176,7 +176,7 @@ class TrackLikeView(CreateView):
         return super().form_valid(form)
 
 
-class TrackUnlikeView(DeleteView):
+class TrackUnlikeView(PermissionRequiredMixin, DeleteView):
     object: Like
     model = Like
 
