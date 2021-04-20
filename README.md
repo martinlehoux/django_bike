@@ -64,6 +64,12 @@ Maildev is a local mail SMTP and client to test sending emails locally.
 You can see your mail box at http://0.0.0.0:1081
 To run: `docker run -p 1081:80 -p 25:25 maildev/maildev`
 
+### Releasing a new version
+
+- `poetry version major|minor|patch`
+- Write `release-notes/x.y.z.yml` release note with the **correct date**.
+- Create a PR
+
 ### Options
 
 **Flower**
