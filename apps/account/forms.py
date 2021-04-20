@@ -5,7 +5,12 @@ from django.conf import settings
 from django.http import QueryDict
 from PIL import Image
 
-from .charts.time_range_query import MonthTimeRange, TimeRangeQuery, WeekTimeRange
+from .charts.time_range_query import (
+    MonthTimeRange,
+    TimeRangeQuery,
+    WeekTimeRange,
+    YearTimeRange,
+)
 from .models import Profile
 
 
@@ -33,7 +38,11 @@ class AvatarForm(forms.ModelForm):
 
 
 class ExerciseHistoryForm(forms.Form):
-    TIME_RANGE_CHOICES = {"week": WeekTimeRange, "month": MonthTimeRange}
+    TIME_RANGE_CHOICES = {
+        "week": WeekTimeRange,
+        "month": MonthTimeRange,
+        "year": YearTimeRange,
+    }
     time_range = forms.ChoiceField(
         choices=[(key, key) for key in TIME_RANGE_CHOICES.keys()],
     )

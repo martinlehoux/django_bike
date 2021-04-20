@@ -5,6 +5,7 @@ features:
   USE_CACHE setting: Turn on/off the cache (for dev purposes).
   Elevation data: Missing elevation used to be retrieved with JAWG. Now we use The Shuttle Radar Topography Mission data through srtm.py parser.
   Admin: Display track state in track list.
+  Exercise chart: Added Year range.
 fixes:
   Release tag ordering: Use a correct lexicographic order on releases.
   Comments: Line breaks are correctly displayed. Prevent anonymous user from posting comments on public tracks.
