@@ -44,6 +44,7 @@ class TrackCreateView(LoginRequiredMixin, CreateView):
             .values_list("name", flat=True)
             .distinct()
         )
+        kwargs["default_sport"] = self.request.user.profile.default_sport
         return kwargs
 
     def form_valid(self, form):

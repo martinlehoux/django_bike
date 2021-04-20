@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from django import forms
 
@@ -10,16 +10,23 @@ from .models import Comment, Track
 class TrackCreateForm(forms.ModelForm):
     class Meta:
         model = Track
-        fields = ["name", "source_file"]
+        fields = ["name", "source_file", "sport"]
 
     name = forms.CharField(
         max_length=128, required=True, strip=True, widget=TextListInput
     )
     source_file = forms.FileField(required=True)
 
-    def __init__(self, track_names: List[str], *args, **kwargs):
+    def __init__(
+        self,
+        track_names: List[str],
+        default_sport: Track.SportChoices = Track.SportChoices.BIKING,
+        *args,
+        **kwargs
+    ):
         super().__init__(*args, **kwargs)
         self.fields["name"].widget.attrs.update({"data_list": track_names})
+        self.fields["sport"].initial = default_sport
 
     def save(self, commit=True):
         self.instance.state = Track.StateChoices.READY

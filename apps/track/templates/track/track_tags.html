@@ -1,4 +1,15 @@
+{% load track_tags %}
+
 <div class="field is-grouped is-grouped-multiline">
+  {% comment %} Sport {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas {{track.sport|sport_icon}}"></i>
+      </span>
+      <span class="tag">{{track.get_sport_display}}</span>
+    </span>
+  </div>
   {% comment %} Likes {% endcomment %}
   <div class="control">
     <span class="tags has-addons">
@@ -38,7 +49,7 @@
         {{track.trackstat.duration}}
       </span>
     </span>
-  </div>
+  </div>  
   {% comment %} Distance {% endcomment %}
   <div class="control">
     <span class="tags has-addons">

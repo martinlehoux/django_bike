@@ -21,6 +21,10 @@ class Track(models.Model):
         READY = "ready", "Ready"
         ERROR = "error", "Error"
 
+    class SportChoices(models.TextChoices):
+        BIKING = "biking", "Biking"
+        RUNNING = "running", "Running"
+
     uuid = models.UUIDField(default=uuid.uuid4)
     name = models.CharField(max_length=128)
     datetime = models.DateTimeField(blank=True, default=timezone.now)
@@ -29,6 +33,9 @@ class Track(models.Model):
     public = models.BooleanField(default=False)
     state = models.CharField(
         max_length=32, choices=StateChoices.choices, default=StateChoices.READY
+    )
+    sport = models.CharField(
+        max_length=32, choices=SportChoices.choices, default=SportChoices.BIKING
     )
 
     # Typing

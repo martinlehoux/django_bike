@@ -10,29 +10,36 @@ from django.contrib.auth.views import (
 )
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.views.generic import DetailView, UpdateView
+from django.views.generic import UpdateView
 
 from apps.notification import notify
 
 from .charts.exercise_history import ExerciseHistoryChart
-from .forms import AvatarForm, ExerciseHistoryForm
+from .forms import AvatarForm, ExerciseHistoryForm, ProfileForm
+from .models import Profile
 
 
-class ProfileView(LoginRequiredMixin, DetailView):
-    model = User
+class ProfileView(LoginRequiredMixin, UpdateView):
+    model = Profile
+    form_class = ProfileForm
+    template_name = "auth/user_detail.html"
+    success_url = reverse_lazy("profile")
 
     def get_object(self, queryset=None):
-        return get_user(self.request)
+        return get_user(self.request).profile
 
     def get_context_data(self, **kwags):
+        profile: Profile = self.get_object()
         context = super().get_context_data(**kwags)
-        exercise_form = ExerciseHistoryForm(self.request.GET)
+        exercise_form = ExerciseHistoryForm(self.request.GET, profile)
         exercise_history_chart = None
         if exercise_form.is_valid():
             exercise_history_chart = ExerciseHistoryChart(
-                self.request.user, exercise_form.time_range_choice
+                self.request.user,
+                exercise_form.time_range_choice,
+                exercise_form.cleaned_data["sport"],
             ).plot()
-        context["avatar_form"] = AvatarForm(instance=self.request.user)
+        context["avatar_form"] = AvatarForm(instance=profile)
         context["exercise_history_form"] = exercise_form
         context["exercise_chart"] = exercise_history_chart
         return context

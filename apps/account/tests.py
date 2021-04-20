@@ -47,11 +47,13 @@ class TrackProfileTestCase(TestCase):
                 name="Track 1", datetime=now - timedelta(days=i // 2), user=self.user
             )
             track_stat = TrackStat(track=track)
-            track_stat.distance = 10 * (i % 3 + 1)
+            track_stat.distance = 10 * (i % 3 + 1) * 1000
             track_stat.save()
 
         # This week
-        chart = ExerciseHistoryChart(self.user, WeekTimeRange, now)
+        chart = ExerciseHistoryChart(
+            self.user, WeekTimeRange, Track.SportChoices.BIKING, now
+        )
         data = chart.get_data()[0]
 
         self.assertEqual(
@@ -68,8 +70,29 @@ class TrackProfileTestCase(TestCase):
         )
         self.assertEqual(data.y, (0, 0, 50.0, 40.0, 30.0, 0, 0))
 
+        # Running
+        chart = ExerciseHistoryChart(
+            self.user, WeekTimeRange, Track.SportChoices.RUNNING, now
+        )
+        data = chart.get_data()[0]
+        self.assertEqual(
+            data.x,
+            (
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ),
+        )
+        self.assertEqual(data.y, (0, 0, 0, 0, 0, 0, 0))
+
         # This month
-        chart = ExerciseHistoryChart(self.user, MonthTimeRange, now)
+        chart = ExerciseHistoryChart(
+            self.user, MonthTimeRange, Track.SportChoices.BIKING, now
+        )
         data = chart.get_data()[0]
         self.assertEqual(data.x, tuple(range(1, 32)))
         self.assertEqual(

@@ -6,6 +6,10 @@ features:
   Elevation data: Missing elevation used to be retrieved with JAWG. Now we use The Shuttle Radar Topography Mission data through srtm.py parser.
   Admin: Display track state in track list.
   Exercise chart: Added Year range.
+  Track sport: |
+    You can now choose the activity sport (only biking or running for now).
+    You can also choose in the Exercise History which sport to display.
+    Set your default sport in your profile page.
 fixes:
   Release tag ordering: Use a correct lexicographic order on releases.
   Comments: Line breaks are correctly displayed. Prevent anonymous user from posting comments on public tracks.

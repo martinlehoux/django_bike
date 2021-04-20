@@ -5,6 +5,8 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
+from apps.track.models import Track
+
 
 def upload_avatar_to(instance: "Profile", filename: str):
     ext = Path(filename).suffix
@@ -14,6 +16,9 @@ def upload_avatar_to(instance: "Profile", filename: str):
 class Profile(models.Model):
     user: User = models.OneToOneField(User, on_delete=models.CASCADE)  # type: ignore
     age: int = models.PositiveIntegerField(blank=True, null=True)  # type: ignore
+    default_sport = models.CharField(
+        choices=Track.SportChoices.choices, null=True, blank=True, max_length=32
+    )
 
     avatar = models.ImageField(
         blank=True, upload_to=upload_avatar_to, default="default-avatar.png"
