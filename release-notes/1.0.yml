@@ -1,0 +1,17 @@
+date: 2021-04-20
+features:
+  GPXpy: Refactor all computation on track using a modern GPX lib.
+  Map chart: Map chart is deprecated. It will be replaced in a future release.
+  USE_CACHE setting: Turn on/off the cache (for dev purposes).
+  Elevation data: Missing elevation used to be retrieved with JAWG. Now we use The Shuttle Radar Topography Mission data through srtm.py parser.
+  Admin: Display track state in track list.
+  Exercise chart: Added Year range.
+  Track sport: |
+    You can now choose the activity sport (only biking or running for now).
+    You can also choose in the Exercise History which sport to display.
+    Set your default sport in your profile page.
+fixes:
+  Release tag ordering: Use a correct lexicographic order on releases.
+  Comments: Line breaks are correctly displayed. Prevent anonymous user from posting comments on public tracks.
+  Dependencies: Pillow@8.1
+  Permissions: The permission framework was deprecated, thus it was removed.

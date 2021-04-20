@@ -64,6 +64,16 @@
   <div class="level">
     <div class="level-item has-text-centered">
       <div>
+        <p class="heading">Sport</p>
+        <p class="title">
+          <span class="icon" title="{{track.get_sport_display}}">
+            <i class="fas {{track.sport|sport_icon}}"></i>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
         <p class="heading">
           <span class="icon">
             <i class="fas fa-stopwatch"></i>
@@ -81,7 +91,7 @@
           </span>
           Distance
         </p>
-        <p class="title">{{track.trackstat.distance|floatformat:1}} km</p>
+        <p class="title">{{track.trackstat.distance_km|floatformat:1}} km</p>
       </div>
     </div>
     <div class="level-item has-text-centered">
@@ -103,7 +113,7 @@
           </span>
           Average speed
         </p>
-        <p class="title">{{track.trackstat.mean_speed|floatformat:1}} km/h</p>
+        <p class="title">{{track.trackstat.mean_speed_km_h|floatformat:1}} km/h</p>
       </div>
     </div>
   </div>
@@ -125,6 +135,7 @@
 {% block side %}
 <div class="box">
   <h2 class="header">Comments ({{track.comment_set.count}})</h2>
+  {% if not request.user.is_anonymous %}
   <form method="post" action="{% url 'track:comment' track.pk %}">{% csrf_token %}
     {% include "form.html" with form=comment_form %}
     <div class="control">
@@ -137,6 +148,7 @@
     </div>
   </form>
   <br>
+  {% endif %}
   {% for comment in comment_set %}
     <article class="media">
       <figure class="media-left">
@@ -150,9 +162,8 @@
             <strong>{{comment.author}}</strong>
             <br>
             <small>on {{comment.datetime}}</small>
-            <br>
-            {{ comment.text }}
           </p>
+          {{ comment.text|linebreaks }}
         </div>
       </div>
     </article>

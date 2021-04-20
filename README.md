@@ -23,7 +23,8 @@ docker-compose up -d --no-deps --build db flower redis web worker
 **Configure project**
 - `cp django_bikes/template.env django_bikes/.env`
 - Edit this new file and fill the required values.
-  - `JAWG_TOKEN` is used to retrieve altitudes for GPX. See https://www.jawg.io/.
+  - `USE_CACHE` enable cache when filled with any value
+  - `SITE_NAME` used for displaying the site name
   - `POSTGRES_PASSWORD` is not required in development mode (using SQLite3)
   - `SENDGRID_KEY` is not required in development mode (using Maildev). See https://sendgrid.com/.
   - `SECRET_KEY` can be generated using python : 
@@ -63,9 +64,21 @@ Maildev is a local mail SMTP and client to test sending emails locally.
 You can see your mail box at http://0.0.0.0:1081
 To run: `docker run -p 1081:80 -p 25:25 maildev/maildev`
 
+### Releasing a new version
+
+- `poetry version major|minor|patch`
+- Write `release-notes/x.y.z.yml` release note with the **correct date**.
+- Create a PR
+
 ### Options
 
 **Flower**
 Flower helps you monitor you workers and your Redis messages. The site will work the same if not activated.
 Depends on: **redis**
 To run: `celery flower -A django_bike`
+
+
+### References
+- http://www.movable-type.co.uk/scripts/latlong.html
+- https://github.com/tkrajina/gpxpy
+- https://github.com/tkrajina/srtm.py

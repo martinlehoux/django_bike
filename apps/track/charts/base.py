@@ -1,7 +1,10 @@
 from plotly import graph_objs as go
 from plotly.offline import plot
 
-from ..models import Track, TrackData, smoother
+from apps.main.utils import smoother
+
+from ..models import Track
+from ..track_data import TrackData
 
 
 class BaseChart:

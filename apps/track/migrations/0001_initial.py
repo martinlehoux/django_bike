@@ -4,7 +4,7 @@ import django.db.models.deletion
 from django.conf import settings
 from django.db import migrations, models
 
-import apps.track.models
+import apps.track.models.track
 
 
 class Migration(migrations.Migration):
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 (
                     "gpx_file",
                     models.FileField(
-                        null=True, upload_to=apps.track.models.gpx_file_path
+                        null=True, upload_to=apps.track.models.track.source_file_path
                     ),
                 ),
                 (

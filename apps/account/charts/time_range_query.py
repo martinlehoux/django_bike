@@ -33,9 +33,9 @@ class WeekTimeRange(TimeRangeQuery):
 
     def fill_data(
         self, summary: QuerySet, key: str, value: str
-    ) -> Tuple[List[float], List[float]]:
+    ) -> Tuple[List[str], List[float]]:
         x = list(calendar.day_name)
-        y = [0 for i in x]
+        y = [0.0 for i in x]
         for data in summary:
             y[data[key]] = data[value]
         return x, y
@@ -50,10 +50,27 @@ class MonthTimeRange(TimeRangeQuery):
 
     def fill_data(
         self, summary: QuerySet, key: str, value: str
-    ) -> Tuple[List[float], List[float]]:
+    ) -> Tuple[List[int], List[float]]:
         max_day = calendar.monthrange(self.now.year, self.now.month)[1]
         x = list(range(1, max_day + 1))
-        y = [0 for i in x]
+        y = [0.0 for i in x]
+        for data in summary:
+            y[data[key]] = data[value]
+        return x, y
+
+
+class YearTimeRange(TimeRangeQuery):
+    time_aggregate = "datetime__month"
+
+    @property
+    def query(self) -> Q:
+        return Q(datetime__gte=datetime(self.now.year, 1, 1))
+
+    def fill_data(
+        self, summary: QuerySet, key: str, value: str
+    ) -> Tuple[List[str], List[float]]:
+        x = list(calendar.month_name)
+        y = [0.0 for i in x]
         for data in summary:
             y[data[key]] = data[value]
         return x, y

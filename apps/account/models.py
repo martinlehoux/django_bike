@@ -1,21 +1,24 @@
 from pathlib import Path
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-User = get_user_model()
+from apps.track.models import Track
 
 
-def upload_avatar_to(instance: User, filename: str):
+def upload_avatar_to(instance: "Profile", filename: str):
     ext = Path(filename).suffix
     return f"account/avatar/{instance.user.username}{ext}"
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    age = models.PositiveIntegerField(blank=True, null=True)
+    user: User = models.OneToOneField(User, on_delete=models.CASCADE)  # type: ignore
+    age: int = models.PositiveIntegerField(blank=True, null=True)  # type: ignore
+    default_sport = models.CharField(
+        choices=Track.SportChoices.choices, null=True, blank=True, max_length=32
+    )
 
     avatar = models.ImageField(
         blank=True, upload_to=upload_avatar_to, default="default-avatar.png"

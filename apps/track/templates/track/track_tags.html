@@ -1,4 +1,15 @@
+{% load track_tags %}
+
 <div class="field is-grouped is-grouped-multiline">
+  {% comment %} Sport {% endcomment %}
+  <div class="control">
+    <span class="tags has-addons">
+      <span class="tag is-dark icon">
+        <i class="fas {{track.sport|sport_icon}}"></i>
+      </span>
+      <span class="tag">{{track.get_sport_display}}</span>
+    </span>
+  </div>
   {% comment %} Likes {% endcomment %}
   <div class="control">
     <span class="tags has-addons">
@@ -38,7 +49,7 @@
         {{track.trackstat.duration}}
       </span>
     </span>
-  </div>
+  </div>  
   {% comment %} Distance {% endcomment %}
   <div class="control">
     <span class="tags has-addons">
@@ -46,7 +57,7 @@
         <i class="fas fa-arrows-alt-h"></i>
       </span>
       <span class="tag">
-        {{track.trackstat.distance|floatformat:1}} km
+        {{track.trackstat.distance_km|floatformat:1}} km
       </span>
     </span>
   </div>
@@ -68,7 +79,7 @@
         <i class="fas fa-tachometer-alt"></i>
       </span>
       <span class="tag">
-        {{track.trackstat.mean_speed|floatformat:1}} km/h
+        {{track.trackstat.mean_speed_km_h|floatformat:1}} km/h
       </span>
     </span>
   </div>

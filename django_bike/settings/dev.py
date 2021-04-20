@@ -16,3 +16,9 @@ EMAIL_PORT = 25
 
 INSTALLED_APPS.append("debug_toolbar")
 MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
+    },
+}

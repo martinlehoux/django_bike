@@ -1,11 +1,10 @@
 from celery import chain
 from django.contrib import admin, messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
+from django.db.models.query import QuerySet
 
 from . import tasks
 from .models import Comment, Like, Track, TrackStat
-
-User = get_user_model()
 
 
 class TrackStatInline(admin.StackedInline):
@@ -21,13 +20,12 @@ class TrackAdmin(admin.ModelAdmin):
         "datetime",
         "parser",
         "source_file",
-        "points_count",
         "user",
         "public",
         "state",
     )
-    readonly_fields = ("uuid", "points_count", "user")
-    list_display = ("name", "uuid", "datetime", "points_count", "user", "public")
+    readonly_fields = ("uuid", "user")
+    list_display = ("name", "uuid", "datetime", "user", "public", "state")
     search_fields = [
         "user__username",
         "user__first_name",
@@ -35,7 +33,7 @@ class TrackAdmin(admin.ModelAdmin):
         "name",
         "datetime",
     ]
-    actions = ["compute_trace", "compute_stats"]
+    actions = ["parse_source", "compute_stats"]
 
     def save_form(self, request, form, change):
         try:
@@ -44,7 +42,7 @@ class TrackAdmin(admin.ModelAdmin):
             form.instance.user = request.user
         return super().save_form(request, form, change)
 
-    def compute_stats(self, request, queryset):
+    def compute_stats(self, request, queryset: QuerySet[Track]):
         for track in queryset:
             chain(
                 tasks.track_compute_stat.s(track.pk),
@@ -54,12 +52,10 @@ class TrackAdmin(admin.ModelAdmin):
             request, f"{queryset.count()} computations scheduled.", messages.SUCCESS
         )
 
-    def compute_trace(self, request, queryset):
+    def parse_source(self, request, queryset: QuerySet[Track]):
         for track in queryset:
             chain(
-                tasks.track_clear_points.s(track.pk),
-                tasks.track_compute_trace.s(),
-                tasks.track_compute_stat.s(),
+                tasks.track_parse_source.s(track.pk),
                 tasks.track_state_ready.s(),
             ).delay()
         self.message_user(

@@ -2,17 +2,14 @@ from datetime import datetime, timedelta
 
 import pytz
 from django.conf import settings
-from django.contrib.auth import get_user_model, models
+from django.contrib.auth.models import User
 from django.test import TestCase
 from PIL import Image
 
-from apps.track.models import Track
+from apps.track.models import Track, TrackStat
 
 from .charts.exercise_history import ExerciseHistoryChart
 from .forms import AvatarForm, MonthTimeRange, WeekTimeRange
-
-User = get_user_model()
-models.User
 
 
 class ProfileTestCase(TestCase):
@@ -49,11 +46,14 @@ class TrackProfileTestCase(TestCase):
             track = Track.objects.create(
                 name="Track 1", datetime=now - timedelta(days=i // 2), user=self.user
             )
-            track.trackstat.distance = 10 * (i % 3 + 1)
-            track.trackstat.save()
+            track_stat = TrackStat(track=track)
+            track_stat.distance = 10 * (i % 3 + 1) * 1000
+            track_stat.save()
 
         # This week
-        chart = ExerciseHistoryChart(self.user, WeekTimeRange, now)
+        chart = ExerciseHistoryChart(
+            self.user, WeekTimeRange, Track.SportChoices.BIKING, now
+        )
         data = chart.get_data()[0]
 
         self.assertEqual(
@@ -70,8 +70,29 @@ class TrackProfileTestCase(TestCase):
         )
         self.assertEqual(data.y, (0, 0, 50.0, 40.0, 30.0, 0, 0))
 
+        # Running
+        chart = ExerciseHistoryChart(
+            self.user, WeekTimeRange, Track.SportChoices.RUNNING, now
+        )
+        data = chart.get_data()[0]
+        self.assertEqual(
+            data.x,
+            (
+                "Monday",
+                "Tuesday",
+                "Wednesday",
+                "Thursday",
+                "Friday",
+                "Saturday",
+                "Sunday",
+            ),
+        )
+        self.assertEqual(data.y, (0, 0, 0, 0, 0, 0, 0))
+
         # This month
-        chart = ExerciseHistoryChart(self.user, MonthTimeRange, now)
+        chart = ExerciseHistoryChart(
+            self.user, MonthTimeRange, Track.SportChoices.BIKING, now
+        )
         data = chart.get_data()[0]
         self.assertEqual(data.x, tuple(range(1, 32)))
         self.assertEqual(

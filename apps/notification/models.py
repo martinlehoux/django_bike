@@ -1,10 +1,8 @@
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
-from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.db import models
 from django.dispatch import receiver
-
-User = get_user_model()
 
 
 class Notification(models.Model):

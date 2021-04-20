@@ -33,3 +33,12 @@ def state_icon(value):
 @register.simple_tag
 def user_likes_track(user, track):
     return Like.objects.filter(user=user, track=track).exists()
+
+
+@register.filter
+@stringfilter
+def sport_icon(value):
+    if value == Track.SportChoices.BIKING:
+        return "fa-biking"
+    if value == Track.SportChoices.RUNNING:
+        return "fa-running"

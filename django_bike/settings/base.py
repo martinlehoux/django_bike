@@ -6,9 +6,9 @@ from django.urls import reverse_lazy
 
 # ENV VARIABLES
 SECRET_KEY = os.environ.get("SECRET_KEY")
-JAWG_TOKEN = os.environ.get("JAWG_TOKEN")
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(";")
-TRACK_CHARTS_DISPLAY = bool(os.environ.get("TRACK_CHARTS_DISPLAY", True))
+USE_CACHE = bool(os.environ.get("USE_CACHE", True))
+SITE_NAME = os.environ.get("SITE_NAME", "Django Bikes")
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
@@ -29,7 +29,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django.forms",
     "django_cleanup.apps.CleanupConfig",
-    "rules.apps.AutodiscoverRulesConfig",
     "channels",
 ]
 
@@ -57,6 +56,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "extensions.context_processors.settings_context_processor",
             ],
         },
     },
@@ -95,7 +95,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "America/Los_Angeles"
+TIME_ZONE = "UTC"
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -105,6 +105,8 @@ STATIC_ROOT = "static/"
 STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
+
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:6379/0"
 
@@ -177,18 +179,23 @@ LOGGING = {
     },
 }
 
-AUTHENTICATION_BACKENDS = (
-    "rules.permissions.ObjectPermissionBackend",
-    "django.contrib.auth.backends.ModelBackend",
-)
+AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
-CACHES = {
-    "default": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": f"redis://{REDIS_HOSTNAME}:6379/1",
-        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
-        "KEY_PREFIX": "django_bike.cache",
+if not USE_CACHE:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.dummy.DummyCache",
+        }
     }
-}
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": f"redis://{REDIS_HOSTNAME}:6379/1",
+            "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
+            "KEY_PREFIX": "django_bike.cache",
+        }
+    }
 
 AVATAR_SIZE = (128, 128)
+GPX_SMOOTH_NO = 100
