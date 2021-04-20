@@ -18,7 +18,6 @@ class TrackAdmin(admin.ModelAdmin):
         "uuid",
         "name",
         "datetime",
-        "parser",
         "source_file",
         "user",
         "public",
