@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('account', '0004_auto_20200906_1211'),
+        ("account", "0004_auto_20200906_1211"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='default_sport',
-            field=models.CharField(blank=True, choices=[('biking', 'Biking'), ('running', 'Running')], max_length=32, null=True),
+            model_name="profile",
+            name="default_sport",
+            field=models.CharField(
+                blank=True,
+                choices=[("biking", "Biking"), ("running", "Running")],
+                max_length=32,
+                null=True,
+            ),
         ),
     ]
