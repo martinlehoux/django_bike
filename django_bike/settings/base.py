@@ -106,6 +106,8 @@ STATICFILES_DIRS = ["webapp/public/build"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = "media/"
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 CELERY_BROKER_URL = f"redis://{REDIS_HOSTNAME}:6379/0"
 
 LOGOUT_REDIRECT_URL = reverse_lazy("track:list")
