@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.db.models import Sum
+from django.db.models import IntegerField, Sum, functions
 from django.utils import timezone
 from plotly import graph_objs as go
 
@@ -29,7 +29,7 @@ class ExerciseHistoryChart(BaseChart):
         time_query = self.time_range(self.now)
         tracks = Track.objects.filter(time_query.query)
         summary = tracks.values(time_query.time_aggregate).annotate(
-            distance=Sum(time_query.stat_query)
+            distance=functions.Cast(Sum(time_query.stat_query) / 1000, IntegerField())
         )
         x, y = time_query.fill_data(summary, time_query.time_aggregate, "distance")
         return [go.Bar(x=x, y=y, name=self.name)]
